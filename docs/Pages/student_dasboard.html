@@ -328,7 +328,7 @@
 
         .journal-entry-item {
             cursor: pointer;
-            transition: 0.2s;
+            transition: background-color 0.2s;
         }
 
         .gradient-button-container {
@@ -1641,7 +1641,7 @@
         }
 
 
-        // --- Assignments Logic ---
+        // --- Assignments Logic (Fixed) ---
         const assignmentsList = document.getElementById('assignments-list');
         const newAssignmentBtn = document.getElementById('new-assignment-btn');
         const newAssignmentForm = document.getElementById('new-assignment-form');
@@ -1701,16 +1701,15 @@
         function initializeFirestoreAssignments() {
             const user = auth.currentUser;
 
-            if (!user || user.isAnonymous) {
+            if (!user) {
                 clearAssignmentsList();
                 const infoItem = document.createElement('div');
                 infoItem.className = 'text-center text-gray-400 p-4 col-span-full';
-                infoItem.textContent = 'Sign in to sync assignments.';
+                infoItem.textContent = 'Connecting to server...';
                 assignmentsList.appendChild(infoItem);
                 return;
             }
 
-            // Proceed with fetching data for the authenticated user
             const assignmentsRef = collection(db, `artifacts/${sanitizedAppId}/users/${user.uid}/assignments`);
             const q = query(assignmentsRef);
 
@@ -1763,8 +1762,8 @@
             if (!name) return;
 
             if (assignmentStorageMode === 'server') {
-                if (!db || !currentUserId || (auth.currentUser && auth.currentUser.isAnonymous)) {
-                     alert("Please sign in to save assignments to the server.");
+                if (!db || !currentUserId) {
+                     alert("Cannot save to server. Connection not ready, please wait a moment.");
                     return;
                 }
                 await addDoc(collection(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/assignments`), {
@@ -1792,7 +1791,7 @@
             const id = taskItem.dataset.id;
 
             if (assignmentStorageMode === 'server') {
-                 if (!db || !currentUserId || (auth.currentUser && auth.currentUser.isAnonymous)) return;
+                 if (!db || !currentUserId) return;
                 const docRef = doc(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/assignments`, id);
                 if (target.matches('.task-checkbox')) {
                     await updateDoc(docRef, { completed: target.checked });
@@ -1816,7 +1815,7 @@
             }
         });
 
-        // --- User Health Logic (Restored and Improved) ---
+        // --- User Health Logic (Fixed) ---
         const healthStatsContainer = document.getElementById('health-stats-container');
         const googleFitAuthContainer = document.getElementById('google-fit-auth-container');
         let fitTokenClient;
@@ -1855,7 +1854,7 @@
             healthStatsContainer.appendChild(renderHealthGauge('sleep', 'Hours', 0, 8));
         }
 
-        async function fetchGoogleFitData(accessToken) {
+       async function fetchGoogleFitData(accessToken) {
             const FIT_API_URL = 'https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate';
             const now = new Date();
             const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 0, 0, 0);
@@ -1938,7 +1937,7 @@
             
             if (auth.currentUser && auth.currentUser.isAnonymous) {
                 displayDummyHealthData();
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-gray-400">Please sign in to connect Google Fit.</p>`;
+                googleFitAuthContainer.innerHTML = `<p class="text-sm text-gray-400">Sign in to connect Google Fit.</p>`;
                 return;
             }
 
@@ -2011,8 +2010,8 @@
 
         function initializeFirestoreJournal() {
             const user = auth.currentUser;
-            if (!user || user.isAnonymous) {
-                journalHistoryList.innerHTML = '<p class="text-sm text-center text-gray-400">Sign in to sync journal entries.</p>';
+            if (!user) {
+                journalHistoryList.innerHTML = '<p class="text-sm text-center text-gray-400">Connecting to server...</p>';
                 return;
             }
             const journalRef = collection(db, `artifacts/${sanitizedAppId}/users/${user.uid}/journal`);
@@ -2097,8 +2096,8 @@
             if (!entryText) return;
 
             if (journalStorageMode === 'server') {
-                 if (!db || !currentUserId || (auth.currentUser && auth.currentUser.isAnonymous)) {
-                     alert("Please sign in to save journal entries to the server.");
+                 if (!db || !currentUserId) {
+                     alert("Cannot save to server. Please ensure you are connected.");
                     return;
                 }
                 try {
@@ -2221,7 +2220,7 @@
             if (e.key === 'Enter') handleHumataSendMessage();
         });
 
-        // --- Serenity Map Logic (Improved with Gemini) ---
+        // --- Serenity Map Logic (Fixed) ---
         let map;
         let mapMarkers = [];
 
@@ -2259,16 +2258,15 @@
             searchButton.disabled = true;
             searchButton.innerHTML = '<div class="loader" style="width:20px; height:20px; border-width: 2px; margin: auto;"></div>';
 
-            const prompt = `Find 5 to 7 serene, quiet public places like parks, libraries, or calm cafes near ${query}, India. Respond with ONLY a valid JSON array of objects. Each object must have "name", "lat", and "lon" properties. Example: [{"name": "Some Park", "lat": 28.123, "lon": 77.456}]`;
+            const geminiPrompt = `Find 5 serene public places (like parks, libraries, quiet cafes) in or very near ${query}, India. Respond with ONLY a valid JSON array of objects. Each object must have "name" (string), "lat" (number), and "lon" (number) properties. The coordinates must be accurate. Example: [{"name": "Lodi Garden", "lat": 28.5931, "lon": 77.2196}]`;
 
             try {
-                const responseText = await getGeminiResponse(prompt, "You are a helpful location finding assistant. You only respond with JSON.");
+                const responseText = await getGeminiResponse(geminiPrompt, "You are a helpful location finding assistant. You only respond with JSON.");
                 
-                // Clean the response to ensure it's valid JSON
                 const cleanedResponse = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
                 const places = JSON.parse(cleanedResponse);
 
-                if (places && places.length > 0) {
+                if (places && places.length > 0 && places[0].lat && places[0].lon) {
                     map.setView([places[0].lat, places[0].lon], 13);
                     places.forEach(createMapMarker);
                 } else {
@@ -2289,6 +2287,7 @@
             marker.bindPopup(`<b>${place.name}</b>`);
             mapMarkers.push(marker);
         }
+
 
         // --- General Initialization ---
         document.addEventListener('DOMContentLoaded', async () => {
