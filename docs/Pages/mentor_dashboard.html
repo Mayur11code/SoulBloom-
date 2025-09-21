@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -63,9 +64,15 @@
             <a href="index.html" class="text-3xl font-bold font-playfair text-green-400">
                 Soul Bloom <span class="text-xl text-gray-300 font-sans font-medium">| Mentor Dashboard</span>
             </a>
-            <a href="mentor_login.html" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition-transform transform hover:scale-105">
-                Logout
-            </a>
+            <div class="flex items-center gap-4">
+                 <a href="admin_dashboard.html" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition-transform transform hover:scale-105 flex items-center gap-2">
+                    <i data-lucide="shield-alert" class="w-5 h-5"></i>
+                    <span>Review Flags</span>
+                </a>
+                <a href="mentor_login.html" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-full transition-transform transform hover:scale-105">
+                    Logout
+                </a>
+            </div>
         </div>
     </header>
 
@@ -152,6 +159,8 @@
     
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+        
         const gardenBg = document.getElementById('garden-bg');
         for (let i = 0; i < 20; i++) {
             const leaf = document.createElement('div');
@@ -281,3 +290,4 @@
     </script>
 </body>
 </html>
+
