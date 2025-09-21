@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Dashboard - Soul Bloom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #134e25;
+        }
+        .dark body {
+            background-color: #0c1a1e;
+        }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom card styling for a consistent look */
+        .dashboard-card {
+            background-color: rgba(17, 24, 39, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        /* Animated Background Styles */
+        #garden-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .leaf {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22L6.66 19.7C7.14 18.45 7.93 17.37 8.95 16.54C10 15.64 11.22 15 12.5 15H17V12H12.5C11.54 12 10.64 11.73 9.84 11.23C9.04 10.73 8.36 10.05 7.85 9.24C7.05 7.94 6.75 6.45 7 5C7.25 3.55 8.06 2.22 9.24 1.28L10.47 2.5L9.5 3.47C9.06 3.91 8.72 4.45 8.5 5C8.25 5.55 8.12 6.16 8.12 6.79C8.12 7.41 8.25 8.03 8.5 8.5C8.72 9.05 9.06 9.59 9.5 10.03L10.47 11L17 11V8Z" fill="%2322c55e"/></svg>');
+            background-size: contain;
+            animation: float 25s infinite linear;
+            opacity: 0;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="dark text-gray-200">
+    
+    <div id="garden-bg"></div>
+    
+    <header class="sticky top-0 z-50 w-full bg-gray-900/50 backdrop-blur-lg border-b border-white/10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-3xl font-bold font-playfair text-green-400">
+                Soul Bloom <span class="text-xl text-gray-300 font-sans font-medium">| Mentor Dashboard</span>
+            </a>
+            <a href="mentor_login.html" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition-transform transform hover:scale-105">
+                Logout
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6 lg:p-8 relative z-10">
+        <h1 class="text-3xl font-bold text-white mb-6">Welcome, Dr. Evans</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="dashboard-card rounded-2xl p-6 flex flex-col justify-between">
+                <h3 class="text-lg font-semibold text-gray-300">Total Students</h3>
+                <p class="text-5xl font-bold text-green-400">1,204</p>
+            </div>
+            <div class="dashboard-card rounded-2xl p-6 flex flex-col justify-between">
+                <h3 class="text-lg font-semibold text-gray-300">Appointments This Week</h3>
+                <p class="text-5xl font-bold text-blue-400">28</p>
+            </div>
+            <div class="dashboard-card rounded-2xl p-6 flex flex-col justify-between">
+                <h3 class="text-lg font-semibold text-gray-300">Average Mood Score</h3>
+                <p class="text-5xl font-bold text-yellow-400">7.2 <span class="text-2xl text-gray-400">/ 10</span></p>
+            </div>
+            <div class="dashboard-card rounded-2xl p-6 flex flex-col justify-between">
+                <h3 class="text-lg font-semibold text-gray-300">Alerts</h3>
+                <p class="text-5xl font-bold text-red-500">4</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 dashboard-card rounded-2xl p-6">
+                <h3 class="text-xl font-bold mb-4">Overall Student Stress Level (Last 6 Months)</h3>
+                <canvas id="studentStatusLineChart"></canvas>
+            </div>
+            <div class="dashboard-card rounded-2xl p-6">
+                <h3 class="text-xl font-bold mb-4">Current Student Status</h3>
+                <canvas id="studentStatusPieChart" class="max-h-80 mx-auto"></canvas>
+            </div>
+        </div>
+        
+        <div class="mt-8 dashboard-card rounded-2xl p-6">
+            <h3 class="text-xl font-bold mb-4">Students Needing Attention</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-left">
+                    <thead class="border-b border-gray-600">
+                        <tr>
+                            <th class="py-3 px-4">Student ID</th>
+                            <th class="py-3 px-4">Name</th>
+                            <th class="py-3 px-4">Last Check-in</th>
+                            <th class="py-3 px-4">Status</th>
+                            <th class="py-3 px-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-700 hover:bg-white/5">
+                            <td class="py-3 px-4">#84021</td>
+                            <td class="py-3 px-4">Jessica Miller</td>
+                            <td class="py-3 px-4">2 days ago</td>
+                            <td class="py-3 px-4"><span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-500/30 text-red-300">In Crisis</span></td>
+                            <td class="py-3 px-4"><button class="text-sm font-bold text-green-400 hover:underline">View Profile</button></td>
+                        </tr>
+                        <tr class="border-b border-gray-700 hover:bg-white/5">
+                            <td class="py-3 px-4">#79345</td>
+                            <td class="py-3 px-4">David Chen</td>
+                            <td class="py-3 px-4">4 days ago</td>
+                            <td class="py-3 px-4"><span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-500/30 text-yellow-300">Struggling</span></td>
+                             <td class="py-3 px-4"><button class="text-sm font-bold text-green-400 hover:underline">View Profile</button></td>
+                        </tr>
+                        <tr class="border-b border-gray-700 hover:bg-white/5">
+                            <td class="py-3 px-4">#88109</td>
+                            <td class="py-3 px-4">Maria Garcia</td>
+                            <td class="py-3 px-4">1 day ago</td>
+                            <td class="py-3 px-4"><span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-500/30 text-yellow-300">Struggling</span></td>
+                             <td class="py-3 px-4"><button class="text-sm font-bold text-green-400 hover:underline">View Profile</button></td>
+                        </tr>
+                         <tr class="hover:bg-white/5">
+                            <td class="py-3 px-4">#81233</td>
+                            <td class="py-3 px-4">Chris Turner</td>
+                            <td class="py-3 px-4">5 days ago</td>
+                            <td class="py-3 px-4"><span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-500/30 text-yellow-300">Struggling</span></td>
+                             <td class="py-3 px-4"><button class="text-sm font-bold text-green-400 hover:underline">View Profile</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const gardenBg = document.getElementById('garden-bg');
+        for (let i = 0; i < 20; i++) {
+            const leaf = document.createElement('div');
+            leaf.className = 'leaf';
+            leaf.style.left = `${Math.random() * 100}vw`;
+            leaf.style.animationDuration = `${15 + Math.random() * 20}s`;
+            leaf.style.animationDelay = `${Math.random() * 10}s`;
+            leaf.style.transform = `scale(${0.5 + Math.random() * 0.8})`;
+            leaf.style.opacity = '0';
+            gardenBg.appendChild(leaf);
+        }
+
+        const lineChartOptions = {
+            plugins: {
+                legend: { labels: { color: '#d1d5db', font: { size: 14 } } }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 10,
+                    ticks: { 
+                        color: '#9ca3af',
+                        callback: function(value) {
+                            if (value === 0) return 'Low Stress';
+                            if (value === 5) return 'Medium Stress';
+                            if (value === 10) return 'High Stress';
+                            return null;
+                        }
+                    },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                x: {
+                    ticks: { color: '#9ca3af' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        };
+
+        const lineCtx = document.getElementById('studentStatusLineChart').getContext('2d');
+        const lineChart = new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: ['March', 'April', 'May', 'June', 'July', 'August'],
+                datasets: [{
+                    label: 'Average Stress Score (out of 10)',
+                    data: [6.5, 6.2, 5.5, 5.8, 5.2, 5.9],
+                    borderColor: '#4ade80',
+                    backgroundColor: 'rgba(74, 222, 128, 0.2)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#4ade80',
+                    pointBorderColor: '#fff',
+                    pointHoverRadius: 7,
+                    pointRadius: 5,
+                }]
+            },
+            options: lineChartOptions
+        });
+
+        /*==============================================*/
+        /* START: PIE CHART STYLE UPDATE                */
+        /*==============================================*/
+        const pieCtx = document.getElementById('studentStatusPieChart').getContext('2d');
+        const pieChart = new Chart(pieCtx, {
+            // 1. Changed chart type to 'polarArea' for a more dynamic look
+            type: 'polarArea',
+            data: {
+                labels: ['Thriving', 'Stable', 'Struggling', 'In Crisis'],
+                datasets: [{
+                    label: 'Student Distribution',
+                    data: [45, 35, 15, 5], 
+                    // 2. Updated to semi-transparent colors for a softer, modern feel
+                    backgroundColor: [
+                        'rgba(34, 197, 94, 0.7)',  // green-500
+                        'rgba(59, 130, 246, 0.7)',  // blue-500
+                        'rgba(245, 158, 11, 0.7)',  // amber-500
+                        'rgba(239, 68, 68, 0.7)'   // red-500
+                    ],
+                    borderWidth: 0, // Removed border for a cleaner look
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#d1d5db',
+                            font: { size: 14 },
+                            padding: 20
+                        }
+                    },
+                    // 3. Customized tooltips to show percentages
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += context.parsed + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                // 4. Added styling for the radial grid lines
+                scales: {
+                    r: {
+                        ticks: {
+                           display: false // Hides the radial axis numbers (e.g., 0, 5, 10...)
+                        },
+                        grid: {
+                           color: 'rgba(255, 255, 255, 0.15)'
+                        }
+                    }
+                }
+            }
+        });
+        /*==============================================*/
+        /* END: PIE CHART STYLE UPDATE                  */
+        /*==============================================*/
+    });
+    </script>
+</body>
+</html>

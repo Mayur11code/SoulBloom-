@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Flagged Users</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'VT323', monospace;
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body class="p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl text-red-400 mb-6 flex items-center gap-3"><i data-lucide="shield-alert" class="w-8 h-8"></i> Flagged Users Monitor</h1>
+        <p class="text-gray-400 mb-6">This dashboard displays users whose journal entries or AI chat messages have been flagged for containing sensitive content. New flagged users will appear here in real-time.</p>
+        
+        <div class="bg-gray-800 rounded-lg border border-gray-700 shadow-lg">
+            <div class="grid grid-cols-4 font-bold text-gray-400 p-4 border-b border-gray-700">
+                <div>Timestamp</div>
+                <div>User ID</div>
+                <div class="col-span-2">Flagged Message</div>
+            </div>
+            <div id="flagged-users-list" class="divide-y divide-gray-700">
+                <!-- Flagged users will be dynamically inserted here -->
+                <div id="loading-state" class="p-8 text-center text-gray-500">
+                     <p>Connecting and authenticating...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // IMPORTANT: Use the same Firebase config as your student dashboard
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOveO-NFW_X5FkINfh5KMgCBBMlOej8M4",
+            authDomain: "student-dashboard-4ec02.firebaseapp.com",
+            projectId: "student-dashboard-4ec02",
+            storageBucket: "student-dashboard-4ec02.firebasestorage.app",
+            messagingSenderId: "250478137189",
+            appId: "1:250478137189:web:224352f8e017b4194edb8c"
+        };
+        const finalFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
+        
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const sanitizedAppId = appId.replace(/\//g, '_');
+
+        let db, auth;
+
+        try {
+            const app = initializeApp(finalFirebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } catch (e) {
+            console.error("Firebase initialization failed.", e);
+            document.getElementById('loading-state').textContent = 'Error: Firebase connection failed.';
+        }
+
+        const flaggedUsersList = document.getElementById('flagged-users-list');
+        const loadingState = document.getElementById('loading-state');
+
+        function listenForFlaggedUsers() {
+            if (!db) return;
+            
+            const flaggedUsersRef = collection(db, `artifacts/${sanitizedAppId}/public/data/flagged_users`);
+            const q = query(flaggedUsersRef); 
+
+            onSnapshot(q, (snapshot) => {
+                if(snapshot.empty && !loadingState.classList.contains('hidden')) {
+                    loadingState.innerHTML = `
+                        <div class="flex flex-col items-center gap-4 py-8">
+                            <i data-lucide="antenna" class="w-16 h-16 text-gray-600"></i>
+                            <h2 class="text-xl text-gray-400">Monitoring Active</h2>
+                            <p class="max-w-md">This dashboard is successfully connected and is now waiting for flagged content to be submitted from the student dashboard.</p>
+                        </div>
+                    `;
+                    lucide.createIcons();
+                } else if (!snapshot.empty) {
+                    loadingState.classList.add('hidden');
+                }
+                
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added") {
+                        const userData = change.doc.data();
+                        const newRow = document.createElement('div');
+                        newRow.className = 'grid grid-cols-4 p-4 items-center bg-red-900/20 hover:bg-red-900/40 transition-colors duration-300';
+                        
+                        const timestamp = userData.timestamp?.toDate ? userData.timestamp.toDate().toLocaleString() : 'N/A';
+
+                        newRow.innerHTML = `
+                            <div class="text-sm text-gray-400">${timestamp}</div>
+                            <div class="text-sm font-mono text-yellow-400" title="${userData.userId}">${userData.userId.substring(0, 12)}...</div>
+                            <div class="col-span-2 text-sm text-gray-200 bg-gray-900 p-2 rounded">${userData.message}</div>
+                        `;
+                        flaggedUsersList.prepend(newRow);
+                    }
+                });
+
+            }, (error) => {
+                console.error("Error listening for flagged users:", error);
+                loadingState.innerHTML = `<div class="p-4 text-center text-red-500">Error listening for updates. Check your browser console and Firestore security rules.</div>`;
+            });
+        }
+        
+        function initializeAdminDashboard() {
+            if (!auth) {
+                loadingState.textContent = 'Error: Auth service not available.';
+                return;
+            };
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // User is signed in. It's safe to listen.
+                    listenForFlaggedUsers();
+                } else {
+                    // No user. Attempt to sign in.
+                    // This will trigger this same listener again on success.
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Admin sign-in failed:", error);
+                        loadingState.textContent = 'Error: Could not authenticate admin user.';
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initializeAdminDashboard();
+        });
+
+    </script>
+</body>
+</html>
+

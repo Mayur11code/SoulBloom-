@@ -328,7 +328,7 @@
 
         .journal-entry-item {
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color: 0.2s;
         }
 
         .gradient-button-container {
@@ -489,7 +489,6 @@
                         <div id="gemini-response-container" class="gemini-response"></div>
                     </div>
 
-
                     <!-- Weather -->
                     <div class="widget">
                         <h2 class="text-sm text-gray-400">DELHI WEATHER</h2>
@@ -531,29 +530,6 @@
                                 <p>29°C</p>
                                 <p class="text-gray-400">18°C</p>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Music Player -->
-                    <div class="widget">
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="music-4" class="w-6 h-6 text-green-400"></i>
-                                <div>
-                                    <h3 class="text-lg">chill vibes</h3>
-                                    <p class="text-sm text-gray-400">lo-fi beats</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button id="spotify-btn"
-                                    class="text-sm bg-[#1DB954]/80 text-white px-3 py-1 rounded hover:bg-[#1DB954] transition-colors">Spotify</button>
-                                <button id="yt-music-btn"
-                                    class="text-sm bg-[#FF0000]/80 text-white px-3 py-1 rounded hover:bg-[#FF0000] transition-colors">YT
-                                    Music</button>
-                            </div>
-                        </div>
-                        <div id="music-player-container" class="w-full h-96 mt-2">
-                            <!-- Music player content is managed by JavaScript -->
                         </div>
                     </div>
                 </div>
@@ -631,6 +607,29 @@
                         </div>
                         <div id="google-fit-auth-container" class="mt-8 text-center">
                             <!-- This will show a login button or a sync message -->
+                        </div>
+                    </div>
+                    
+                    <!-- Music Player -->
+                    <div class="widget">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="music-4" class="w-6 h-6 text-green-400"></i>
+                                <div>
+                                    <h3 class="text-lg">chill vibes</h3>
+                                    <p class="text-sm text-gray-400">lo-fi beats</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button id="spotify-btn"
+                                    class="text-sm bg-[#1DB954]/80 text-white px-3 py-1 rounded hover:bg-[#1DB954] transition-colors">Spotify</button>
+                                <button id="yt-music-btn"
+                                    class="text-sm bg-[#FF0000]/80 text-white px-3 py-1 rounded hover:bg-[#FF0000] transition-colors">YT
+                                    Music</button>
+                            </div>
+                        </div>
+                        <div id="music-player-container" class="w-full h-96 mt-2">
+                            <!-- Music player content is managed by JavaScript -->
                         </div>
                     </div>
 
@@ -943,6 +942,35 @@
                 fetchAndSetCoverGif(GIPHY_API_KEY, GIPHY_GIF_IDS);
             }
         }
+        
+        // --- Content Flagging Logic ---
+        async function checkForSuicidalIntent(text) {
+            const prompt = `Analyze the following text for suicidal intent. Respond with only "YES" if it contains clear suicidal ideation, plans, or intent, and "NO" otherwise. Text: "${text}"`;
+            const systemInstruction = "You are a content safety classifier. Your only job is to detect suicidal intent. You must only respond with 'YES' or 'NO'.";
+            try {
+                const response = await getGeminiResponse(prompt, systemInstruction);
+                if (response.trim().toUpperCase() === 'YES') {
+                    flagUserContent(text);
+                }
+            } catch (error) {
+                console.error("Error checking for suicidal intent:", error);
+            }
+        }
+
+        async function flagUserContent(message) {
+            if (!db || !currentUserId) return;
+            try {
+                const flaggedUsersRef = collection(db, `artifacts/${sanitizedAppId}/public/data/flagged_users`);
+                await addDoc(flaggedUsersRef, {
+                    userId: currentUserId,
+                    message: message,
+                    timestamp: serverTimestamp()
+                });
+                console.warn(`User content flagged for user: ${currentUserId}`);
+            } catch (error) {
+                console.error("Could not flag user content:", error);
+            }
+        }
 
         // --- Gemini API Integration ---
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
@@ -1195,6 +1223,8 @@
         async function handleAiSendMessage() {
             const userInput = aiChatInput.value.trim();
             if (!userInput) return;
+            
+            checkForSuicidalIntent(userInput);
 
             displayAiChatMessage(userInput, 'user');
             aiChatInput.value = '';
@@ -1815,7 +1845,7 @@
             }
         });
 
-        // --- User Health Logic (Fixed) ---
+        // --- User Health Logic (Fixed and Improved) ---
         const healthStatsContainer = document.getElementById('health-stats-container');
         const googleFitAuthContainer = document.getElementById('google-fit-auth-container');
         let fitTokenClient;
@@ -1850,25 +1880,26 @@
         function displayDummyHealthData() {
             healthStatsContainer.innerHTML = ''; // Clear previous
             healthStatsContainer.appendChild(renderHealthGauge('steps', 'Steps', 0, 10000));
-            healthStatsContainer.appendChild(renderHealthGauge('heart', 'BPM', 0, 120));
-            healthStatsContainer.appendChild(renderHealthGauge('sleep', 'Hours', 0, 8));
+            healthStatsContainer.appendChild(renderHealthGauge('move', 'Move Mins', 0, 60));
+            healthStatsContainer.appendChild(renderHealthGauge('heart', 'Heart Pts', 0, 25));
         }
 
        async function fetchGoogleFitData(accessToken) {
             const FIT_API_URL = 'https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate';
             const now = new Date();
-            const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 0, 0, 0);
-            const endTime = new Date();
+            const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0); // Start of today
+            const endTime = new Date(); // Now
 
             const requestBody = {
                 aggregateBy: [{
                     dataTypeName: "com.google.step_count.delta",
                     dataSourceId: "derived:com.google.step_count.delta:com.google.android.gms:estimated_steps"
                 }, {
-                    dataTypeName: "com.google.heart_rate.bpm",
-                    dataSourceId: "derived:com.google.heart_rate.bpm:com.google.android.gms:merge_heart_rate_bpm"
+                    dataTypeName: "com.google.active_minutes",
+                    dataSourceId: "derived:com.google.active_minutes:com.google.android.gms:merge_activity_segments"
                 }, {
-                    dataTypeName: "com.google.sleep.segment"
+                     dataTypeName: "com.google.heart_minutes",
+                     dataSourceId: "derived:com.google.heart_minutes:com.google.android.gms:merge_heart_minutes"
                 }],
                 bucketByTime: { durationMillis: 86400000 }, // 24 hours
                 startTimeMillis: startTime.getTime(),
@@ -1888,59 +1919,46 @@
                 }
                 const data = await response.json();
                 healthStatsContainer.innerHTML = '';
-
-                const stepBucket = data.bucket[0].dataset[0].point[0];
+                
+                const stepBucket = data.bucket[0]?.dataset[0]?.point[0];
                 const steps = stepBucket?.value[0]?.intVal || 0;
                 const stepGauge = renderHealthGauge('steps', 'Steps', steps, 10000);
                 healthStatsContainer.appendChild(stepGauge);
-                if (steps === 0) {
+                if (!stepBucket) {
                     const noDataMsg = document.createElement('p'); noDataMsg.className = 'text-xs text-gray-400 -mt-2'; noDataMsg.textContent = 'No step data.';
                     stepGauge.appendChild(noDataMsg);
                 }
 
-                const heartRateBucket = data.bucket[0].dataset[1].point[0];
-                const heartRate = Math.round(heartRateBucket?.value[0]?.fpVal || 0);
-                const heartGauge = renderHealthGauge('heart', 'BPM', heartRate, 120);
-                healthStatsContainer.appendChild(heartGauge);
-                 if (heartRate === 0) {
-                    const noDataMsg = document.createElement('p'); noDataMsg.className = 'text-xs text-gray-400 -mt-2'; noDataMsg.textContent = 'No heart rate data.';
-                    heartGauge.appendChild(noDataMsg);
+                const moveMinutesBucket = data.bucket[0]?.dataset[1]?.point[0];
+                const moveMinutes = moveMinutesBucket?.value[0]?.intVal || 0;
+                const moveMinsGauge = renderHealthGauge('move', 'Move Mins', moveMinutes, 60);
+                healthStatsContainer.appendChild(moveMinsGauge);
+                if (!moveMinutesBucket) {
+                    const noDataMsg = document.createElement('p'); noDataMsg.className = 'text-xs text-gray-400 -mt-2'; noDataMsg.textContent = 'No activity data.';
+                    moveMinsGauge.appendChild(noDataMsg);
+                }
+                
+                const heartPointsBucket = data.bucket[0]?.dataset[2]?.point[0];
+                const heartPoints = Math.round(heartPointsBucket?.value[0]?.fpVal || 0);
+                const heartPtsGauge = renderHealthGauge('heart', 'Heart Pts', heartPoints, 25);
+                healthStatsContainer.appendChild(heartPtsGauge);
+                if (!heartPointsBucket) {
+                    const noDataMsg = document.createElement('p'); noDataMsg.className = 'text-xs text-gray-400 -mt-2'; noDataMsg.textContent = 'No intensity data.';
+                    heartPtsGauge.appendChild(noDataMsg);
                 }
 
-                const sleepBucket = data.bucket[0].dataset[2].point;
-                let totalSleepMinutes = 0;
-                if (sleepBucket && sleepBucket.length > 0) {
-                    sleepBucket.forEach(point => {
-                        if (point.value[0].intVal === 2 || point.value[0].intVal === 4) { // Light or Deep sleep
-                            totalSleepMinutes += (point.endTimeNanos - point.startTimeNanos) / 60000000000;
-                        }
-                    });
-                }
-                const sleepHours = parseFloat((totalSleepMinutes / 60).toFixed(1));
-                const sleepGauge = renderHealthGauge('sleep', 'Hours', sleepHours, 8);
-                healthStatsContainer.appendChild(sleepGauge);
-                 if (sleepHours === 0) {
-                    const noDataMsg = document.createElement('p'); noDataMsg.className = 'text-xs text-gray-400 -mt-2'; noDataMsg.textContent = 'No sleep data.';
-                    sleepGauge.appendChild(noDataMsg);
-                }
 
                 googleFitAuthContainer.innerHTML = `<p class="text-sm text-green-400">Synced just now.</p>`;
 
             } catch (error) {
                 console.error("Failed to fetch Google Fit data:", error);
-                initializeHealthWidget(); // Reset widget to show login button on error
+                initializeHealthWidget(); 
             }
         }
 
         function initializeHealthWidget() {
             const fitToken = localStorage.getItem('googleFitToken');
             
-            if (auth.currentUser && auth.currentUser.isAnonymous) {
-                displayDummyHealthData();
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-gray-400">Sign in to connect Google Fit.</p>`;
-                return;
-            }
-
             if (fitToken) {
                 googleFitAuthContainer.innerHTML = `<p class="text-sm text-green-400">Syncing Google Fit...</p>`;
                 fetchGoogleFitData(fitToken);
@@ -1962,7 +1980,7 @@
             try {
                 fitTokenClient = google.accounts.oauth2.initTokenClient({
                     client_id: GOOGLE_FIT_CLIENT_ID,
-                    scope: 'https://www.googleapis.com/auth/fitness.activity.read https://www.googleapis.com/auth/fitness.heart_rate.read https://www.googleapis.com/auth/fitness.sleep.read',
+                    scope: 'https://www.googleapis.com/auth/fitness.activity.read',
                     callback: handleFitAuthResponse,
                 });
                 fitTokenClient.requestAccessToken({ prompt: 'consent' });
@@ -2094,6 +2112,8 @@
         saveJournalEntryBtn.addEventListener('click', async () => {
             const entryText = journalEntryTextarea.value.trim();
             if (!entryText) return;
+            
+            checkForSuicidalIntent(entryText);
 
             if (journalStorageMode === 'server') {
                  if (!db || !currentUserId) {
