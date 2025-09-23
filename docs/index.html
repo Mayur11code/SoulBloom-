@@ -1,2351 +1,777 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Green Template Dashboard</title>
+    <title>Soul Bloom - Your Virtual Garden for Mental Wellness</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Leaflet.js for Maps -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
-    <!-- 
-      The Google Sign-In script is loaded asynchronously. 
-      The 'onGoogleScriptsLoad' function will be our single entry point
-      to start the rest of the Google API initialization process.
-    -->
-    <script>
-        // Set a global flag when the GSI script's onload callback fires.
-        // This helps prevent a race condition with DOMContentLoaded.
-        window.googleGsiIsReady = false;
-        function onGoogleScriptsLoad() {
-            window.googleGsiIsReady = true;
-            // Dispatch a custom event to let our main script know the GSI client is ready.
-            window.dispatchEvent(new Event('google-gsi-loaded'));
-        }
-    </script>
-    <script src="https://accounts.google.com/gsi/client" onload="onGoogleScriptsLoad()" async defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
+        /* Custom CSS for the animated background and other effects */
         body {
-            font-family: 'VT323', monospace;
-            background-color: #0F2923;
-            /* Deep Green */
-            color: #E0E0E0;
-            position: relative;
-            overflow-x: hidden;
-            /* Prevent horizontal scrollbar */
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s, color 0.5s;
         }
 
-        .widget {
-            background-color: rgba(57, 65, 74, 0.5);
-            /* Semi-transparent background */
-            backdrop-filter: blur(10px);
-            /* Frosted glass effect */
-            -webkit-backdrop-filter: blur(10px);
-            /* Safari support */
-            border-radius: 8px;
-            padding: 1.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            /* Subtle border */
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
         }
-
-        .pixelated-bg {
-            /* The background image will be set by JavaScript */
-            background-color: #5B6F55;
-            /* Added a fallback color */
-            background-size: cover;
-            background-position: center;
-            height: 200px;
-            image-rendering: pixelated;
-        }
-
-        .music-progress::-webkit-progress-bar {
-            background-color: #4A5568;
-            border-radius: 5px;
-        }
-
-        .music-progress::-webkit-progress-value {
-            background-color: #68D391;
-            border-radius: 5px;
-        }
-
-        .music-progress::-moz-progress-bar {
-            background-color: #68D391;
-            border-radius: 5px;
-        }
-
-        .task-checkbox {
-            appearance: none;
-            width: 1.25rem;
-            height: 1.25rem;
-            border: 2px solid #A0AEC0;
-            border-radius: 4px;
-            display: inline-block;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .task-checkbox:checked {
-            background-color: #68D391;
-            border-color: #68D391;
-        }
-
-        .task-checkbox:checked::after {
-            content: '✔';
-            font-size: 1rem;
-            color: #2E3338;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .task-item.completed span {
-            text-decoration: line-through;
-            color: #A0AEC0;
-        }
-
-        .course-tag {
-            background-color: #ECC94B;
-            color: #2E3338;
-            font-size: 0.8rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-        }
-
-        /* Floating elements styles */
-        .floating-elements {
+        
+        #garden-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .floaty {
-            position: absolute;
-            background: rgba(104, 211, 145, 0.15);
-            border-radius: 50%;
-            animation: floatUp 25s infinite ease-in-out;
-            opacity: 0;
-            bottom: -100px;
-            /* Start from below the screen */
-        }
-
-        @keyframes floatUp {
-            0% {
-                transform: translateY(0) scale(1);
-                opacity: 0;
-            }
-
-            10%,
-            90% {
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(-120vh) scale(1.5);
-                opacity: 0;
-            }
-        }
-
-        .gemini-response {
-            white-space: pre-wrap;
-            background: #2E3338;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-            min-height: 50px;
-        }
-
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #68D391;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 1rem auto;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Chat styles */
-        .chat-message {
-            display: flex;
-            margin-bottom: 1rem;
-            align-items: flex-end;
-            gap: 0.5rem;
-        }
-
-        .chat-message.user {
-            justify-content: flex-end;
-        }
-
-        .chat-bubble {
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            max-width: 80%;
-            line-height: 1.5;
-        }
-
-        .chat-bubble.other-user,
-        .chat-bubble.ai {
-            background-color: #2E3338;
-        }
-
-        .chat-bubble.user {
-            background-color: #48BB78;
-            color: #1A202C;
-        }
-
-        .chat-sender-id {
-            font-size: 0.75rem;
-            color: #A0AEC0;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Health Gauge Styles */
-        .health-gauge {
-            position: relative;
-            width: 120px;
-            height: 60px;
-            /* Half of width */
-            margin: 0 auto;
-        }
-
-        .gauge-arc {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .gauge-arc-segments {
-            width: 120px;
-            height: 60px;
-            position: relative;
+            z-index: -1;
             overflow: hidden;
+            background-color: #f0fdf4; /* Light mode bg */
+            transition: background-color 0.5s;
         }
 
-        .gauge-arc-segments::before {
-            content: '';
+        .dark #garden-bg {
+            background-color: #0c1a1e; /* Dark mode bg */
+        }
+        
+        #bg-canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 200%;
-            /* Double height for full circle */
-            border-radius: 50%;
-            background: conic-gradient(from -90deg,
-                    #F87171 0deg 36deg,
-                    /* Red */
-                    #FBBF24 36deg 72deg,
-                    /* Amber */
-                    #FCD34D 72deg 108deg,
-                    /* Yellow */
-                    #A3E635 108deg 144deg,
-                    /* Lime */
-                    #4ADE80 144deg 180deg
-                    /* Green */
-                );
-        }
-
-        .gauge-arc-mask {
-            position: absolute;
-            top: 10px;
-            /* Arc thickness */
-            left: 10px;
-            /* Arc thickness */
-            width: 100px;
-            /* Width - 2 * thickness */
-            height: 100px;
-            background: #39414A;
-            /* Same as widget background */
-            border-radius: 50%;
-        }
-
-        .gauge-needle-container {
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            width: 2px;
-            height: 50px;
-            transform-origin: bottom center;
-            animation: sweep-needle 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-            transform: rotate(var(--needle-angle, -90deg));
-        }
-
-        @keyframes sweep-needle {
-            from {
-                transform: rotate(-90deg);
-            }
-
-            to {
-                transform: rotate(var(--needle-angle));
-            }
-        }
-
-        .gauge-needle {
-            width: 100%;
             height: 100%;
-            background-color: #F87171;
-            border-radius: 2px;
         }
 
-        .gauge-text {
-            margin-top: 0.5rem;
-            text-align: center;
+        .leaf {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22L6.66 19.7C7.14 18.45 7.93 17.37 8.95 16.54C10 15.64 11.22 15 12.5 15H17V12H12.5C11.54 12 10.64 11.73 9.84 11.23C9.04 10.73 8.36 10.05 7.85 9.24C7.05 7.94 6.75 6.45 7 5C7.25 3.55 8.06 2.22 9.24 1.28L10.47 2.5L9.5 3.47C9.06 3.91 8.72 4.45 8.5 5C8.25 5.55 8.12 6.16 8.12 6.79C8.12 7.41 8.25 8.03 8.5 8.5C8.72 9.05 9.06 9.59 9.5 10.03L10.47 11L17 11V8Z" fill="%234ade80"/></svg>');
+            background-size: contain;
+            animation: float 25s infinite linear;
+            opacity: 0;
         }
 
-        .gauge-value {
-            font-size: 1.5rem;
-            display: block;
+        .dark .leaf {
+             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22L6.66 19.7C7.14 18.45 7.93 17.37 8.95 16.54C10 15.64 11.22 15 12.5 15H17V12H12.5C11.54 12 10.64 11.73 9.84 11.23C9.04 10.73 8.36 10.05 7.85 9.24C7.05 7.94 6.75 6.45 7 5C7.25 3.55 8.06 2.22 9.24 1.28L10.47 2.5L9.5 3.47C9.06 3.91 8.72 4.45 8.5 5C8.25 5.55 8.12 6.16 8.12 6.79C8.12 7.41 8.25 8.03 8.5 8.5C8.72 9.05 9.06 9.59 9.5 10.03L10.47 11L17 11V8Z" fill="%2322c55e"/></svg>');
         }
 
-        .gauge-label {
-            font-size: 0.9rem;
-            color: #A0AEC0;
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
         }
 
-        .journal-entry-item {
-            cursor: pointer;
-            transition: background-color 0.2s;
+        /* Glassmorphism effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .dark .glass-card {
+            background: rgba(17, 24, 39, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .gradient-button-container {
-            padding: 2px;
-            border-radius: 12px;
-            background: conic-gradient(from 180deg at 50% 50%, #FBBF24, #A3E635, #4ADE80, #F87171, #FBBF24);
+        /* Scrollbar styles */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        .dark ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #86efac; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #22c55e; }
+        ::-webkit-scrollbar-thumb:hover { background: #4ade80; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #16a34a; }
+        
+        /* Scroll Animation CSS */
+        .revealable {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
+
+        .revealable.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Gemini Modal Styles */
+        #gemini-modal-overlay { transition: opacity 0.3s ease-in-out; }
+        #gemini-modal { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; max-height: 90vh; overflow-y: auto;}
+        .dot-flashing {
+            position: relative; width: 10px; height: 10px;
+            border-radius: 5px; background-color: #22c55e; color: #22c55e;
+            animation: dotFlashing 1s infinite linear alternate; animation-delay: .5s;
+        }
+        .dot-flashing::before, .dot-flashing::after {
+            content: ''; display: inline-block; position: absolute; top: 0;
+        }
+        .dot-flashing::before {
+            left: -15px; width: 10px; height: 10px; border-radius: 5px;
+            background-color: #22c55e; color: #22c55e;
+            animation: dotFlashing 1s infinite alternate; animation-delay: 0s;
+        }
+        .dot-flashing::after {
+            left: 15px; width: 10px; height: 10px; border-radius: 5px;
+            background-color: #22c55e; color: #22c55e;
+            animation: dotFlashing 1s infinite alternate; animation-delay: 1s;
+        }
+
+        @keyframes dotFlashing {
+            0% { background-color: #22c55e; }
+            50%, 100% { background-color: #a7f3d0; }
+        }
+
+        #meditation-player {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
     </style>
 </head>
+<body class="bg-green-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 
-<body class="p-4 md:p-8">
-
-    <!-- Floating Elements Background -->
-    <div class="floating-elements">
-        <div class="floaty" style="width: 10px; height: 10px; left: 5%; animation-duration: 20s; animation-delay: 0s;">
-        </div>
-        <div class="floaty" style="width: 20px; height: 20px; left: 15%; animation-duration: 30s; animation-delay: 5s;">
-        </div>
-        <div class="floaty" style="width: 12px; height: 12px; left: 25%; animation-duration: 18s; animation-delay: 2s;">
-        </div>
-        <div class="floaty" style="width: 15px; height: 15px; left: 40%; animation-duration: 28s; animation-delay: 8s;">
-        </div>
-        <div class="floaty"
-            style="width: 18px; height: 18px; left: 55%; animation-duration: 22s; animation-delay: 12s;"></div>
-        <div class="floaty" style="width: 8px; height: 8px; left: 70%; animation-duration: 35s; animation-delay: 1s;">
-        </div>
-        <div class="floaty" style="width: 16px; height: 16px; left: 85%; animation-duration: 24s; animation-delay: 6s;">
-        </div>
-        <div class="floaty"
-            style="width: 13px; height: 13px; left: 95%; animation-duration: 26s; animation-delay: 10s;"></div>
+    <div id="garden-bg">
+        <canvas id="bg-canvas"></canvas>
     </div>
 
-
-    <div class="max-w-7xl mx-auto relative z-10">
-        <!-- SOS Button -->
-        <button id="sos-btn"
-            class="fixed top-8 right-8 bg-orange-400 text-white p-3 rounded-full shadow-lg hover:bg-orange-500 transition-transform hover:scale-110 z-40">
-            <i data-lucide="siren" class="w-6 h-6"></i>
-        </button>
-
-        <!-- Header Image -->
-        <div class="pixelated-bg rounded-lg relative">
-            <div class="absolute inset-0 bg-black/40 rounded-lg"></div> <!-- Brightness Overlay -->
-            <div class="absolute -bottom-8 left-8">
-                <button id="profile-pic-container"
-                    class="bg-[#39414A]/50 backdrop-blur-[10px] p-3 rounded-lg border border-white/10 shadow-[0_0_20px_rgba(160,130,255,0.5)] transition-transform hover:scale-105">
-                    <span id="profile-pic-emoji" class="text-5xl">☘️</span>
+    <header id="header" class="fixed w-full top-0 z-50 transition-all duration-300 glass-card">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-3xl font-bold font-playfair text-green-700 dark:text-green-400">
+                Soul Bloom
+            </a>
+            <nav class="hidden md:flex items-center space-x-8 text-gray-800 dark:text-gray-200">
+                <a href="#features" class="hover:text-green-600 dark:hover:text-green-300 transition">Features</a>
+                <a href="#your-garden" class="hover:text-green-600 dark:hover:text-green-300 transition">Your Garden</a>
+                <a href="#mission" class="hover:text-green-600 dark:hover:text-green-300 transition">Our Mission</a>
+                <a href="#support" class="hover:text-green-600 dark:hover:text-green-300 transition">Peer Support</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button id="theme-toggle" class="p-2 rounded-full text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <svg id="theme-icon-light" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <svg id="theme-icon-dark" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
                 </button>
-            </div>
-            <div class="absolute bottom-4 left-32 text-2xl">
-                <span id="user-anonymous-name" class="font-bold"></span>
-            </div>
-        </div>
-
-        <!-- Main Dashboard Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 pt-6 mt-6">
-
-            <!-- Sidebar -->
-            <div class="lg:col-span-1 flex flex-col gap-6">
-                <div class="widget">
-                    <button id="study-help-btn" class="gradient-button-container w-full">
-                        <div
-                            class="bg-black rounded-lg p-3 text-center hover:bg-gray-900 transition-colors flex items-center justify-center gap-2 text-lg">
-                            <i data-lucide="graduation-cap" class="w-5 h-5 text-yellow-400"></i>
-                            <span>Study Help !!</span>
-                        </div>
-                    </button>
-                </div>
-                <div class="widget h-full">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl">Chat Rooms</h2>
-                        <div class="flex items-center gap-2">
-                            <button class="text-gray-400 hover:text-white"><i data-lucide="search"
-                                    class="w-5 h-5"></i></button>
-                        </div>
-                    </div>
-                    <div class="space-y-2">
-                        <button
-                            class="chatroom-btn w-full text-left p-2 rounded hover:bg-white/10 transition-colors flex items-center gap-2"
-                            data-room-name="General Chat">
-                            <i data-lucide="message-square" class="w-4 h-4"></i> General Chat
-                        </button>
-                        <button
-                            class="chatroom-btn w-full text-left p-2 rounded hover:bg-white/10 transition-colors flex items-center gap-2"
-                            data-room-name="Study Group">
-                            <i data-lucide="book-open" class="w-4 h-4"></i> Study Group
-                        </button>
-                        <button
-                            class="chatroom-btn w-full text-left p-2 rounded hover:bg-white/10 transition-colors flex items-center gap-2"
-                            data-room-name="Gaming Corner">
-                            <i data-lucide="gamepad-2" class="w-4 h-4"></i> Gaming Corner
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Content Area -->
-            <div class="lg:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Left Column -->
-                <div class="lg:col-span-1 flex flex-col gap-6">
-                    <!-- Helpful Links -->
-                    <div class="widget">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="link-2"
-                                    class="w-5 h-5"></i> Helpful Links</h2>
-                            <button id="helpful-link-btn"
-                                class="text-sm bg-green-500/80 text-white px-3 py-1 rounded hover:bg-green-600">✨ Find a Link</button>
-                        </div>
-                        <ul id="helpful-links-list" class="space-y-2 mt-2">
-                             <li><a href="https://telemanas.mohfw.gov.in/" target="_blank" class="hover:text-green-400">✧ Tele MANAS</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Journaling -->
-                    <div class="widget">
-                        <div class="flex justify-between items-center mb-3">
-                            <h2 class="text-xl flex items-center gap-2"><i data-lucide="book-heart" class="w-5 h-5"></i>
-                                Journaling</h2>
-                            <div class="flex items-center gap-2 text-sm text-gray-400">
-                                <span>Local</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="journal-storage-toggle" class="sr-only peer">
-                                    <div
-                                        class="w-11 h-6 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500">
-                                    </div>
-                                </label>
-                                <span>Server</span>
-                            </div>
-                        </div>
-                        <button id="shadow-work-prompt-btn"
-                            class="w-full text-sm bg-purple-500/80 text-white px-3 py-2 rounded hover:bg-purple-600 mb-3">🔮
-                            New Shadow Work Prompt</button>
-                        <textarea id="journal-entry"
-                            class="w-full h-32 bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-purple-400 text-base"
-                            placeholder="What's on your mind?"></textarea>
-                        <button id="save-journal-entry-btn"
-                            class="w-full mt-2 text-sm bg-green-500/80 text-white px-3 py-2 rounded hover:bg-green-600">Save
-                            Entry</button>
-
-                        <div id="journal-history-container" class="mt-4">
-                            <h3 class="text-lg mb-2">Past Entries</h3>
-                            <div id="journal-history-list" class="space-y-2 max-h-40 overflow-y-auto pr-2">
-                                <!-- Journal history will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- AI Assistant Widget -->
-                    <div class="widget">
-                        <h2 class="text-xl mb-3 flex items-center gap-2">✨ AI Assistant</h2>
-                        <p class="text-gray-400 mb-3 text-base">What do you want to brainstorm or generate today?</p>
-                        <div class="flex gap-2">
-                            <input type="text" id="gemini-prompt-input" placeholder="e.g., Ideas for a weekend trip"
-                                class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                            <button id="gemini-generate-btn"
-                                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Generate</button>
-                        </div>
-                        <div id="gemini-response-container" class="gemini-response"></div>
-                    </div>
-
-                    <!-- Weather -->
-                    <div class="widget">
-                        <h2 class="text-sm text-gray-400">DELHI WEATHER</h2>
-                        <div class="flex items-center justify-between mt-2">
-                            <p class="text-5xl">28°C</p>
-                            <div class="text-right">
-                                <i data-lucide="cloud-sun" class="w-12 h-12 ml-auto"></i>
-                                <p>broken clouds</p>
-                            </div>
-                        </div>
-                        <div class="mt-4 pt-4 border-t border-gray-600 flex justify-between text-center">
-                            <div class="flex flex-col items-center">
-                                <p>SAT</p>
-                                <i data-lucide="sun" class="w-6 h-6 my-1"></i>
-                                <p>38°C</p>
-                                <p class="text-gray-400">24°C</p>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <p>SUN</p>
-                                <i data-lucide="cloud-sun" class="w-6 h-6 my-1"></i>
-                                <p>35°C</p>
-                                <p class="text-gray-400">24°C</p>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <p>MON</p>
-                                <i data-lucide="cloud-drizzle" class="w-6 h-6 my-1"></i>
-                                <p>34°C</p>
-                                <p class="text-gray-400">21°C</p>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <p>TUE</p>
-                                <i data-lucide="cloud-lightning" class="w-6 h-6 my-1"></i>
-                                <p>31°C</p>
-                                <p class="text-gray-400">18°C</p>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <p>WED</p>
-                                <i data-lucide="cloud" class="w-6 h-6 my-1"></i>
-                                <p>29°C</p>
-                                <p class="text-gray-400">18°C</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column -->
-                <div class="lg:col-span-2 flex flex-col gap-6">
-                    <!-- Serenity Map -->
-                    <div class="widget">
-                         <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="map" class="w-5 h-5"></i> Serenity Map</h2>
-                         <div class="flex gap-2 mb-3">
-                            <input type="text" id="location-search-input" placeholder="Search any location in India..." class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                            <button id="location-search-btn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Search</button>
-                         </div>
-                         <div id="map" class="w-full h-64 bg-[#2E3338] rounded"></div>
-                    </div>
-                    <!-- Assignments -->
-                    <div class="widget">
-                        <div class="flex justify-between items-center mb-3">
-                            <h2 class="text-xl flex items-center gap-2"><i data-lucide="clipboard-check"
-                                    class="w-5 h-5"></i> assignments</h2>
-                            <div class="flex items-center gap-2 text-sm text-gray-400">
-                                <span>Local</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="storage-toggle" class="sr-only peer">
-                                    <div
-                                        class="w-11 h-6 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500">
-                                    </div>
-                                </label>
-                                <span>Server</span>
-                            </div>
-                        </div>
-
-                        <div id="assignments-list" class="space-y-2">
-                            <div
-                                class="grid grid-cols-[auto,1fr,auto,auto,auto] gap-x-4 items-center text-sm text-gray-400 pb-1 border-b border-gray-600">
-                                <span></span>
-                                <span>Name</span>
-                                <span>Course</span>
-                                <span>Due Date</span>
-                                <span></span>
-                            </div>
-                            <!-- Dynamic tasks will be inserted here -->
-                        </div>
-                        <form id="new-assignment-form" class="mt-4 hidden">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-base">
-                                <input type="text" id="new-assignment-name" placeholder="Task Name"
-                                    class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400"
-                                    required>
-                                <input type="text" id="new-assignment-course" placeholder="Course"
-                                    class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400">
-                                <input type="date" id="new-assignment-due-date"
-                                    class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400">
-                            </div>
-                            <div class="flex justify-end gap-2 mt-2">
-                                <button type="button" id="cancel-assignment-btn"
-                                    class="text-sm text-gray-400 hover:text-white px-3 py-1 rounded">Cancel</button>
-                                <button type="submit"
-                                    class="text-sm bg-green-500/80 text-white px-3 py-1 rounded hover:bg-green-600">Add
-                                    Task</button>
-                            </div>
-                        </form>
-                        <button id="new-assignment-btn"
-                            class="mt-4 text-gray-400 hover:text-white flex items-center gap-2"><i data-lucide="plus"
-                                class="w-4 h-4"></i> New</button>
-                    </div>
-
-                    <!-- User Health -->
-                    <div class="widget">
-                        <h2 class="text-xl mb-4 flex items-center gap-2"><i data-lucide="heart-pulse"
-                                class="w-5 h-5"></i> User Health</h2>
-                        <div id="health-stats-container"
-                            class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center items-start"
-                            style="min-height: 150px;">
-                            <!-- Health gauges will be injected here by JS -->
-                        </div>
-                        <div id="google-fit-auth-container" class="mt-8 text-center">
-                            <!-- This will show a login button or a sync message -->
-                        </div>
-                    </div>
-                    
-                    <!-- Music Player -->
-                    <div class="widget">
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="music-4" class="w-6 h-6 text-green-400"></i>
-                                <div>
-                                    <h3 class="text-lg">chill vibes</h3>
-                                    <p class="text-sm text-gray-400">lo-fi beats</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button id="spotify-btn"
-                                    class="text-sm bg-[#1DB954]/80 text-white px-3 py-1 rounded hover:bg-[#1DB954] transition-colors">Spotify</button>
-                                <button id="yt-music-btn"
-                                    class="text-sm bg-[#FF0000]/80 text-white px-3 py-1 rounded hover:bg-[#FF0000] transition-colors">YT
-                                    Music</button>
-                            </div>
-                        </div>
-                        <div id="music-player-container" class="w-full h-96 mt-2">
-                            <!-- Music player content is managed by JavaScript -->
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Peer Chat Window -->
-    <div id="chat-window"
-        class="fixed bottom-8 right-16 w-full max-w-md bg-[#39414A] rounded-lg shadow-2xl border border-[#4A5568] hidden flex flex-col z-20"
-        style="height: 500px;">
-        <!-- Header -->
-        <div class="flex justify-between items-center p-3 bg-[#2E3338] rounded-t-lg">
-            <div class="flex items-center gap-2">
-                <h3 id="chat-header-title" class="text-lg flex items-center gap-2"><i data-lucide="users"
-                        class="w-5 h-5"></i> Chat Room</h3>
-            </div>
-            <div class="flex items-center gap-3">
-                <button id="peer-chat-clear-btn" title="Clear chat locally" class="text-gray-400 hover:text-white">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-                <button id="chat-close-btn" class="text-gray-400 hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-        <!-- Messages -->
-        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4">
-            <!-- Messages from Firestore will be dynamically inserted here -->
-        </div>
-        <!-- Input -->
-        <div class="p-3 border-t border-[#4A5568]">
-            <div class="flex gap-2">
-                <input type="text" id="chat-input" placeholder="Type your message..."
-                    class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                <button id="chat-send-btn"
-                    class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 flex items-center justify-center">
-                    <i data-lucide="send" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- AI Chatbot Icon -->
-    <button id="ai-chat-toggle-btn"
-        class="fixed bottom-8 right-8 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition-transform hover:scale-110 z-30">
-        <i data-lucide="bot" class="w-8 h-8"></i>
-    </button>
-
-    <!-- AI Chat Window -->
-    <div id="ai-chat-window"
-        class="fixed bottom-24 right-8 w-full max-w-md bg-[#39414A] rounded-lg shadow-2xl border border-[#4A5568] hidden flex flex-col z-30"
-        style="height: 500px;">
-        <div class="flex justify-between items-center p-3 bg-[#2E3338] rounded-t-lg">
-            <h3 class="text-lg flex items-center gap-2"><i data-lucide="bot" class="w-5 h-5"></i> AI Assistant</h3>
-            <div class="flex items-center gap-3">
-                <select id="ai-personality-selector"
-                    class="bg-[#39414A] text-sm rounded p-1 border border-[#4A5568] focus:outline-none text-white">
-                    <option value="helpful">Helpful</option>
-                    <option value="creative">Creative</option>
-                    <option value="sarcastic">Sarcastic</option>
-                </select>
-                <button id="ai-chat-clear-btn" title="Clear chat history" class="text-gray-400 hover:text-white">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-                <button id="ai-chat-close-btn" class="text-gray-400 hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-        <div id="ai-chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
-        <div class="p-3 border-t border-[#4A5568]">
-            <div class="flex gap-2">
-                <input type="text" id="ai-chat-input" placeholder="Ask me anything..."
-                    class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-blue-400 text-base">
-                <button id="ai-chat-send-btn"
-                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center justify-center">
-                    <i data-lucide="send" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Emote Picker Modal -->
-    <div id="emote-picker-modal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
-        <div class="widget p-6 rounded-lg max-w-sm w-full">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl">Choose a new picture</h3>
-                <button id="close-emote-modal" class="text-gray-400 hover:text-white">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            <div id="emote-grid" class="grid grid-cols-4 gap-4 text-4xl text-center">
-                <!-- Emotes will be populated by JS -->
-            </div>
-        </div>
-    </div>
-
-    <!-- SOS Sidebar -->
-    <div id="sos-sidebar"
-        class="fixed top-0 right-0 w-80 h-full bg-[#39414A]/80 backdrop-blur-lg border-l border-white/10 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
-        <div class="p-4">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl flex items-center gap-2"><i data-lucide="life-buoy" class="w-5 h-5"></i> Emergency
-                    Support</h2>
-                <button id="close-sos-sidebar" class="text-gray-400 hover:text-white"><i data-lucide="x"
-                        class="w-6 h-6"></i></button>
-            </div>
-            <div class="space-y-3 text-lg">
-                <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="phone" class="w-5 h-5"></i>
-                    <span>Contact Counsellor</span>
+                 <a href="Pages/mentor_login.html" class="bg-white/50 dark:bg-gray-700/50 border border-green-600 text-green-700 dark:text-green-300 font-bold py-2 px-6 rounded-full transition-transform transform hover:scale-105">
+                    Mentor Login
                 </a>
-                <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="shield-half" class="w-5 h-5"></i>
-                    <span>Helplines</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="sparkles" class="w-5 h-5"></i>
-                    <span>Quick Meditation</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="wind" class="w-5 h-5"></i>
-                    <span>Breathing Exercise</span>
+                <a href="Pages/student_dasboard.html" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full transition-transform transform hover:scale-105">
+                    Launch App
                 </a>
             </div>
         </div>
-    </div>
+    </header>
 
-    <!-- Journal Analysis Modal -->
-    <div id="journal-analysis-modal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
-        <div class="widget p-6 rounded-lg max-w-xl w-full">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl flex items-center gap-2"><i data-lucide="brain-circuit" class="w-5 h-5"></i> AI
-                    Journal Analysis</h3>
-                <button id="close-journal-analysis-modal" class="text-gray-400 hover:text-white">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
+    <main class="relative overflow-hidden">
+        <section class="min-h-screen flex items-center pt-24">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-5xl md:text-7xl font-playfair font-bold text-gray-900 dark:text-white mb-4 leading-tight">
+                    Nurture Your Mind, 
+                    <span class="bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-400 dark:to-emerald-500 bg-clip-text text-transparent">
+                        Let Your Soul Bloom.
+                    </span>
+                </h1>
+                <p class="text-lg md:text-xl max-w-3xl mx-auto mb-8 text-gray-700 dark:text-gray-300 leading-relaxed">
+                    A safe, stigma-free space for students to cultivate mental wellness. Your confidential garden for growth and support is just a click away.
+                </p>
+                <a href="Pages/student_dasboard.html" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-10 rounded-full transition-transform transform hover:scale-105 inline-block text-lg">
+                    Explore Your Garden
+                </a>
             </div>
-            <div id="journal-analysis-content" class="gemini-response max-h-[60vh] overflow-y-auto">
-                <!-- AI analysis will be loaded here -->
-            </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Study Help Modal -->
-    <div id="study-help-modal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
-        <div class="widget p-6 rounded-lg max-w-lg w-full flex flex-col" style="height: 70vh;">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl flex items-center gap-2"><i data-lucide="graduation-cap"
-                        class="w-5 h-5 text-yellow-400"></i> Study Help !!</h3>
-                <button id="close-study-help-modal" class="text-gray-400 hover:text-white">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            <div id="humata-upload-view" class="space-y-3 text-base">
-                <p class="text-sm text-gray-400">Upload a document to start a chat session.</p>
-                <label for="humata-file-upload"
-                    class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-[#2E3338] border-gray-600 hover:border-gray-500 hover:bg-[#39414A]">
-                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                        <i data-lucide="upload-cloud" class="w-10 h-10 mb-2 text-gray-400"></i>
-                        <p class="mb-1 text-sm text-gray-400"><span class="font-semibold">Click to upload</span></p>
-                        <p id="humata-file-name" class="text-xs text-gray-400">PDF, DOCX (MAX. 5MB)</p>
+        <section id="features" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12 revealable">
+                    <h2 class="text-4xl font-playfair font-bold text-gray-900 dark:text-white">A Garden of Support</h2>
+                    <p class="mt-2 text-lg text-gray-700 dark:text-gray-300">Everything you need to tend to your mental wellbeing.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 revealable">
+                    <div class="glass-card p-6 rounded-2xl flex flex-col justify-between hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                        <div class="text-center">
+                            <div class="bg-green-200 dark:bg-green-900/50 h-20 w-20 rounded-full mx-auto flex items-center justify-center mb-4">
+                                <svg class="h-10 w-10 text-green-700 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">AI-Guided First-Aid</h3>
+                            <p class="text-gray-700 dark:text-gray-400">Get instant, friendly support and coping strategies from our AI companion, Blossom, anytime you need it.</p>
+                        </div>
+                        <button id="open-gemini-modal" class="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition">Talk to Blossom ✨</button>
                     </div>
-                    <input id="humata-file-upload" type="file" class="hidden" accept=".pdf,.docx" />
-                </label>
-            </div>
-            <div id="humata-chat-view" class="hidden flex-1 flex flex-col min-h-0">
-                <div class="flex justify-between items-center p-2 bg-black/20 rounded mb-2">
-                    <p id="humata-chat-file-name" class="text-sm truncate text-gray-300"></p>
-                    <button id="humata-end-chat-btn" class="text-xs text-red-400 hover:text-white">End Session</button>
-                </div>
-                <div id="humata-chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-black/10 rounded">
-                    <!-- Humata chat messages will appear here -->
-                </div>
-                <div class="p-3 border-t border-[#4A5568] mt-2">
-                    <div class="flex gap-2">
-                        <input type="text" id="humata-chat-input" placeholder="Ask a follow-up..."
-                            class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-yellow-400 text-base">
-                        <button id="humata-chat-send-btn"
-                            class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 flex items-center justify-center">
-                            <i data-lucide="send" class="w-5 h-5"></i>
-                        </button>
+                    <div class="glass-card p-6 rounded-2xl text-center hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                         <div class="bg-green-200 dark:bg-green-900/50 h-20 w-20 rounded-full mx-auto flex items-center justify-center mb-4">
+                            <svg class="h-10 w-10 text-green-700 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Confidential Booking</h3>
+                        <p class="text-gray-700 dark:text-gray-400">Securely and privately book appointments with your on-campus counsellor. Your privacy is our priority.</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl text-center hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                         <div class="bg-green-200 dark:bg-green-900/50 h-20 w-20 rounded-full mx-auto flex items-center justify-center mb-4">
+                           <svg class="h-10 w-10 text-green-700 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Psychoeducational Hub</h3>
+                        <p class="text-gray-700 dark:text-gray-400">Access a library of videos, relaxation audio, and wellness guides in regional languages, tailored for you.</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl text-center hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                         <div class="bg-green-200 dark:bg-green-900/50 h-20 w-20 rounded-full mx-auto flex items-center justify-center mb-4">
+                            <svg class="h-10 w-10 text-green-700 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.952A3 3 0 006 11.25m-3 2.25c0-1.03.821-1.875 1.875-1.875M9 11.25v-1.5c0-1.03.821-1.875 1.875-1.875m-1.875 0c.502 0 .965.188 1.336.516m-1.336-.516c-.502 0-.965.188-1.336.516m6 0v-1.5c0-1.03-.821-1.875-1.875-1.875m1.875 0c-.502 0-.965-.188-1.336.516m-1.336-.516c.502 0 .965.188 1.336.516M12 6.75v-1.5c0-1.03.821-1.875 1.875-1.875m-1.875 0c.502 0 .965.188 1.336.516m-1.336-.516c-.502 0-.965.188-1.336.516" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Peer Support Forum</h3>
+                        <p class="text-gray-700 dark:text-gray-400">Connect with trained student volunteers in a moderated, safe forum. You are not alone in this journey.</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
 
+        <section id="your-garden" class="py-20">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl font-playfair font-bold text-gray-900 dark:text-white mb-4 revealable">Watch Your Garden Grow</h2>
+                <p class="text-lg max-w-3xl mx-auto mb-12 text-gray-700 dark:text-gray-300 leading-relaxed revealable">
+                    As you engage with Soul Bloom, complete exercises, and connect with peers, you'll see your personal virtual plant flourish, symbolizing your journey towards mental wellbeing.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-end revealable">
+                      <div class="flex flex-col items-center p-4">
+                        <svg class="h-24 w-24 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><g><path d="M12,13c-0.55,0-1-0.45-1-1V8c0-0.55,0.45-1,1-1s1,0.45,1,1v4C13,12.55,12.55,13,12,13z"></path><path d="M12.5,15h-1C11.22,15,11,15.22,11,15.5v1C11,16.78,11.22,17,11.5,17h1c0.28,0,0.5-0.22,0.5-0.5v-1 C13,15.22,12.78,15,12.5,15z"></path><path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8s3.59-8,8-8 s8,3.59,8,8S16.41,20,12,20z"></path></g></svg>
+                        <h3 class="font-bold mt-4 text-xl text-gray-800 dark:text-gray-200">The First Sprout</h3>
+                        <p class="text-gray-600 dark:text-gray-400">Starting your journey</p>
+                    </div>
+                    <div class="flex flex-col items-center p-4">
+                        <svg class="h-32 w-32 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22L6.66 19.7C7.14 18.45 7.93 17.37 8.95 16.54C10 15.64 11.22 15 12.5 15H17V12H12.5C11.54 12 10.64 11.73 9.84 11.23C9.04 10.73 8.36 10.05 7.85 9.24C7.05 7.94 6.75 6.45 7 5C7.25 3.55 8.06 2.22 9.24 1.28L10.47 2.5L9.5 3.47C9.06 3.91 8.72 4.45 8.5 5C8.25 5.55 8.12 6.16 8.12 6.79C8.12 7.41 8.25 8.03 8.5 8.5C8.72 9.05 9.06 9.59 9.5 10.03L10.47 11L17 11V8Z"/></svg>
+                        <h3 class="font-bold mt-4 text-xl text-gray-800 dark:text-gray-200">Growing Strong</h3>
+                        <p class="text-gray-600 dark:text-gray-400">Completing modules</p>
+                    </div>
+                    <div class="flex flex-col items-center p-4">
+                        <svg class="h-40 w-40 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C9.24 2 7 4.24 7 7c0 2.22 1.41 4.1 3.33 4.72V12c-1.48-.61-2.5-2.02-2.5-3.64C7.83 6.1 9.71 4 12 4s4.17 2.1 4.17 4.36c0 1.62-1.02 3.03-2.5 3.64v-.28c1.92-.62 3.33-2.5 3.33-4.72C17 4.24 14.76 2 12 2zM8.05 13c-1.39.53-2.53 1.4-3.55 2.54V15c0-1.65 1.35-3 3-3h.5V13zm8.45.5c-0.29-0.54-0.65-1.03-1.07-1.46.42.43.78.92 1.07 1.46zM15 12h-1.5c-1.65 0-3 1.35-3 3v.54c1.02-1.14 2.16-2.01 3.55-2.54H15c1.65 0 3 1.35 3 3v.54c-1.02-1.14-2.16-2.01-3.55-2.54z"/><path d="M12 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+                        <h3 class="font-bold mt-4 text-xl text-gray-800 dark:text-gray-200">Ready to Bud</h3>
+                        <p class="text-gray-600 dark:text-gray-400">Connecting with support</p>
+                    </div>
+                    <div class="flex flex-col items-center p-4">
+                        <svg class="h-48 w-48 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="m12 10.59-1.41 1.41L12 13.41l1.41-1.41L12 10.59zM16.24 7.76l-1.41 1.41C15.54 9.88 16 10.89 16 12s-.46 2.12-1.17 2.83l1.41 1.41C17.39 15.08 18 13.57 18 12s-.61-3.08-1.76-4.24zM7.76 16.24l1.41-1.41C8.46 14.12 8 13.11 8 12s.46-2.12 1.17-2.83L7.76 7.76C6.61 8.92 6 10.43 6 12s.61 3.08 1.76 4.24z"/><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></svg>
+                        <h3 class="font-bold mt-4 text-xl text-gray-800 dark:text-gray-200">In Full Bloom</h3>
+                        <p class="text-gray-600 dark:text-gray-400">Cultivating balance</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        <section id="mission" class="py-20 bg-white/30 dark:bg-black/20">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col md:flex-row items-center gap-12">
+                    <div class="md:w-1/2 revealable">
+                         <img src="https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?q=80&w=2070&auto=format&fit=crop" 
+                              onerror="this.onerror=null;this.src='https://placehold.co/600x400/a7f3d0/14532d?text=Mental+Wellness';" 
+                              alt="Students collaborating and supporting each other" 
+                              class="rounded-2xl shadow-lg w-full">
+                    </div>
+                    <div class="md:w-1/2 revealable">
+                        <h2 class="text-4xl font-playfair font-bold text-gray-900 dark:text-white mb-4">Our Mission: Bridging the Gap</h2>
+                        <p class="text-gray-700 dark:text-gray-300 mb-4 text-lg leading-relaxed">
+                            We recognize the silent struggles of students. High stress, anxiety, and the fear of judgment often prevent them from seeking help. Generic, one-size-fits-all solutions don't address the unique cultural and institutional challenges students face.
+                        </p>
+                        <p class="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
+                            Soul Bloom is a tailored, open-source solution designed specifically for you. We integrate regional context, map to your college's support system, and provide a stigma-free environment to ensure every student has access to the care they deserve.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
         
-        // --- IMPORTANT: ACTION REQUIRED ---
-        // Replace 'YOUR_..._KEY' with your actual API keys for the features to work.
-        const GIPHY_API_KEY = 'D25UbHQ9ZhdSwlwPPLWcc3WUXbS8vzd0';
-        const SPOTIFY_CLIENT_ID = '974fb988050a4b52a8dac1b812c8a9e4';
-        const YT_MUSIC_CLIENT_ID = '186638354534-sc0ecemspj32eqkqk3u67ma2fe87gfnj.apps.googleusercontent.com';
-        const GOOGLE_FIT_CLIENT_ID = '691627541266-nup7p5ked390epqje1vbh4eova6d7lpc.apps.googleusercontent.com';
-        const YOUTUBE_API_KEY = 'AIzaSyC4isDfYT5JO64BtH1lvBP0-etVBXhAThA';
-        const GEMINI_API_KEY = "AIzaSyDzX6NrBh-02my-Sll8stjoUYffBkgVB4Y";
+        <section id="support" class="py-20">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl font-playfair font-bold text-gray-900 dark:text-white mb-4 revealable">Find Strength in Community</h2>
+                <p class="text-lg max-w-3xl mx-auto mb-8 text-gray-700 dark:text-gray-300 leading-relaxed revealable">
+                    Our peer support platform is a place for connection and shared understanding. Led by trained student volunteers, it's a space to share experiences, offer support, and grow together.
+                </p>
+                <div class="relative max-w-4xl mx-auto glass-card rounded-2xl p-8 revealable">
+                    <div class="space-y-4 text-left">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-green-200 text-green-800 dark:bg-green-900 dark:text-green-200 h-10 w-10 rounded-full flex-shrink-0 flex items-center justify-center font-bold">A</div>
+                            <div class="bg-gray-200 dark:bg-gray-700 p-4 rounded-lg rounded-tl-none">
+                                <p class="font-semibold text-gray-900 dark:text-gray-100">Alex</p>
+                                <p class="text-gray-800 dark:text-gray-200">I've been feeling so overwhelmed with exams lately. It's hard to find the motivation to even start studying.</p>
+                            </div>
+                        </div>
+                         <div class="flex items-start gap-3 justify-end">
+                            <div class="bg-gray-200 dark:bg-gray-700 p-4 rounded-lg rounded-br-none order-1">
+                                <p class="font-semibold text-gray-900 dark:text-gray-100">Ben (Volunteer)</p>
+                                <p class="text-gray-800 dark:text-gray-200">I completely understand that feeling, Alex. It's tough. One thing that helped me was breaking tasks down into tiny steps. Have you tried the Pomodoro technique?</p>
+                            </div>
+                            <div class="bg-blue-200 text-blue-800 dark:bg-blue-900 dark:text-blue-200 h-10 w-10 rounded-full flex-shrink-0 flex items-center justify-center font-bold order-2">B</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-        // --- END OF ACTION REQUIRED ---
-
-        // --- Firebase Setup ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCOveO-NFW_X5FkINfh5KMgCBBMlOej8M4",
-            authDomain: "student-dashboard-4ec02.firebaseapp.com",
-            projectId: "student-dashboard-4ec02",
-            storageBucket: "student-dashboard-4ec02.firebasestorage.app",
-            messagingSenderId: "250478137189",
-            appId: "1:250478137189:web:224352f8e017b4194edb8c",
-            measurementId: "G-K159S6DZNP"
-        };
-        const finalFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
-        
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const sanitizedAppId = appId.replace(/\//g, '_');
-
-        let db, auth, currentUserId, currentUserAnonymousName;
-        
-        function generateAnonymousName() {
-            const adjectives = ["Brave", "Silent", "Wise", "Wandering", "Gentle", "Hidden", "Cosmic", "Lunar", "Solar", "Pixelated"];
-            const nouns = ["River", "Fox", "Oak", "Badger", "Starlight", "Meadow", "Whisper", "Dreamer", "Voyager", "Sprite"];
-            const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-            const noun = nouns[Math.floor(Math.random() * nouns.length)];
-            return `${adjective} ${noun}`;
-        }
-
-        try {
-            const app = initializeApp(finalFirebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-        } catch (e) {
-            console.error("Firebase initialization failed. Chat features will be disabled.", e);
-        }
-        
-        onAuthStateChanged(auth, user => {
-            if (user) {
-                currentUserId = user.uid;
-
-                let storedName = localStorage.getItem('anonymousUserName');
-                if (!storedName) {
-                    storedName = generateAnonymousName();
-                    localStorage.setItem('anonymousUserName', storedName);
-                }
-
-                if (user.isAnonymous) {
-                    currentUserAnonymousName = storedName;
-                } else {
-                    currentUserAnonymousName = user.displayName || storedName;
-                }
-                
-                const userNameElement = document.getElementById('user-anonymous-name');
-                if (userNameElement) {
-                    userNameElement.textContent = currentUserAnonymousName;
-                }
-                
-            } else {
-                currentUserId = null;
-                currentUserAnonymousName = "Guest";
-                const userNameElement = document.getElementById('user-anonymous-name');
-                 if (userNameElement) userNameElement.textContent = currentUserAnonymousName;
-            }
+    <div id="gemini-modal-overlay" class="fixed inset-0 bg-black/60 z-[100] hidden opacity-0 flex items-center justify-center p-4">
+        <div id="gemini-modal" class="w-full max-w-md bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-2xl p-6 relative">
+            <button id="close-gemini-modal" class="absolute top-4 right-4 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <div class="text-center">
+                <h3 class="text-2xl font-bold font-playfair text-gray-900 dark:text-white">Chat with Blossom ✨</h3>
+            </div>
             
-            initializeAssignments();
-            initializeJournaling();
-            initializeHealthWidget();
-        });
+            <div class="mt-4">
+                <p class="text-gray-600 dark:text-gray-400 mt-2 text-center">How are you feeling right now?</p>
+                <textarea id="gemini-prompt-input" rows="3" class="w-full mt-2 p-3 text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-green-500 focus:ring-0 rounded-lg transition" placeholder="e.g., I'm feeling stressed..."></textarea>
+                <button id="gemini-submit-button" class="w-full mt-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105">
+                    Get Quick Support
+                </button>
+                <div id="gemini-response-area" class="mt-4 p-4 bg-green-50 dark:bg-gray-700/50 rounded-lg min-h-[100px] text-gray-700 dark:text-gray-200 leading-relaxed text-left">
+                    <div id="gemini-loading-indicator" class="hidden h-full flex items-center justify-center">
+                        <div class="dot-flashing"></div>
+                    </div>
+                    <p id="gemini-response-text">Your supportive message will appear here...</p>
+                </div>
+            </div>
 
+            <hr class="my-6 border-gray-300 dark:border-gray-600">
 
-        // Cover Image Handling
-        const coverElement = document.querySelector('.pixelated-bg');
-        const GIPHY_GIF_IDS = [
-            'HRXnPYf10Zx0wz4alF', // Default best
-            '6705G9I9sUcNCaJF10', // Pixel train through nature
-            'rzeWnbH8Uc5Y4', // Night castle
-            'TRebCjNbc4dIA',      // sky
-            'Basrh159dGwKY'  // Pixel night sky
-        ];
-
-        async function fetchAndSetCoverGif(apiKey, gifIds) {
-            const ids = gifIds.join(',');
-            const url = `https://api.giphy.com/v1/gifs?api_key=${apiKey}&ids=${ids}`;
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`Giphy API error: ${response.statusText}`);
-                const data = await response.json();
-                if (data.data && data.data.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * data.data.length);
-                    coverElement.style.backgroundImage = `url('${data.data[randomIndex].images.original.url}')`;
-                }
-            } catch (error) {
-                console.error("Failed to fetch GIFs from Giphy:", error);
-                coverElement.style.backgroundImage = `url('https://placehold.co/1200x200/5B6F55/C2C2C2?text=Invalid+Giphy+Key')`;
-            }
-        }
-
-        function initializePage() {
-            if (GIPHY_API_KEY.includes('YOUR_')) {
-                coverElement.style.backgroundImage = `url('https://placehold.co/1200x200/5B6F55/C2C2C2?text=Add+Giphy+Key+in+Code')`;
-            } else {
-                fetchAndSetCoverGif(GIPHY_API_KEY, GIPHY_GIF_IDS);
-            }
-        }
-        
-        // --- Content Flagging Logic ---
-        async function checkForSuicidalIntent(text) {
-            const prompt = `Analyze the following text for suicidal intent. Respond with only "YES" if it contains clear suicidal ideation, plans, or intent, and "NO" otherwise. Text: "${text}"`;
-            const systemInstruction = "You are a content safety classifier. Your only job is to detect suicidal intent. You must only respond with 'YES' or 'NO'.";
-            try {
-                const response = await getGeminiResponse(prompt, systemInstruction);
-                if (response.trim().toUpperCase() === 'YES') {
-                    flagUserContent(text);
-                }
-            } catch (error) {
-                console.error("Error checking for suicidal intent:", error);
-            }
-        }
-
-        async function flagUserContent(message) {
-            if (!db || !currentUserId) return;
-            try {
-                const flaggedUsersRef = collection(db, `artifacts/${sanitizedAppId}/public/data/flagged_users`);
-                await addDoc(flaggedUsersRef, {
-                    userId: currentUserId,
-                    message: message,
-                    timestamp: serverTimestamp()
-                });
-                console.warn(`User content flagged for user: ${currentUserId}`);
-            } catch (error) {
-                console.error("Could not flag user content:", error);
-            }
-        }
-
-        // --- Gemini API Integration ---
-        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
-        
-        async function getGeminiResponse(prompt, customSystemInstruction = null) {
-            const defaultSystemInstruction = "You are a helpful assistant. Important: You must not provide any medical, clinical, or therapeutic advice. Your goal is to be supportive and provide general information or creative ideas. If the user seems to be in distress or asks for advice related to health or mental well-being, you must gently decline and suggest they consult a qualified professional.";
-            try {
-                 if (!GEMINI_API_KEY || GEMINI_API_KEY.includes('YOUR_')) {
-                    return "Sorry, the AI Assistant is not configured. Please add a Gemini API Key in the code.";
-                }
-                const payload = {
-                    contents: [{ parts: [{ text: prompt }] }],
-                    systemInstruction: { parts: [{ text: customSystemInstruction || defaultSystemInstruction }] },
-                };
-                const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error(`API error: ${response.statusText}`);
-                const result = await response.json();
-                return result.candidates?.[0]?.content?.parts?.[0]?.text || "No response found.";
-            } catch (error) {
-                console.error("Error calling Gemini API:", error);
-                return "Sorry, something went wrong.";
-            }
-        }
-
-        // --- Widget AI Assistant Logic ---
-        const geminiPromptInput = document.getElementById('gemini-prompt-input');
-        const geminiGenerateBtn = document.getElementById('gemini-generate-btn');
-        const geminiResponseContainer = document.getElementById('gemini-response-container');
-
-        geminiGenerateBtn.addEventListener('click', async () => {
-            const prompt = geminiPromptInput.value.trim();
-            if (prompt) {
-                geminiResponseContainer.innerHTML = '<div class="loader"></div>';
-                geminiGenerateBtn.disabled = true;
-                geminiResponseContainer.textContent = await getGeminiResponse(prompt);
-                geminiGenerateBtn.disabled = false;
-            }
-        });
-
-        // --- Helpful Link Logic ---
-        const helpfulLinkBtn = document.getElementById('helpful-link-btn');
-        const helpfulLinksList = document.getElementById('helpful-links-list');
-
-        helpfulLinkBtn.addEventListener('click', async () => {
-            const prompt = "Generate a single, helpful and meaningful link for a student looking to improve their well-being or productivity. Provide only the URL and a very short description, separated by a pipe |. For example: `https://www.example.com | A site for mindfulness`";
-            helpfulLinkBtn.disabled = true;
-            helpfulLinkBtn.textContent = 'Finding...';
-            const response = await getGeminiResponse(prompt);
+            <div class="mt-4">
+                <p class="text-gray-600 dark:text-gray-400 mt-2 text-center">Need to relax? Let's create a guided meditation.</p>
+                <input type="text" id="meditation-prompt-input" class="w-full mt-2 p-3 text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-green-500 focus:ring-0 rounded-lg transition" placeholder="e.g., 5-minute meditation for anxiety">
+                <button id="generate-meditation-button" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105">
+                    Create Meditation
+                </button>
+                <div id="meditation-status-area" class="mt-4 text-center text-gray-600 dark:text-gray-400">
+                    <div id="meditation-loading-indicator" class="hidden flex flex-col items-center justify-center">
+                        <div class="dot-flashing"></div>
+                        <p id="meditation-status-text" class="mt-4 text-sm">Generating script...</p>
+                    </div>
+                     <audio id="meditation-player" controls class="hidden"></audio>
+                </div>
+            </div>
             
-            const parts = response.split('|');
-            if (parts.length === 2) {
-                const url = parts[0].trim();
-                const description = parts[1].trim();
-                const newListItem = document.createElement('li');
-                newListItem.innerHTML = `<a href="${url}" target="_blank" class="hover:text-green-400">✧ ${description}</a>`;
-                helpfulLinksList.appendChild(newListItem);
-            } else {
-                 console.warn("Could not parse helpful link response:", response);
-            }
-            
-            helpfulLinkBtn.disabled = false;
-            helpfulLinkBtn.textContent = '✨ Find a Link';
-        });
+             <p class="text-xs text-center text-gray-500 dark:text-gray-500 mt-6">Disclaimer: Blossom is an AI companion and not a substitute for professional medical advice. For immediate help, please contact a helpline.</p>
+        </div>
+    </div>
+    
+    <footer class="bg-white/30 dark:bg-black/20 py-8 mt-10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-700 dark:text-gray-300">&copy; 2024 Soul Bloom. All Rights Reserved.</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">A project dedicated to improving student mental health, one step at a time.</p>
+        </div>
+    </footer>
 
-        // --- Peer Chat Logic ---
-        const chatWindow = document.getElementById('chat-window');
-        const chatCloseBtn = document.getElementById('chat-close-btn');
-        const peerChatClearBtn = document.getElementById('peer-chat-clear-btn');
-        const chatMessages = document.getElementById('chat-messages');
-        const chatInput = document.getElementById('chat-input');
-        const chatSendBtn = document.getElementById('chat-send-btn');
-        const chatHeaderTitle = document.getElementById('chat-header-title');
-
-        let currentChatRoomId = null;
-        let unsubscribeFromMessages = null;
-
-        function joinChatRoom(roomId) {
-            if (unsubscribeFromMessages) {
-                unsubscribeFromMessages();
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // ====================================================================
+            // SECTION: HELPER FUNCTIONS (e.g., for Text-to-Speech)
+            // ====================================================================
+            function base64ToArrayBuffer(base64) {
+                const binaryString = window.atob(base64);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return bytes.buffer;
             }
 
-            if (!currentUserId) {
-                console.warn("Auth not ready, user cannot join room yet.");
-                chatHeaderTitle.innerHTML = `<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Connecting...`;
-                chatMessages.innerHTML = `<div class="p-4 text-center text-gray-400">Please wait a moment for the connection to be established, then close this window and click the chat room again.</div>`;
-                chatWindow.classList.remove('hidden');
-                lucide.createIcons();
-                return;
-            }
+            function pcmToWav(pcmData, sampleRate) {
+                const numChannels = 1;
+                const bitsPerSample = 16;
+                const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
+                const blockAlign = numChannels * (bitsPerSample / 8);
+                const dataSize = pcmData.byteLength;
+                const chunkSize = 36 + dataSize;
+                const buffer = new ArrayBuffer(44 + dataSize);
+                const view = new DataView(buffer);
 
-            currentChatRoomId = roomId.replace(/\s+/g, '-').toLowerCase();
-            chatHeaderTitle.innerHTML = `<i data-lucide="users" class="w-5 h-5"></i> ${roomId}`;
-            chatMessages.innerHTML = '';
-            chatWindow.classList.remove('hidden');
-            lucide.createIcons();
-
-            if (!db) {
-                chatMessages.innerHTML = '<div>Error: Chat database not connected.</div>';
-                return;
-            }
-
-            const clearTimestamp = localStorage.getItem(`chatClearTimestamp_${currentChatRoomId}`);
-
-            const messagesRef = collection(db, `artifacts/${sanitizedAppId}/public/data/chatrooms/${currentChatRoomId}/messages`);
-            const q = query(messagesRef);
-
-            unsubscribeFromMessages = onSnapshot(q, (snapshot) => {
-                const messages = snapshot.docs.map(doc => doc.data());
-                messages.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
-
-                chatMessages.innerHTML = ''; // Clear before re-rendering
-                messages.forEach(messageData => {
-                    const messageTimestamp = messageData.createdAt?.toDate();
-                    if (clearTimestamp && messageTimestamp && messageTimestamp < new Date(clearTimestamp)) {
-                        return; 
+                function writeString(view, offset, string) {
+                    for (let i = 0; i < string.length; i++) {
+                        view.setUint8(offset + i, string.charCodeAt(i));
                     }
-                    displayPeerChatMessage(messageData);
-                });
+                }
 
-            }, (error) => {
-                console.error("Error listening to chat messages:", error);
-                chatMessages.innerHTML = '<div>Error loading messages. Please check permissions.</div>';
+                writeString(view, 0, 'RIFF');
+                view.setUint32(4, chunkSize, true);
+                writeString(view, 8, 'WAVE');
+                writeString(view, 12, 'fmt ');
+                view.setUint32(16, 16, true);
+                view.setUint16(20, 1, true);
+                view.setUint16(22, numChannels, true);
+                view.setUint32(24, sampleRate, true);
+                view.setUint32(28, byteRate, true);
+                view.setUint16(32, blockAlign, true);
+                view.setUint16(34, bitsPerSample, true);
+                writeString(view, 36, 'data');
+                view.setUint32(40, dataSize, true);
+                new Uint8Array(buffer, 44).set(new Uint8Array(pcmData));
+                return new Blob([buffer], { type: 'audio/wav' });
+            }
+
+            // ====================================================================
+            // SECTION: GENERAL PAGE LOGIC & SETUP
+            // ====================================================================
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIconLight = document.getElementById('theme-icon-light');
+            const themeIconDark = document.getElementById('theme-icon-dark');
+            const htmlElement = document.documentElement;
+
+            if (localStorage.getItem('theme') === 'light') {
+                htmlElement.classList.remove('dark');
+                themeIconLight.classList.remove('hidden');
+                themeIconDark.classList.add('hidden');
+            } else {
+                htmlElement.classList.add('dark');
+                themeIconLight.classList.add('hidden');
+                themeIconDark.classList.remove('hidden');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                htmlElement.classList.toggle('dark');
+                themeIconLight.classList.toggle('hidden');
+                themeIconDark.classList.toggle('hidden');
+                localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
             });
-        }
 
-        function displayPeerChatMessage(messageData) {
-            const isCurrentUser = messageData.senderId === currentUserId;
-            const messageContainer = document.createElement('div');
-            messageContainer.className = `chat-message ${isCurrentUser ? 'user' : 'other'}`;
+            const gardenBg = document.getElementById('garden-bg');
+            for (let i = 0; i < 20; i++) {
+                const leaf = document.createElement('div');
+                leaf.className = 'leaf';
+                leaf.style.left = `${Math.random() * 100}vw`;
+                leaf.style.animationDuration = `${15 + Math.random() * 20}s`;
+                leaf.style.animationDelay = `${Math.random() * 10}s`;
+                leaf.style.transform = `scale(${0.5 + Math.random() * 0.8})`;
+                leaf.style.opacity = '0';
+                gardenBg.appendChild(leaf);
+            }
 
-            const senderIdText = isCurrentUser ? 'You' : messageData.senderName || `User ${messageData.senderId.substring(0, 6)}...`;
-            const senderIdTitle = isCurrentUser ? `You (${currentUserAnonymousName})` : `${messageData.senderName} (${messageData.senderId})`;
-
-            messageContainer.innerHTML = `
-                <div class="flex flex-col ${isCurrentUser ? 'items-end' : 'items-start'}">
-                    <div class="chat-sender-id" title="${senderIdTitle}">${senderIdText}</div>
-                    <div class="chat-bubble ${isCurrentUser ? 'user' : 'other-user'}">${messageData.text}</div>
-                </div>
-            `;
-
-            chatMessages.appendChild(messageContainer);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        async function handlePeerSendMessage() {
-            const userInput = chatInput.value.trim();
-            if (!userInput || !currentChatRoomId || !currentUserId || !db) return;
-
-            const messagesRef = collection(db, `artifacts/${sanitizedAppId}/public/data/chatrooms/${currentChatRoomId}/messages`);
-
-            try {
-                await addDoc(messagesRef, {
-                    text: userInput,
-                    senderId: currentUserId,
-                    senderName: currentUserAnonymousName,
-                    createdAt: serverTimestamp()
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
                 });
-                chatInput.value = '';
-            } catch (error) {
-                console.error("Error sending message:", error);
-            }
-        }
+            });
 
-        chatCloseBtn.addEventListener('click', () => {
-            chatWindow.classList.add('hidden');
-            if (unsubscribeFromMessages) {
-                unsubscribeFromMessages();
-                unsubscribeFromMessages = null;
-            }
-            currentChatRoomId = null;
-        });
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', () => {
+                header.classList.toggle('py-2', window.scrollY > 50);
+                header.classList.toggle('py-4', window.scrollY <= 50);
+            });
 
-        peerChatClearBtn.addEventListener('click', () => {
-            if (currentChatRoomId) {
-                localStorage.setItem(`chatClearTimestamp_${currentChatRoomId}`, new Date().toISOString());
-                chatMessages.innerHTML = '';
-            }
-        });
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('is-visible');
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.revealable').forEach(el => observer.observe(el));
 
-        chatSendBtn.addEventListener('click', handlePeerSendMessage);
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handlePeerSendMessage();
-        });
+            // ====================================================================
+            // SECTION: GEMINI AI MODAL & API LOGIC
+            // ====================================================================
+            
+            // --- IMPORTANT: PASTE YOUR API KEY HERE ---
+            const apiKey = "AIzaSyBKIy8ScHv6JqVJAMuTibo7ikvBzMSfwXo"; 
+            
+            const modalOverlay = document.getElementById('gemini-modal-overlay');
+            const modal = document.getElementById('gemini-modal');
+            const openModalButton = document.getElementById('open-gemini-modal');
+            const closeModalButton = document.getElementById('close-gemini-modal');
 
-        // --- AI Chatbot with Personalities Logic ---
-        const aiChatToggleBtn = document.getElementById('ai-chat-toggle-btn');
-        const aiChatWindow = document.getElementById('ai-chat-window');
-        const aiChatCloseBtn = document.getElementById('ai-chat-close-btn');
-        const aiChatClearBtn = document.getElementById('ai-chat-clear-btn');
-        const aiChatMessages = document.getElementById('ai-chat-messages');
-        const aiChatInput = document.getElementById('ai-chat-input');
-        const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
-        const aiPersonalitySelector = document.getElementById('ai-personality-selector');
-        let aiChatHistory = [];
+            // Text Chat Elements
+            const submitButton = document.getElementById('gemini-submit-button');
+            const promptInput = document.getElementById('gemini-prompt-input');
+            const responseText = document.getElementById('gemini-response-text');
+            const loadingIndicator = document.getElementById('gemini-loading-indicator');
 
-        async function getGeminiResponseWithPersonality(prompt, history, personality) {
-            const personalityPrompts = {
-                helpful: "You are a helpful and friendly assistant. You are concise and to the point. You are here to help the user with their tasks.",
-                creative: "You are a creative muse. You think outside the box and provide imaginative and inspiring ideas. You speak in a poetic and slightly eccentric way.",
-                sarcastic: "You are a sarcastic, witty bot. You answer questions correctly but with a dry sense of humor and a bit of sass. You're not mean, just amusingly unimpressed."
+            // Meditation Elements
+            const meditationPromptInput = document.getElementById('meditation-prompt-input');
+            const generateMeditationButton = document.getElementById('generate-meditation-button');
+            const meditationStatusArea = document.getElementById('meditation-status-area');
+            const meditationLoadingIndicator = document.getElementById('meditation-loading-indicator');
+            const meditationStatusText = document.getElementById('meditation-status-text');
+            const meditationPlayer = document.getElementById('meditation-player');
+
+            const showModal = () => {
+                modalOverlay.classList.remove('hidden');
+                setTimeout(() => {
+                    modalOverlay.classList.remove('opacity-0');
+                    modal.classList.remove('opacity-0', 'scale-95');
+                }, 10);
             };
-            const safetyDisclaimer = "\n\n**Important Disclaimer:** You are an AI assistant and not a medical professional. You must not provide any medical, clinical, or therapeutic advice. If a user is in crisis or needs mental health support, you must advise them to contact a qualified professional or a crisis hotline immediately.";
-            const systemPrompt = (personalityPrompts[personality] || personalityPrompts['helpful']) + safetyDisclaimer;
 
-            const contents = history.map(msg => ({
-                role: msg.sender === 'user' ? 'user' : 'model',
-                parts: [{ text: msg.text }]
-            }));
-            contents.push({ role: 'user', parts: [{ text: prompt }] });
+            const hideModal = () => {
+                modalOverlay.classList.add('opacity-0');
+                modal.classList.add('opacity-0', 'scale-95');
+                meditationPlayer.pause();
+                setTimeout(() => modalOverlay.classList.add('hidden'), 300);
+            };
 
-            try {
+            openModalButton.addEventListener('click', showModal);
+            closeModalButton.addEventListener('click', hideModal);
+            modalOverlay.addEventListener('click', e => e.target === modalOverlay && hideModal());
+            
+            // --- Function to check for valid API key ---
+            function isApiKeyMissing() {
+                if (apiKey === "PASTE_YOUR_GEMINI_API_KEY_HERE" || !apiKey) {
+                    responseText.textContent = "API Key is missing. Please add your Gemini API key to the script section of the HTML file to enable this feature.";
+                    meditationStatusText.textContent = "API Key is missing. Please add your key to the HTML file.";
+                    meditationLoadingIndicator.classList.add('hidden');
+                    return true;
+                }
+                return false;
+            }
+
+            // --- Text Chat API Call ---
+            submitButton.addEventListener('click', async () => {
+                if (isApiKeyMissing()) return;
+
+                const userQuery = promptInput.value.trim();
+                if (!userQuery) {
+                    responseText.textContent = "Please tell me how you're feeling first.";
+                    return;
+                }
+
+                loadingIndicator.classList.remove('hidden');
+                responseText.classList.add('hidden');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Thinking...';
+
+                const systemPrompt = `You are Blossom, a kind and supportive AI companion from Soul Bloom... (rest of prompt is the same)`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                 const payload = {
-                    contents: contents,
+                    contents: [{ parts: [{ text: userQuery }] }],
                     systemInstruction: { parts: [{ text: systemPrompt }] },
                 };
-                const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error(`API error: ${response.statusText}`);
-                const result = await response.json();
-                return result.candidates?.[0]?.content?.parts?.[0]?.text || "I'm not sure how to respond to that.";
-            } catch (error) {
-                console.error("Error calling Gemini API:", error);
-                return "Sorry, I'm having trouble connecting right now.";
-            }
-        }
-
-        function displayAiChatMessage(text, sender, save = true) {
-            const messageContainer = document.createElement('div');
-            messageContainer.className = `chat-message ${sender}`;
-            const bubble = document.createElement('div');
-            bubble.className = `chat-bubble ${sender}`;
-            bubble.textContent = text;
-            messageContainer.appendChild(bubble);
-            aiChatMessages.appendChild(messageContainer);
-            aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-
-            if (save) {
-                aiChatHistory.push({ sender, text });
-                localStorage.setItem('aiChatHistory', JSON.stringify(aiChatHistory));
-            }
-        }
-
-        async function handleAiSendMessage() {
-            const userInput = aiChatInput.value.trim();
-            if (!userInput) return;
-            
-            checkForSuicidalIntent(userInput);
-
-            displayAiChatMessage(userInput, 'user');
-            aiChatInput.value = '';
-            aiChatSendBtn.disabled = true;
-
-            const typingIndicator = document.createElement('div');
-            typingIndicator.id = 'ai-typing-indicator';
-            typingIndicator.className = 'chat-message ai';
-            typingIndicator.innerHTML = `<div class="chat-bubble ai"><div class="loader" style="width:20px; height:20px; margin:0;"></div></div>`;
-            aiChatMessages.appendChild(typingIndicator);
-            aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-
-            const personality = aiPersonalitySelector.value;
-            const aiResponse = await getGeminiResponseWithPersonality(userInput, aiChatHistory, personality);
-
-            document.getElementById('ai-typing-indicator').remove();
-            aiChatSendBtn.disabled = false;
-            displayAiChatMessage(aiResponse, 'ai');
-        }
-
-        function loadAiChatHistory() {
-            const savedHistory = localStorage.getItem('aiChatHistory');
-            if (savedHistory && JSON.parse(savedHistory).length > 0) {
-                aiChatHistory = JSON.parse(savedHistory);
-                aiChatMessages.innerHTML = '';
-                aiChatHistory.forEach(msg => displayAiChatMessage(msg.text, msg.sender, false));
-            } else {
-                aiChatHistory = [];
-                displayAiChatMessage("Hello! How can I help you today?", 'ai', false);
-            }
-        }
-
-        aiChatToggleBtn.addEventListener('click', () => {
-            aiChatWindow.classList.toggle('hidden');
-            chatWindow.classList.add('hidden'); // Hide peer chat if open
-            lucide.createIcons();
-        });
-        aiChatCloseBtn.addEventListener('click', () => aiChatWindow.classList.add('hidden'));
-        aiChatSendBtn.addEventListener('click', handleAiSendMessage);
-        aiChatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleAiSendMessage();
-        });
-
-        aiChatClearBtn.addEventListener('click', () => {
-            aiChatHistory = [];
-            localStorage.removeItem('aiChatHistory');
-            aiChatMessages.innerHTML = '';
-            displayAiChatMessage("Hello! How can I help you today?", 'ai', false);
-        });
-
-
-        // --- Profile Picture Logic ---
-        const profilePicContainer = document.getElementById('profile-pic-container');
-        const profilePicEmoji = document.getElementById('profile-pic-emoji');
-        const emotePickerModal = document.getElementById('emote-picker-modal');
-        const closeEmoteModalBtn = document.getElementById('close-emote-modal');
-        const emoteGrid = document.getElementById('emote-grid');
-        const availableEmotes = ['☘️', '🌸', '🍓', '🍄', '✨', '🌙', '🪐', '🦊', '🐸', '🐢', '🦋', '⭐'];
-
-        function populateEmotePicker() {
-            emoteGrid.innerHTML = '';
-            availableEmotes.forEach(emote => {
-                const button = document.createElement('button');
-                button.className = 'p-2 rounded-lg hover:bg-white/10 transition-colors';
-                button.textContent = emote;
-                emoteGrid.appendChild(button);
-            });
-        }
-
-        profilePicContainer.addEventListener('click', () => emotePickerModal.classList.remove('hidden'));
-        closeEmoteModalBtn.addEventListener('click', () => emotePickerModal.classList.add('hidden'));
-        emotePickerModal.addEventListener('click', (e) => { if (e.target === emotePickerModal) emotePickerModal.classList.add('hidden'); });
-        emoteGrid.addEventListener('click', (e) => {
-            if (e.target.tagName === 'BUTTON') {
-                const newEmote = e.target.textContent;
-                profilePicEmoji.textContent = newEmote;
-                localStorage.setItem('dashboardProfilePic', newEmote);
-                emotePickerModal.classList.add('hidden');
-            }
-        });
-
-        function loadProfilePic() {
-            const savedEmote = localStorage.getItem('dashboardProfilePic');
-            if (savedEmote) profilePicEmoji.textContent = savedEmote;
-        }
-
-        // --- Music Player Helper Functions ---
-        function generateCodeVerifier(length) {
-            let text = '';
-            let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-            for (let i = 0; i < length; i++) {
-                text += possible.charAt(Math.floor(Math.random() * possible.length));
-            }
-            return text;
-        }
-
-        async function generateCodeChallenge(codeVerifier) {
-            const data = new TextEncoder().encode(codeVerifier);
-            const digest = await window.crypto.subtle.digest('SHA-256', data);
-            return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
-                .replace(/\+/g, '-')
-                .replace(/\//g, '_')
-                .replace(/=+$/, '');
-        }
-
-        // --- UPDATED MUSIC PLAYER LOGIC ---
-        function initializeMusicPlayer() {
-            const spotifyBtn = document.getElementById('spotify-btn');
-            const ytMusicBtn = document.getElementById('yt-music-btn');
-            const musicPlayerContainer = document.getElementById('music-player-container');
-            const YOUTUBE_DEFAULT_EMBED_URL = 'https://www.youtube.com/embed/jfKfPfyJRdk';
-            
-            // --- YouTube Music Variables & Functions ---
-            let tokenClient;
-            let gapiReady = false;
-            let gsiReady = false;
-            let ytSyncError = null;
-            
-            function updateYtLoginButtonState() {
-                const loginBtn = document.getElementById('yt-login-btn');
-                if (!loginBtn) return;
-                if (ytSyncError) {
-                    loginBtn.disabled = true; loginBtn.textContent = 'Sync Error'; loginBtn.title = ytSyncError; return;
-                }
-                if (gapiReady && gsiReady) {
-                    loginBtn.disabled = false; loginBtn.textContent = 'Sync YouTube Music'; loginBtn.title = 'Login to see your playlists.';
-                } else {
-                    loginBtn.disabled = true; loginBtn.textContent = 'Loading Sync...'; loginBtn.title = 'Waiting for Google libraries...';
-                }
-            }
-            function initializeGapiClient() {
-                if (YOUTUBE_API_KEY.includes('YOUR_')) {
-                     ytSyncError = "YouTube API Key is missing."; updateYtLoginButtonState(); return;
-                }
-                gapi.load('client', () => {
-                    gapi.client.init({
-                        apiKey: YOUTUBE_API_KEY,
-                        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest'],
-                    }).then(() => {
-                        gapiReady = true; updateYtLoginButtonState();
-                    }).catch(error => {
-                        console.error("GAPI client init error:", error);
-                        ytSyncError = `GAPI Error: The YouTube Data API is not enabled.`; updateYtLoginButtonState();
-                    });
-                });
-            }
-            function loadGapiScript() {
-                const script = document.createElement('script'); script.src = 'https://apis.google.com/js/api.js';
-                script.onload = initializeGapiClient; document.body.appendChild(script);
-            }
-            function initializeGsiClient() {
-                 if (typeof google === 'undefined' || !google.accounts) {
-                    ytSyncError = "Google script failed to load."; updateYtLoginButtonState(); return;
-                }
-                 if (YT_MUSIC_CLIENT_ID.includes('YOUR_')) {
-                    ytSyncError = "YouTube Music OAuth Client ID is missing."; updateYtLoginButtonState(); return;
-                }
-                try {
-                    tokenClient = google.accounts.oauth2.initTokenClient({ 
-                        client_id: YT_MUSIC_CLIENT_ID, scope: 'https://www.googleapis.com/auth/youtube.readonly', callback: handleAuthResponse 
-                    });
-                    gsiReady = true; loadGapiScript();
-                } catch(e) {
-                     console.error("GSI Init Failed for YT Music:", e);
-                     ytSyncError = "GSI Init Failed for YT Music. Check Client ID."; updateYtLoginButtonState();
-                }
-            }
-            async function handleAuthResponse(tokenResponse) {
-                 if (tokenResponse.access_token) {
-                    gapi.client.setToken(tokenResponse);
-                    musicPlayerContainer.innerHTML = '<div class="loader mx-auto mt-16"></div>';
-                    try {
-                        const response = await gapi.client.youtube.playlists.list({ part: 'snippet', mine: true, maxResults: 50 });
-                        if (response.result.items && response.result.items.length > 0) {
-                            renderUserPlaylists(response.result.items);
-                        } else {
-                            musicPlayerContainer.innerHTML = `<div class="text-center p-4">No public playlists found. <button id="yt-logout-btn" class="text-sm text-red-400 hover:text-white block mx-auto mt-2">Logout</button></div>`;
-                            document.getElementById('yt-logout-btn').addEventListener('click', handleYtLogout);
-                        }
-                    } catch (err) {
-                        console.error("Error fetching YT playlists:", err);
-                        musicPlayerContainer.innerHTML = `<div class="text-center p-4">Could not fetch playlists. <button id="yt-logout-btn" class="mx-auto block text-sm text-gray-400 hover:text-white mt-2">Logout</button></div>`;
-                        document.getElementById('yt-logout-btn').addEventListener('click', handleYtLogout);
-                    }
-                } else {
-                    console.error("Auth response did not contain access token.", tokenResponse);
-                    musicPlayerContainer.innerHTML = `<div class="text-center p-4">Authentication failed. Please try again.</div>`;
-                }
-            }
-            function handleYtLogin() {
-                if (gapiReady && gsiReady && tokenClient) tokenClient.requestAccessToken({ prompt: 'consent' });
-            }
-            function handleYtLogout() {
-                gapi.client.setToken(null); renderDefaultYtPlayer();
-            }
-
-            async function fetchPlaylistItems(playlistId, container) {
-                try {
-                    const response = await gapi.client.youtube.playlistItems.list({
-                        part: 'snippet',
-                        playlistId: playlistId,
-                        maxResults: 50
-                    });
-                    renderPlaylistItems(response.result.items, container);
-                } catch (err) {
-                    console.error("Error fetching playlist items:", err);
-                    container.innerHTML = `<p class="text-xs text-gray-400 p-2">Could not load videos.</p>`;
-                }
-            }
-
-            function renderPlaylistItems(items, container) {
-                const videoList = document.createElement('div');
-                videoList.className = "space-y-2";
-
-                if (!items || items.length === 0) {
-                     container.innerHTML = `<p class="text-xs text-gray-400 p-2">This playlist is empty.</p>`;
-                     return;
-                }
-
-                videoList.innerHTML = items.map(item => {
-                    const snippet = item.snippet;
-                    const videoId = snippet.resourceId.videoId;
-                    const title = snippet.title;
-                    const thumbnailUrl = snippet.thumbnails.default.url;
-                    // Skip deleted or private videos
-                    if (title === "Deleted video" || title === "Private video") return '';
-                    
-                    return `
-                        <button class="yt-video-item flex items-center gap-2 w-full text-left p-1.5 hover:bg-white/10 rounded transition-colors duration-200" data-video-id="${videoId}">
-                            <img src="${thumbnailUrl}" class="w-10 h-10 rounded object-cover" alt="Video thumbnail">
-                            <span class="flex-1 text-xs font-medium truncate">${title}</span>
-                        </button>
-                    `;
-                }).join('');
-
-                container.innerHTML = '';
-                container.appendChild(videoList);
-
-                container.querySelectorAll('.yt-video-item').forEach(item => {
-                    item.addEventListener('click', () => {
-                        document.getElementById('music-player-iframe').src = `https://www.youtube.com/embed/${item.dataset.videoId}?autoplay=1`;
-                    });
-                });
-            }
-
-            async function renderUserPlaylists(playlists) {
-                musicPlayerContainer.innerHTML = `
-                    <div class="flex flex-col h-full bg-black/20 rounded-lg">
-                        <div class="w-full h-2/5 relative">
-                             <iframe id="music-player-iframe" class="rounded-t-lg w-full h-full" src="https://www.youtube.com/embed/videoseries?list=${playlists[0].id}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        </div>
-                        <div class="flex-1 flex flex-row min-h-0">
-                            <!-- Left: Playlist List -->
-                            <div class="w-1/2 flex flex-col border-r border-white/10">
-                                <div class="flex justify-between items-center p-2 border-b border-white/10">
-                                    <h4 class="font-bold text-base truncate">Your Playlists</h4>
-                                    <button id="yt-logout-btn" class="text-xs text-gray-400 hover:text-white flex-shrink-0">Logout</button>
-                                </div>
-                                <div id="yt-playlist-list" class="flex-1 overflow-y-auto p-1 space-y-1">
-                                    ${playlists.map((p, index) => `
-                                        <button class="yt-playlist-item flex items-center gap-2 w-full text-left p-1.5 hover:bg-white/10 rounded transition-colors duration-200 ${index === 0 ? 'bg-white/20' : ''}" data-playlist-id="${p.id}" title="${p.snippet.title}">
-                                            <img src="${p.snippet.thumbnails.default.url}" class="w-10 h-10 rounded object-cover" alt="Playlist thumbnail">
-                                            <span class="flex-1 text-xs font-medium truncate">${p.snippet.title}</span>
-                                        </button>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            <!-- Right: Video List -->
-                            <div class="w-1/2 flex flex-col">
-                                 <div class="p-2 border-b border-white/10">
-                                     <h4 id="yt-video-list-header" class="font-bold text-base truncate">${playlists[0].snippet.title}</h4>
-                                 </div>
-                                 <div id="yt-video-list" class="flex-1 overflow-y-auto p-1">
-                                     <div class="loader"></div>
-                                 </div>
-                            </div>
-                        </div>
-                    </div>`;
-
-                document.getElementById('yt-logout-btn').addEventListener('click', handleYtLogout);
-                const videoListContainer = document.getElementById('yt-video-list');
-                const videoListHeader = document.getElementById('yt-video-list-header');
                 
-                const playlistItems = document.querySelectorAll('.yt-playlist-item');
-                playlistItems.forEach(item => {
-                    item.addEventListener('click', () => { 
-                        playlistItems.forEach(el => el.classList.remove('bg-white/20'));
-                        item.classList.add('bg-white/20');
-                        
-                        const playlistId = item.dataset.playlistId;
-                        const playlistTitle = item.getAttribute('title');
-
-                        videoListHeader.textContent = playlistTitle;
-                        videoListContainer.innerHTML = '<div class="loader"></div>';
-                        document.getElementById('music-player-iframe').src = `https://www.youtube.com/embed/videoseries?list=${playlistId}`; 
-                        fetchPlaylistItems(playlistId, videoListContainer);
-                    });
-                });
-                // Initially load videos for the first playlist
-                fetchPlaylistItems(playlists[0].id, videoListContainer);
-            }
-
-            // --- Spotify Variables & Functions ---
-            const SPOTIFY_REDIRECT_URI = window.location.origin + window.location.pathname;
-            
-            async function redirectToAuthCodeFlow() {
-                const verifier = generateCodeVerifier(128);
-                const challenge = await generateCodeChallenge(verifier);
-                localStorage.setItem("spotify_verifier", verifier);
-                const params = new URLSearchParams();
-                params.append("client_id", SPOTIFY_CLIENT_ID);
-                params.append("response_type", "code");
-                params.append("redirect_uri", SPOTIFY_REDIRECT_URI);
-                params.append("scope", "playlist-read-private playlist-read-collaborative");
-                params.append("code_challenge_method", "S256");
-                params.append("code_challenge", challenge);
-                document.location = `https://accounts.spotify.com/authorize?${params.toString()}`;
-            }
-            async function getSpotifyToken(code) {
-                const verifier = localStorage.getItem("spotify_verifier");
-                const params = new URLSearchParams();
-                params.append("client_id", SPOTIFY_CLIENT_ID);
-                params.append("grant_type", "authorization_code");
-                params.append("code", code);
-                params.append("redirect_uri", SPOTIFY_REDIRECT_URI);
-                params.append("code_verifier", verifier);
                 try {
-                    const result = await fetch("https://accounts.spotify.com/api/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params });
-                    const { access_token } = await result.json();
-                    localStorage.setItem('spotify_access_token', access_token);
-                    await renderSpotifyPlayer();
-                } catch(e) { console.error("Could not get Spotify token", e); }
-            }
-            async function fetchSpotifyPlaylists() {
-                const token = localStorage.getItem('spotify_access_token');
-                if (!token) return;
-                try {
-                    const result = await fetch("https://api.spotify.com/v1/me/playlists", { method: "GET", headers: { Authorization: `Bearer ${token}` } });
-                    if (result.status === 401) { handleSpotifyLogout(); return; } 
-                    const data = await result.json();
-                    if (data.items && data.items.length > 0) {
-                        renderSpotifyUserPlaylists(data.items);
-                    } else {
-                        renderNoSpotifyPlaylistsMessage();
-                    }
-                } catch(e) { console.error("Could not fetch Spotify playlists", e); }
-            }
-            function handleSpotifyLogout() {
-                localStorage.removeItem('spotify_access_token');
-                renderSpotifyPlayer();
-            }
-            function renderNoSpotifyPlaylistsMessage() {
-                musicPlayerContainer.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-full gap-4 text-center">
-                        <i data-lucide="music-4" class="w-16 h-16 text-gray-500"></i>
-                        <h4 class="text-lg font-bold">No Playlists Found</h4>
-                        <p class="text-sm text-gray-400">We couldn't find any playlists in your Spotify account.</p>
-                        <button id="spotify-logout-btn" class="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 text-sm">Logout from Spotify</button>
-                    </div>
-                `;
-                document.getElementById('spotify-logout-btn').addEventListener('click', handleSpotifyLogout);
-                lucide.createIcons();
-            }
-            function renderSpotifyUserPlaylists(playlists) {
-                 musicPlayerContainer.innerHTML = `
-                    <div class="flex flex-col h-full bg-black/20 rounded-lg">
-                        <iframe id="spotify-player-iframe" class="rounded-t-lg w-full h-3/5" src="https://open.spotify.com/embed/playlist/${playlists[0].id}" frameborder="0" allow="encrypted-media"></iframe>
-                        <div class="flex-1 flex flex-col min-h-0">
-                            <div class="flex justify-between items-center p-2 border-b border-white/10"><h4 class="font-bold text-base">Your Playlists</h4><button id="spotify-logout-btn" class="text-xs text-gray-400 hover:text-white">Logout</button></div>
-                            <div class="flex-1 overflow-y-auto p-1">
-                                ${playlists.map(p => `<button class="spotify-playlist-item w-full text-left p-2 hover:bg-white/10 rounded text-sm truncate" data-playlist-id="${p.id}" title="${p.name}">${p.name}</button>`).join('')}
-                            </div>
-                        </div>
-                    </div>`;
-                document.getElementById('spotify-logout-btn').addEventListener('click', handleSpotifyLogout);
-                document.querySelectorAll('.spotify-playlist-item').forEach(item => {
-                    item.addEventListener('click', () => { 
-                        document.getElementById('spotify-player-iframe').src = `https://open.spotify.com/embed/playlist/${item.dataset.playlistId}`; 
-                    });
-                });
-            }
-
-            // --- Player Rendering Functions ---
-            async function renderSpotifyPlayer() {
-                ytMusicBtn.classList.remove('ring-2', 'ring-white');
-                spotifyBtn.classList.add('ring-2', 'ring-white');
-                const token = localStorage.getItem('spotify_access_token');
-                if (token) {
-                    musicPlayerContainer.innerHTML = '<div class="loader mx-auto mt-16"></div>';
-                    await fetchSpotifyPlaylists();
-                } else {
-                    const isClientIdSet = SPOTIFY_CLIENT_ID && !SPOTIFY_CLIENT_ID.includes('YOUR_');
-                    const savedSpotifyUrl = localStorage.getItem('spotifyPlaylistUrl') || 'https://open.spotify.com/embed/playlist/37i9dQZF1DX4sWSpwq3LiO';
-                    musicPlayerContainer.innerHTML = `
-                        <div class="flex flex-col h-full gap-2">
-                            <iframe id="spotify-iframe" class="rounded-lg w-full flex-1" src="${savedSpotifyUrl}" title="Spotify Playlist" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                            <div class="flex flex-col gap-3 pt-2 border-t border-white/10">
-                                <div class="flex gap-2">
-                                    <input type="text" id="spotify-link-input" placeholder="Paste Public Playlist Link" class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-sm">
-                                    <button id="spotify-link-save-btn" class="bg-[#1DB954] text-white px-3 py-1 rounded hover:bg-[#1aaf54] text-sm">Set</button>
-                                </div>
-                                <button id="spotify-login-btn" class="w-full bg-[#1DB954] text-white px-4 py-2 rounded hover:bg-[#1aaf54] text-sm ${!isClientIdSet ? 'opacity-50 cursor-not-allowed' : ''}" ${!isClientIdSet ? 'disabled' : ''}>Sync Your Spotify Playlists</button>
-                                ${!isClientIdSet ? '<p class="text-xs text-center text-gray-400">Add Spotify Client ID in code to enable sync.</p>' : ''}
-                            </div>
-                        </div>`;
-                    if (isClientIdSet) document.getElementById('spotify-login-btn').addEventListener('click', redirectToAuthCodeFlow);
-                    document.getElementById('spotify-link-save-btn').addEventListener('click', () => {
-                        const input = document.getElementById('spotify-link-input');
-                        const link = input.value.trim();
-                        if (link.startsWith('https://open.spotify.com/playlist/')) {
-                            const playlistId = new URL(link).pathname.split('/').pop();
-                            if (playlistId) {
-                                const embedUrl = `https://open.spotify.com/embed/playlist/${playlistId}`;
-                                document.getElementById('spotify-iframe').src = embedUrl;
-                                localStorage.setItem('spotifyPlaylistUrl', embedUrl);
-                                input.value = ''; input.placeholder = "Playlist updated!";
-                            }
-                        }
-                    });
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`API error (${response.status}): ${response.statusText}`);
+                    const result = await response.json();
+                    const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    responseText.textContent = generatedText || "I'm sorry, I couldn't think of a response. Please try again.";
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    responseText.textContent = "Sorry, something went wrong. Please check your connection and try again. Make sure you are running this page from a web server.";
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                    responseText.classList.remove('hidden');
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Get Quick Support';
                 }
-            }
-            function renderDefaultYtPlayer() {
-                spotifyBtn.classList.remove('ring-2', 'ring-white');
-                ytMusicBtn.classList.add('ring-2', 'ring-white');
-                musicPlayerContainer.innerHTML = `<div class="flex flex-col items-center justify-center h-full gap-4"> <iframe class="rounded-lg w-full h-4/5" src="${YOUTUBE_DEFAULT_EMBED_URL}" title="YouTube Music Mix" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> <button id="yt-login-btn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" disabled>Loading Sync...</button> </div>`;
-                const loginBtn = document.getElementById('yt-login-btn');
-                if (loginBtn) { loginBtn.addEventListener('click', handleYtLogin); updateYtLoginButtonState(); }
-            }
-
-            // --- Initialization Logic ---
-            const params = new URLSearchParams(window.location.search);
-            if (params.get("code")) {
-                const isSpotify = !params.get("scope"); // Google's redirect includes a 'scope' param
-                if (isSpotify) {
-                    getSpotifyToken(params.get("code"));
-                    history.replaceState({}, document.title, window.location.pathname);
-                }
-            }
-            spotifyBtn.addEventListener('click', renderSpotifyPlayer);
-            ytMusicBtn.addEventListener('click', renderDefaultYtPlayer);
-            if (window.googleGsiIsReady) initializeGsiClient();
-            else window.addEventListener('google-gsi-loaded', initializeGsiClient, { once: true });
-            renderDefaultYtPlayer();
-        }
-
-
-        // --- Assignments Logic (Fixed) ---
-        const assignmentsList = document.getElementById('assignments-list');
-        const newAssignmentBtn = document.getElementById('new-assignment-btn');
-        const newAssignmentForm = document.getElementById('new-assignment-form');
-        const cancelAssignmentBtn = document.getElementById('cancel-assignment-btn');
-        const storageToggle = document.getElementById('storage-toggle');
-
-        let assignmentStorageMode = localStorage.getItem('assignmentStorageMode') || 'server';
-        let unsubscribeFromAssignments = null;
-
-        function clearAssignmentsList() {
-            while (assignmentsList.children.length > 1) {
-                assignmentsList.removeChild(assignmentsList.lastChild);
-            }
-        }
-
-        function renderAssignment(data, id) {
-            const item = document.createElement('div');
-            item.className = `task-item grid grid-cols-[auto,1fr,auto,auto,auto] gap-x-4 items-center ${data.completed ? 'completed' : ''}`;
-            item.dataset.id = id;
-
-            item.innerHTML = `
-                <input type="checkbox" class="task-checkbox" ${data.completed ? 'checked' : ''}>
-                <span>${data.name}</span>
-                <span class="course-tag" style="background-color: ${getCourseColor(data.course)}">${data.course || 'General'}</span>
-                <span>${data.dueDate ? new Date(data.dueDate).toLocaleDateString() : 'No date'}</span>
-                <button class="delete-assignment-btn text-gray-500 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-            `;
-
-            assignmentsList.appendChild(item);
-            lucide.createIcons();
-        }
-
-        function getCourseColor(course) {
-            let hash = 0;
-            for (let i = 0; i < (course || '').length; i++) {
-                hash = course.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            const color = `hsl(${hash % 360}, 50%, 60%)`;
-            return color;
-        }
-
-        function initializeAssignments() {
-            clearAssignmentsList();
-            if (unsubscribeFromAssignments) {
-                unsubscribeFromAssignments();
-                unsubscribeFromAssignments = null;
-            }
-
-            if (assignmentStorageMode === 'server') {
-                initializeFirestoreAssignments();
-            } else {
-                initializeLocalAssignments();
-            }
-            storageToggle.checked = assignmentStorageMode === 'server';
-        }
-
-        function initializeFirestoreAssignments() {
-            const user = auth.currentUser;
-
-            if (!user) {
-                clearAssignmentsList();
-                const infoItem = document.createElement('div');
-                infoItem.className = 'text-center text-gray-400 p-4 col-span-full';
-                infoItem.textContent = 'Connecting to server...';
-                assignmentsList.appendChild(infoItem);
-                return;
-            }
-
-            const assignmentsRef = collection(db, `artifacts/${sanitizedAppId}/users/${user.uid}/assignments`);
-            const q = query(assignmentsRef);
-
-            unsubscribeFromAssignments = onSnapshot(q, (snapshot) => {
-                clearAssignmentsList();
-                const assignments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                assignments.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-                assignments.forEach(assignment => {
-                    renderAssignment(assignment, assignment.id);
-                });
-            }, (error) => {
-                console.error("Error getting assignments:", error);
-                clearAssignmentsList();
-                const errorItem = document.createElement('div');
-                errorItem.className = 'text-center text-red-400 p-4 col-span-full';
-                errorItem.textContent = 'Error: Could not load assignments. Check Firestore rules.';
-                assignmentsList.appendChild(errorItem);
             });
-        }
 
-        function initializeLocalAssignments() {
-            const localTasks = JSON.parse(localStorage.getItem('localAssignments')) || [];
-            clearAssignmentsList();
-            localTasks.forEach(task => renderAssignment(task, task.id));
-        }
-
-        storageToggle.addEventListener('change', () => {
-            assignmentStorageMode = storageToggle.checked ? 'server' : 'local';
-            localStorage.setItem('assignmentStorageMode', assignmentStorageMode);
-            initializeAssignments();
-        });
-
-        newAssignmentBtn.addEventListener('click', () => {
-            newAssignmentForm.classList.remove('hidden');
-            newAssignmentBtn.classList.add('hidden');
-        });
-
-        cancelAssignmentBtn.addEventListener('click', () => {
-            newAssignmentForm.classList.add('hidden');
-            newAssignmentBtn.classList.remove('hidden');
-            newAssignmentForm.reset();
-        });
-
-        newAssignmentForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('new-assignment-name').value.trim();
-            const course = document.getElementById('new-assignment-course').value.trim();
-            const dueDate = document.getElementById('new-assignment-due-date').value;
-
-            if (!name) return;
-
-            if (assignmentStorageMode === 'server') {
-                if (!db || !currentUserId) {
-                     alert("Cannot save to server. Connection not ready, please wait a moment.");
+            // --- Meditation Generation Logic ---
+            generateMeditationButton.addEventListener('click', async () => {
+                if (isApiKeyMissing()) return;
+                
+                const userQuery = meditationPromptInput.value.trim();
+                if (!userQuery) {
+                    meditationStatusText.textContent = "Please enter a topic for your meditation.";
+                    meditationLoadingIndicator.classList.add('hidden');
                     return;
                 }
-                await addDoc(collection(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/assignments`), {
-                    name, course, dueDate, completed: false, createdAt: serverTimestamp()
-                });
-            } else {
-                const localTasks = JSON.parse(localStorage.getItem('localAssignments')) || [];
-                const newTask = {
-                    id: Date.now().toString(), name, course, dueDate, completed: false, createdAt: new Date().toISOString()
-                };
-                localTasks.push(newTask);
-                localStorage.setItem('localAssignments', JSON.stringify(localTasks));
-                initializeLocalAssignments();
+                
+                meditationPlayer.classList.add('hidden');
+                meditationPlayer.src = '';
+                meditationLoadingIndicator.classList.remove('hidden');
+                meditationStatusText.textContent = "Generating meditation script...";
+                generateMeditationButton.disabled = true;
+                generateMeditationButton.textContent = 'Creating...';
+                
+                try {
+                    // Step 1: Generate the meditation script
+                    const scriptPrompt = `Write a short, calming, guided meditation script of about 150-200 words. The topic is "${userQuery}". Address the listener directly using "you". Use simple, soothing language with pauses indicated by ellipses (...). Start with a calming introduction and end with a gentle return to awareness. Do not include any titles or introductory/concluding remarks like "Here is the script:". Just provide the script itself.`;
+                    const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                    const textPayload = { contents: [{ parts: [{ text: scriptPrompt }] }] };
+                    
+                    const textResponse = await fetch(textApiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(textPayload) });
+                    if (!textResponse.ok) throw new Error(`Script generation failed: ${textResponse.statusText}`);
+                    const textResult = await textResponse.json();
+                    const meditationScript = textResult.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (!meditationScript) throw new Error("Could not generate a script.");
+                    
+                    meditationStatusText.textContent = "Converting script to audio...";
+
+                    // Step 2: Generate the audio from the script
+                    const ttsPrompt = `Read the following meditation script in a gentle, calm, and soothing voice: ${meditationScript}`;
+                    const ttsApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+                    const ttsPayload = {
+                        contents: [{ parts: [{ text: ttsPrompt }] }],
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Vindemiatrix" } } }
+                        },
+                        model: "gemini-2.5-flash-preview-tts"
+                    };
+
+                    const audioResponse = await fetch(ttsApiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ttsPayload) });
+                    if (!audioResponse.ok) throw new Error(`TTS generation failed: ${audioResponse.statusText}`);
+                    const audioResult = await audioResponse.json();
+                    
+                    const audioData = audioResult?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+                    const mimeType = audioResult?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.mimeType;
+
+                    if (!audioData || !mimeType || !mimeType.startsWith("audio/")) throw new Error("Invalid audio data received.");
+                    
+                    const sampleRate = parseInt(mimeType.match(/rate=(\d+)/)[1], 10) || 24000;
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const wavBlob = pcmToWav(pcmData, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    
+                    meditationPlayer.src = audioUrl;
+                    meditationPlayer.classList.remove('hidden');
+                    meditationLoadingIndicator.classList.add('hidden');
+
+                } catch (error) {
+                    console.error("Meditation Generation Error:", error);
+                    meditationStatusText.textContent = `Sorry, an error occurred. Please try again.`;
+                    meditationLoadingIndicator.classList.add('hidden');
+                } finally {
+                    generateMeditationButton.disabled = false;
+                    generateMeditationButton.textContent = 'Create Meditation';
+                }
+            });
+        });
+    </script>
+
+    <script>
+        if (typeof THREE !== 'undefined') {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const canvas = document.getElementById('bg-canvas');
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            let intersectedObject = null;
+
+            window.addEventListener('mousemove', (event) => {
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+            }, false);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 10, 7.5);
+            scene.add(directionalLight);
+            camera.position.z = 15;
+
+            class CuteCharacter {
+                constructor() {
+                    this.group = new THREE.Group();
+                    
+                    const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xa7f3d0, roughness: 0.6, metalness: 0.1, transparent: true });
+                    const bodyGeometry = new THREE.SphereGeometry(1, 20, 20);
+                    this.body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+                    
+                    const eyeMaterial = new THREE.MeshBasicMaterial({ color: 0x1a2e29 });
+                    const eyeGeometry = new THREE.SphereGeometry(0.15, 12, 12);
+                    
+                    this.leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+                    this.leftEye.position.set(-0.4, 0.2, 0.8);
+                    
+                    this.rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+                    this.rightEye.position.set(0.4, 0.2, 0.8);
+
+                    this.group.add(this.body, this.leftEye, this.rightEye);
+                    this.group.name = "CuteCharacter";
+
+                    this.group.position.set(
+                        (Math.random() - 0.5) * 40,
+                        (Math.random() - 0.5) * 30,
+                        (Math.random() - 0.5) * 10
+                    );
+                    
+                    const scale = 1 + (this.group.position.z / 15);
+                    this.group.scale.set(scale, scale, scale);
+                    this.body.material.opacity = 0.5 + (this.group.position.z / 20);
+
+                    this.velocity = new THREE.Vector3(
+                        (Math.random() - 0.5) * 0.004,
+                        (Math.random() - 0.5) * 0.004,
+                        (Math.random() - 0.5) * 0.004
+                    );
+                    
+                    this.time = Math.random() * 100;
+                    this.isHovered = false;
+                }
+
+                update() {
+                    this.time += 0.03;
+                    this.group.position.add(this.velocity);
+                    this.group.position.y += Math.sin(this.time) * 0.01;
+                    
+                    this.group.rotation.z = this.isHovered ? Math.sin(this.time * 10) * 0.2 : this.group.rotation.z * 0.9;
+
+                    if (this.group.position.x > 25) this.group.position.x = -25;
+                    if (this.group.position.x < -25) this.group.position.x = 25;
+                    if (this.group.position.y > 15) this.group.position.y = -15;
+                    if (this.group.position.y < -15) this.group.position.y = 15;
+                    
+                    this.group.lookAt(camera.position);
+                }
             }
 
-            newAssignmentForm.reset();
-            newAssignmentForm.classList.add('hidden');
-            newAssignmentBtn.classList.remove('hidden');
-        });
+            const characters = [];
+            const characterGroups = [];
+            for (let i = 0; i < 15; i++) {
+                const char = new CuteCharacter();
+                characters.push(char);
+                scene.add(char.group);
+                characterGroups.push(char.group);
+            }
 
-        assignmentsList.addEventListener('click', async (e) => {
-            const target = e.target;
-            const taskItem = target.closest('.task-item');
-            if (!taskItem) return;
-            const id = taskItem.dataset.id;
+            const animate = () => {
+                requestAnimationFrame(animate);
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(characterGroups, true);
 
-            if (assignmentStorageMode === 'server') {
-                 if (!db || !currentUserId) return;
-                const docRef = doc(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/assignments`, id);
-                if (target.matches('.task-checkbox')) {
-                    await updateDoc(docRef, { completed: target.checked });
-                }
-                if (target.closest('.delete-assignment-btn')) {
-                    await deleteDoc(docRef);
-                }
-            } else {
-                let localTasks = JSON.parse(localStorage.getItem('localAssignments')) || [];
-                if (target.matches('.task-checkbox')) {
-                    const taskIndex = localTasks.findIndex(t => t.id === id);
-                    if (taskIndex > -1) {
-                        localTasks[taskIndex].completed = target.checked;
+                if (intersects.length > 0) {
+                    let topGroup = intersects[0].object;
+                    while(topGroup.parent && topGroup.name !== "CuteCharacter") {
+                        topGroup = topGroup.parent;
                     }
+
+                    if (intersectedObject !== topGroup) {
+                        if (intersectedObject) {
+                             intersectedObject.characterInstance.isHovered = false;
+                             intersectedObject.scale.set(intersectedObject.originalScale.x, intersectedObject.originalScale.y, intersectedObject.originalScale.z);
+                        }
+                        intersectedObject = topGroup;
+                        intersectedObject.characterInstance = characters.find(c => c.group === intersectedObject);
+                        if (intersectedObject.characterInstance) {
+                            intersectedObject.originalScale = intersectedObject.scale.clone();
+                            intersectedObject.characterInstance.isHovered = true;
+                            intersectedObject.scale.multiplyScalar(1.2);
+                        }
+                    }
+                } else {
+                    if (intersectedObject) {
+                        intersectedObject.characterInstance.isHovered = false;
+                        intersectedObject.scale.set(intersectedObject.originalScale.x, intersectedObject.originalScale.y, intersectedObject.originalScale.z);
+                    }
+                    intersectedObject = null;
                 }
-                if (target.closest('.delete-assignment-btn')) {
-                    localTasks = localTasks.filter(t => t.id !== id);
-                }
-                localStorage.setItem('localAssignments', JSON.stringify(localTasks));
-                initializeLocalAssignments();
-            }
-        });
 
-        // --- User Health Logic (Final Fix) ---
-        const healthStatsContainer = document.getElementById('health-stats-container');
-        const googleFitAuthContainer = document.getElementById('google-fit-auth-container');
-        let fitTokenClient;
-
-        function renderHealthGauge(id, label, value, goal) {
-            const container = document.createElement('div');
-            container.className = 'flex flex-col items-center';
-
-            const percent = Math.min((value / goal) * 100, 100);
-            const angle = (percent / 100) * 180 - 90; // -90 to 90 degrees
-
-            const gaugeHTML = `
-                <div class="health-gauge">
-                    <div class="gauge-arc">
-                        <div class="gauge-arc-segments">
-                            <div class="gauge-arc-mask"></div>
-                        </div>
-                    </div>
-                    <div class="gauge-needle-container" style="--needle-angle: ${angle}deg;">
-                        <div class="gauge-needle"></div>
-                    </div>
-                </div>
-                <div class="gauge-text">
-                    <span class="gauge-value">${value.toLocaleString()}</span>
-                    <span class="gauge-label">${label}</span>
-                </div>
-            `;
-            container.innerHTML = gaugeHTML;
-            return container;
-        }
-
-        function displayDummyHealthData() {
-            healthStatsContainer.innerHTML = ''; // Clear previous
-            healthStatsContainer.appendChild(renderHealthGauge('steps', 'Steps', 0, 10000));
-            healthStatsContainer.appendChild(renderHealthGauge('move', 'Move Mins', 0, 60));
-            healthStatsContainer.appendChild(renderHealthGauge('heart', 'Heart Pts', 0, 25));
-        }
-
-        async function fetchGoogleFitData(accessToken) {
-            const FIT_API_URL = 'https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate';
-            const now = new Date();
-            const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0); 
-            const endTime = new Date(); 
-
-            // FINAL FIX 1: Removed specific dataSourceId to aggregate data from all available sources.
-            const requestBody = {
-                aggregateBy: [{
-                    dataTypeName: "com.google.step_count.delta"
-                }, {
-                    dataTypeName: "com.google.active_minutes"
-                }, {
-                     dataTypeName: "com.google.heart_minutes"
-                }],
-                bucketByTime: { durationMillis: 86400000 }, // 24 hours
-                startTimeMillis: startTime.getTime(),
-                endTimeMillis: endTime.getTime()
+                characters.forEach(char => char.update());
+                renderer.render(scene, camera);
             };
 
-            try {
-                const response = await fetch(FIT_API_URL, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestBody)
-                });
-
-                if (!response.ok) {
-                    if (response.status === 401 || response.status === 403) {
-                        localStorage.removeItem('googleFitToken');
-                    }
-                    throw new Error(`Google Fit API error: ${response.statusText}`);
-                }
-                const data = await response.json();
-                healthStatsContainer.innerHTML = '';
-                
-                const stepBucket = data.bucket[0]?.dataset[0]?.point[0];
-                const steps = stepBucket?.value[0]?.intVal || 0;
-                healthStatsContainer.appendChild(renderHealthGauge('steps', 'Steps', steps, 10000));
-
-                const moveMinutesBucket = data.bucket[0]?.dataset[1]?.point[0];
-                const moveMinutes = moveMinutesBucket?.value[0]?.intVal || 0;
-                healthStatsContainer.appendChild(renderHealthGauge('move', 'Move Mins', moveMinutes, 60));
-                
-                const heartPointsBucket = data.bucket[0]?.dataset[2]?.point[0];
-                const heartPoints = Math.round(heartPointsBucket?.value[0]?.fpVal || 0);
-                healthStatsContainer.appendChild(renderHealthGauge('heart', 'Heart Pts', heartPoints, 25));
-
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-green-400">Synced just now.</p>`;
-
-            } catch (error) {
-                console.error("Failed to fetch Google Fit data:", error);
-                // FINAL FIX 2: This is the fix for the loop. We reset the UI and do NOT re-call initializeHealthWidget().
-                displayDummyHealthData();
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-red-400">Sync failed. Please reconnect.</p>
-                    <button id="google-fit-login-btn" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Reconnect</button>`;
-                document.getElementById('google-fit-login-btn').addEventListener('click', handleFitLogin);
-            }
-        }
-
-        function initializeHealthWidget() {
-            const fitToken = localStorage.getItem('googleFitToken');
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            });
             
-            if (fitToken) {
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-green-400">Syncing Google Fit...</p>`;
-                fetchGoogleFitData(fitToken);
-            } else {
-                displayDummyHealthData();
-                if (GOOGLE_FIT_CLIENT_ID.includes('YOUR_')) {
-                    googleFitAuthContainer.innerHTML = `<p class="text-sm text-gray-400">Add Google Fit Client ID in code to connect.</p>`;
-                } else {
-                    googleFitAuthContainer.innerHTML = `<button id="google-fit-login-btn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Connect Google Fit</button>`;
-                    document.getElementById('google-fit-login-btn').addEventListener('click', handleFitLogin);
-                }
-            }
+            animate();
         }
-
-        function handleFitLogin() {
-            if (typeof google === 'undefined' || !google.accounts) {
-                alert("Google scripts not loaded yet. Please try again."); return;
-            }
-            try {
-                fitTokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: GOOGLE_FIT_CLIENT_ID,
-                    scope: 'https://www.googleapis.com/auth/fitness.activity.read',
-                    callback: handleFitAuthResponse,
-                });
-                fitTokenClient.requestAccessToken({ prompt: 'consent' });
-            } catch (e) {
-                console.error("GSI Init Failed for Google Fit. Check Client ID.", e);
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-red-400">Error: Check Google Fit Client ID.</p>`;
-            }
-        }
-
-        async function handleFitAuthResponse(tokenResponse) {
-            if (tokenResponse.access_token) {
-                localStorage.setItem('googleFitToken', tokenResponse.access_token);
-                initializeHealthWidget(); // Re-initialize after successful login
-            } else {
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-red-400">Failed to connect Google Fit.</p>`;
-            }
-        }
-
-
-        // --- Journaling Logic ---
-        const shadowWorkPromptBtn = document.getElementById('shadow-work-prompt-btn');
-        const journalEntryTextarea = document.getElementById('journal-entry');
-        const saveJournalEntryBtn = document.getElementById('save-journal-entry-btn');
-        const journalHistoryList = document.getElementById('journal-history-list');
-        const journalStorageToggle = document.getElementById('journal-storage-toggle');
-        const journalAnalysisModal = document.getElementById('journal-analysis-modal');
-        const closeJournalAnalysisModal = document.getElementById('close-journal-analysis-modal');
-        const journalAnalysisContent = document.getElementById('journal-analysis-content');
-
-        let journalStorageMode = localStorage.getItem('journalStorageMode') || 'server';
-        let unsubscribeFromJournal = null;
-
-        function initializeJournaling() {
-            if (unsubscribeFromJournal) unsubscribeFromJournal();
-            journalHistoryList.innerHTML = '';
-
-            if (journalStorageMode === 'server') {
-                initializeFirestoreJournal();
-            } else {
-                initializeLocalJournal();
-            }
-            journalStorageToggle.checked = journalStorageMode === 'server';
-        }
-
-        function initializeFirestoreJournal() {
-            const user = auth.currentUser;
-            if (!user) {
-                journalHistoryList.innerHTML = '<p class="text-sm text-center text-gray-400">Connecting to server...</p>';
-                return;
-            }
-            const journalRef = collection(db, `artifacts/${sanitizedAppId}/users/${user.uid}/journal`);
-            const q = query(journalRef);
-            unsubscribeFromJournal = onSnapshot(q, snapshot => {
-                journalHistoryList.innerHTML = '';
-                const entries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                entries.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-                entries.forEach(entry => renderJournalHistoryItem(entry, entry.id));
-            });
-        }
-
-        function initializeLocalJournal() {
-            const entries = JSON.parse(localStorage.getItem('localJournalEntries')) || [];
-            journalHistoryList.innerHTML = '';
-            entries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(entry => renderJournalHistoryItem(entry, entry.id));
-        }
-
-        function renderJournalHistoryItem(data, id) {
-            const item = document.createElement('div');
-            item.className = 'journal-entry-item p-2 rounded hover:bg-white/10 flex justify-between items-center';
-            item.dataset.id = id;
-            item.dataset.entryText = data.entry;
-
-            const date = data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
-            const dateString = date.toLocaleDateString();
-
-            item.innerHTML = `
-                <div>
-                    <span class="font-bold">${dateString}</span>
-                    <p class="text-sm text-gray-400 truncate">${data.entry.substring(0, 30)}...</p>
-                </div>
-                <button class="analyze-journal-btn text-purple-400 hover:text-purple-300" title="Analyze with AI"><i data-lucide="brain-circuit" class="w-4 h-4"></i></button>
-            `;
-            journalHistoryList.appendChild(item);
-            lucide.createIcons();
-
-            item.querySelector('.analyze-journal-btn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                handleJournalAnalysis(data.entry);
-            });
-
-            item.addEventListener('click', () => {
-                journalEntryTextarea.value = data.entry;
-            });
-        }
-
-        async function handleJournalAnalysis(entryText) {
-            journalAnalysisModal.classList.remove('hidden');
-            journalAnalysisContent.innerHTML = '<div class="loader"></div>';
-            const prompt = `Analyze this journal entry. Here is the entry: "${entryText}"`;
-            const systemInstruction = "You are an AI assistant for self-reflection. Your role is to analyze a journal entry from a compassionate, neutral, and insightful perspective. Identify potential underlying themes, emotions, or thought patterns. Frame your response as gentle observations or reflective questions to encourage deeper thought. **Crucially, you must not provide any form of medical, clinical, psychological, or therapeutic advice, diagnosis, or treatment plan.** You are not a healthcare professional. If the entry mentions suicidal ideation, self-harm, or severe distress, your primary response must be to provide a disclaimer advising the user to seek immediate help from a crisis hotline or a qualified mental health professional.";
-
-            const analysis = await getGeminiResponse(prompt, systemInstruction);
-            journalAnalysisContent.textContent = analysis;
-        }
-
-        closeJournalAnalysisModal.addEventListener('click', () => journalAnalysisModal.classList.add('hidden'));
-        journalAnalysisModal.addEventListener('click', (e) => {
-            if (e.target === journalAnalysisModal) journalAnalysisModal.classList.add('hidden');
-        });
-
-
-        journalStorageToggle.addEventListener('change', () => {
-            journalStorageMode = journalStorageToggle.checked ? 'server' : 'local';
-            localStorage.setItem('journalStorageMode', journalStorageMode);
-            initializeJournaling();
-        });
-
-        shadowWorkPromptBtn.addEventListener('click', async () => {
-            const prompt = "Generate a single, deep, and introspective shadow work prompt. It should be a question that encourages self-reflection on difficult or hidden aspects of the self.";
-            shadowWorkPromptBtn.disabled = true;
-            shadowWorkPromptBtn.textContent = 'Generating...';
-            const shadowPrompt = await getGeminiResponse(prompt);
-            journalEntryTextarea.value = shadowPrompt.replace(/['"]+/g, '');
-            shadowWorkPromptBtn.disabled = false;
-            shadowWorkPromptBtn.textContent = '🔮 New Shadow Work Prompt';
-        });
-
-        saveJournalEntryBtn.addEventListener('click', async () => {
-            const entryText = journalEntryTextarea.value.trim();
-            if (!entryText) return;
-            
-            checkForSuicidalIntent(entryText);
-
-            if (journalStorageMode === 'server') {
-                 if (!db || !currentUserId) {
-                     alert("Cannot save to server. Please ensure you are connected.");
-                    return;
-                }
-                try {
-                    await addDoc(collection(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/journal`), {
-                        entry: entryText, createdAt: serverTimestamp(), userId: currentUserId
-                    });
-                } catch (error) {
-                    console.error("Error saving journal entry:", error);
-                    alert("Could not save entry. Check your Firestore rules.");
-                }
-            } else {
-                const localEntries = JSON.parse(localStorage.getItem('localJournalEntries')) || [];
-                const newEntry = {
-                    id: Date.now().toString(), entry: entryText, createdAt: new Date().toISOString()
-                };
-                localEntries.push(newEntry);
-                localStorage.setItem('localJournalEntries', JSON.stringify(localEntries));
-                initializeLocalJournal();
-            }
-
-            journalEntryTextarea.value = '';
-            saveJournalEntryBtn.textContent = 'Saved!';
-            setTimeout(() => { saveJournalEntryBtn.textContent = 'Save Entry'; }, 2000);
-        });
-
-        // --- Humata.ai Logic ---
-        const studyHelpBtn = document.getElementById('study-help-btn');
-        const studyHelpModal = document.getElementById('study-help-modal');
-        const closeStudyHelpModal = document.getElementById('close-study-help-modal');
-        const humataFileUpload = document.getElementById('humata-file-upload');
-        const humataFileName = document.getElementById('humata-file-name');
-
-        const humataUploadView = document.getElementById('humata-upload-view');
-        const humataChatView = document.getElementById('humata-chat-view');
-        const humataChatFileName = document.getElementById('humata-chat-file-name');
-        const humataEndChatBtn = document.getElementById('humata-end-chat-btn');
-        const humataChatMessages = document.getElementById('humata-chat-messages');
-        const humataChatInput = document.getElementById('humata-chat-input');
-        const humataChatSendBtn = document.getElementById('humata-chat-send-btn');
-
-        let uploadedFileContent = null;
-
-        function resetHumataModal() {
-            humataUploadView.classList.remove('hidden');
-            humataChatView.classList.add('hidden');
-            humataChatMessages.innerHTML = '';
-            humataChatInput.value = '';
-            humataFileName.textContent = 'PDF, DOCX (MAX. 5MB)';
-            uploadedFileContent = null;
-        }
-
-        studyHelpBtn.addEventListener('click', () => {
-            studyHelpModal.classList.remove('hidden');
-            lucide.createIcons();
-        });
-        closeStudyHelpModal.addEventListener('click', () => {
-            studyHelpModal.classList.add('hidden');
-            resetHumataModal();
-        });
-        studyHelpModal.addEventListener('click', (e) => {
-            if (e.target === studyHelpModal) {
-                studyHelpModal.classList.add('hidden');
-                resetHumataModal();
-            }
-        });
-
-        humataFileUpload.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    uploadedFileContent = event.target.result;
-                    humataUploadView.classList.add('hidden');
-                    humataChatView.classList.remove('hidden');
-                    humataChatFileName.textContent = file.name;
-                    displayHumataChatMessage(`File "${file.name}" uploaded. What would you like to know?`, 'ai');
-                };
-                reader.readAsText(file);
-            }
-        });
-
-        humataEndChatBtn.addEventListener('click', resetHumataModal);
-
-        function displayHumataChatMessage(text, sender) {
-            const messageContainer = document.createElement('div');
-            messageContainer.className = `chat-message ${sender}`;
-            const bubble = document.createElement('div');
-            bubble.className = `chat-bubble ${sender === 'user' ? 'user' : 'ai'}`;
-            bubble.textContent = text;
-            messageContainer.appendChild(bubble);
-            humataChatMessages.appendChild(messageContainer);
-            humataChatMessages.scrollTop = humataChatMessages.scrollHeight;
-        }
-
-        async function handleHumataSendMessage() {
-            const question = humataChatInput.value.trim();
-            if (!question || !uploadedFileContent) return;
-
-            displayHumataChatMessage(question, 'user');
-            humataChatInput.value = '';
-
-            const typingIndicator = document.createElement('div');
-            typingIndicator.id = 'humata-typing-indicator';
-            typingIndicator.className = 'chat-message ai';
-            typingIndicator.innerHTML = `<div class="chat-bubble ai"><div class="loader" style="width:20px; height:20px; margin:0;"></div></div>`;
-            humataChatMessages.appendChild(typingIndicator);
-            humataChatMessages.scrollTop = humataChatMessages.scrollHeight;
-
-            const prompt = `Based on the following document content:\n\n---\n${uploadedFileContent}\n---\n\nAnswer the following question: ${question}`;
-            const systemInstruction = "You are an AI assistant that answers questions based on the document context provided. Be concise and helpful.";
-
-            const aiResponse = await getGeminiResponse(prompt, systemInstruction);
-            
-            document.getElementById('humata-typing-indicator').remove();
-            displayHumataChatMessage(aiResponse, 'ai');
-        }
-
-        humataChatSendBtn.addEventListener('click', handleHumataSendMessage);
-        humataChatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleHumataSendMessage();
-        });
-
-        // --- Serenity Map Logic (Fixed) ---
-        let map;
-        let mapMarkers = [];
-
-        function initializeSerenityMap() {
-            if (typeof L === 'undefined') {
-                document.getElementById('map').innerHTML = `<div class="flex items-center justify-center h-full text-red-400 p-4 text-center">Error: Could not load Leaflet mapping library.</div>`;
-                return;
-            }
-            try {
-                var container = L.DomUtil.get('map');
-                if(container != null){ container._leaflet_id = null; }
-                map = L.map('map').setView([20.5937, 78.9629], 5);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                }).addTo(map);
-                document.getElementById('location-search-btn').addEventListener('click', () => {
-                    const query = document.getElementById('location-search-input').value;
-                    if (query) searchPlaces(query);
-                });
-            } catch (e) {
-                console.error("Leaflet map initialization failed:", e);
-                document.getElementById('map').innerHTML = `<div class="flex items-center justify-center h-full text-red-400 p-4 text-center">Map initialization failed.</div>`;
-            }
-        }
-
-        function clearMapMarkers() {
-            mapMarkers.forEach(marker => map.removeLayer(marker));
-            mapMarkers = [];
-        }
-
-        async function searchPlaces(query) {
-            clearMapMarkers();
-            const searchButton = document.getElementById('location-search-btn');
-            searchButton.disabled = true;
-            searchButton.innerHTML = '<div class="loader" style="width:20px; height:20px; border-width: 2px; margin: auto;"></div>';
-
-            const geminiPrompt = `Find 5 serene public places (like parks, libraries, quiet cafes) in or very near ${query}, India. Respond with ONLY a valid JSON array of objects. Each object must have "name" (string), "lat" (number), and "lon" (number) properties. The coordinates must be accurate. Example: [{"name": "Lodi Garden", "lat": 28.5931, "lon": 77.2196}]`;
-
-            try {
-                const responseText = await getGeminiResponse(geminiPrompt, "You are a helpful location finding assistant. You only respond with JSON.");
-                
-                const cleanedResponse = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-                const places = JSON.parse(cleanedResponse);
-
-                if (places && places.length > 0 && places[0].lat && places[0].lon) {
-                    map.setView([places[0].lat, places[0].lon], 13);
-                    places.forEach(createMapMarker);
-                } else {
-                    alert('The AI could not find any specific quiet locations. Please try a different search.');
-                }
-            } catch (error) {
-                console.error("Error parsing Gemini response or searching places:", error);
-                alert("An error occurred while searching. The AI might have returned an invalid format. Please try again.");
-            } finally {
-                searchButton.disabled = false;
-                searchButton.textContent = 'Search';
-            }
-        }
-
-        function createMapMarker(place) {
-            if (!place.lat || !place.lon) return;
-            const marker = L.marker([place.lat, place.lon]).addTo(map);
-            marker.bindPopup(`<b>${place.name}</b>`);
-            mapMarkers.push(marker);
-        }
-
-
-        // --- General Initialization ---
-        document.addEventListener('DOMContentLoaded', async () => {
-            initializePage();
-            loadProfilePic();
-            initializeMusicPlayer();
-            loadAiChatHistory();
-            populateEmotePicker();
-            initializeSerenityMap();
-
-            const chatroomBtns = document.querySelectorAll('.chatroom-btn');
-            chatroomBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    aiChatWindow.classList.add('hidden');
-                    joinChatRoom(btn.dataset.roomName);
-                });
-            });
-
-            const sosBtn = document.getElementById('sos-btn');
-            const sosSidebar = document.getElementById('sos-sidebar');
-            const closeSosSidebarBtn = document.getElementById('close-sos-sidebar');
-
-            sosBtn.addEventListener('click', () => {
-                sosSidebar.classList.remove('translate-x-full');
-            });
-            closeSosSidebarBtn.addEventListener('click', () => {
-                sosSidebar.classList.add('translate-x-full');
-            });
-
-            lucide.createIcons();
-
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else if (!auth.currentUser) {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Initial authentication failed:", error);
-                if (!auth.currentUser) {
-                     try {
-                        await signInAnonymously(auth);
-                    } catch (anonError) {
-                        console.error("Fallback anonymous sign-in also failed.", anonError);
-                    }
-                }
-            }
-        });
-
     </script>
 </body>
-
 </html>
-

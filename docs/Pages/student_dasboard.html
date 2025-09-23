@@ -328,7 +328,7 @@
 
         .journal-entry-item {
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color: 0.2s;
         }
 
         .gradient-button-container {
@@ -1845,10 +1845,11 @@
             }
         });
 
-        // --- User Health Logic (Fixed and Improved) ---
+        // --- User Health Logic (Final Fix) ---
         const healthStatsContainer = document.getElementById('health-stats-container');
         const googleFitAuthContainer = document.getElementById('google-fit-auth-container');
         let fitTokenClient;
+        let isFetchingFitData = false; // Flag to prevent re-entrant calls
 
         function renderHealthGauge(id, label, value, goal) {
             const container = document.createElement('div');
@@ -1884,24 +1885,27 @@
             healthStatsContainer.appendChild(renderHealthGauge('heart', 'Heart Pts', 0, 25));
         }
 
-       async function fetchGoogleFitData(accessToken) {
+        async function fetchGoogleFitData(accessToken) {
+            if (isFetchingFitData) {
+                console.warn("Fetch already in progress. Aborting.");
+                return;
+            }
+            isFetchingFitData = true;
+
             const FIT_API_URL = 'https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate';
             const now = new Date();
-            const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0); // Start of today
-            const endTime = new Date(); // Now
+            const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0); 
+            const endTime = new Date(); 
 
             const requestBody = {
                 aggregateBy: [{
-                    dataTypeName: "com.google.step_count.delta",
-                    dataSourceId: "derived:com.google.step_count.delta:com.google.android.gms:estimated_steps"
+                    dataTypeName: "com.google.step_count.delta"
                 }, {
-                    dataTypeName: "com.google.active_minutes",
-                    dataSourceId: "derived:com.google.active_minutes:com.google.android.gms:merge_activity_segments"
+                    dataTypeName: "com.google.active_minutes"
                 }, {
-                     dataTypeName: "com.google.heart_minutes",
-                     dataSourceId: "derived:com.google.heart_minutes:com.google.android.gms:merge_heart_minutes"
+                     dataTypeName: "com.google.heart_minutes"
                 }],
-                bucketByTime: { durationMillis: 86400000 }, // 24 hours
+                bucketByTime: { durationMillis: 86400000 }, 
                 startTimeMillis: startTime.getTime(),
                 endTimeMillis: endTime.getTime()
             };
@@ -1914,7 +1918,9 @@
                 });
 
                 if (!response.ok) {
-                    if (response.status === 401) localStorage.removeItem('googleFitToken');
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem('googleFitToken');
+                    }
                     throw new Error(`Google Fit API error: ${response.statusText}`);
                 }
                 const data = await response.json();
@@ -1922,47 +1928,35 @@
                 
                 const stepBucket = data.bucket[0]?.dataset[0]?.point[0];
                 const steps = stepBucket?.value[0]?.intVal || 0;
-                const stepGauge = renderHealthGauge('steps', 'Steps', steps, 10000);
-                healthStatsContainer.appendChild(stepGauge);
-                if (!stepBucket) {
-                    const noDataMsg = document.createElement('p'); noDataMsg.className = 'text-xs text-gray-400 -mt-2'; noDataMsg.textContent = 'No step data.';
-                    stepGauge.appendChild(noDataMsg);
-                }
+                healthStatsContainer.appendChild(renderHealthGauge('steps', 'Steps', steps, 10000));
 
                 const moveMinutesBucket = data.bucket[0]?.dataset[1]?.point[0];
                 const moveMinutes = moveMinutesBucket?.value[0]?.intVal || 0;
-                const moveMinsGauge = renderHealthGauge('move', 'Move Mins', moveMinutes, 60);
-                healthStatsContainer.appendChild(moveMinsGauge);
-                if (!moveMinutesBucket) {
-                    const noDataMsg = document.createElement('p'); noDataMsg.className = 'text-xs text-gray-400 -mt-2'; noDataMsg.textContent = 'No activity data.';
-                    moveMinsGauge.appendChild(noDataMsg);
-                }
+                healthStatsContainer.appendChild(renderHealthGauge('move', 'Move Mins', moveMinutes, 60));
                 
                 const heartPointsBucket = data.bucket[0]?.dataset[2]?.point[0];
                 const heartPoints = Math.round(heartPointsBucket?.value[0]?.fpVal || 0);
-                const heartPtsGauge = renderHealthGauge('heart', 'Heart Pts', heartPoints, 25);
-                healthStatsContainer.appendChild(heartPtsGauge);
-                if (!heartPointsBucket) {
-                    const noDataMsg = document.createElement('p'); noDataMsg.className = 'text-xs text-gray-400 -mt-2'; noDataMsg.textContent = 'No intensity data.';
-                    heartPtsGauge.appendChild(noDataMsg);
-                }
-
+                healthStatsContainer.appendChild(renderHealthGauge('heart', 'Heart Pts', heartPoints, 25));
 
                 googleFitAuthContainer.innerHTML = `<p class="text-sm text-green-400">Synced just now.</p>`;
-
             } catch (error) {
                 console.error("Failed to fetch Google Fit data:", error);
-                initializeHealthWidget(); 
+                displayDummyHealthData();
+                googleFitAuthContainer.innerHTML = `<p class="text-sm text-red-400">Sync failed. Please reconnect.</p>
+                    <button id="google-fit-login-btn" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Reconnect</button>`;
+                document.getElementById('google-fit-login-btn').addEventListener('click', handleFitLogin);
+            } finally {
+                isFetchingFitData = false; 
             }
         }
 
         function initializeHealthWidget() {
             const fitToken = localStorage.getItem('googleFitToken');
             
-            if (fitToken) {
+            if (fitToken && !isFetchingFitData) {
                 googleFitAuthContainer.innerHTML = `<p class="text-sm text-green-400">Syncing Google Fit...</p>`;
                 fetchGoogleFitData(fitToken);
-            } else {
+            } else if (!fitToken) {
                 displayDummyHealthData();
                 if (GOOGLE_FIT_CLIENT_ID.includes('YOUR_')) {
                     googleFitAuthContainer.innerHTML = `<p class="text-sm text-gray-400">Add Google Fit Client ID in code to connect.</p>`;
@@ -1993,8 +1987,7 @@
         async function handleFitAuthResponse(tokenResponse) {
             if (tokenResponse.access_token) {
                 localStorage.setItem('googleFitToken', tokenResponse.access_token);
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-green-400">Syncing Google Fit...</p>`;
-                await fetchGoogleFitData(tokenResponse.access_token);
+                initializeHealthWidget();
             } else {
                 googleFitAuthContainer.innerHTML = `<p class="text-sm text-red-400">Failed to connect Google Fit.</p>`;
             }
