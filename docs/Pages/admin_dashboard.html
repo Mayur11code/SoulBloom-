@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Flagged Users</title>
+    <title>Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -13,34 +13,71 @@
             background-color: #1a202c;
             color: #e2e8f0;
         }
+        /* Style for the AI-generated report text */
+        .report-text {
+            white-space: pre-wrap; /* Preserves whitespace and wraps text */
+            font-family: sans-serif; /* Use a more readable font for the report body */
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body class="p-8">
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl text-red-400 mb-6 flex items-center gap-3"><i data-lucide="shield-alert" class="w-8 h-8"></i> Flagged Users Monitor</h1>
-        <p class="text-gray-400 mb-6">This dashboard displays users whose journal entries or AI chat messages have been flagged for containing sensitive content. New flagged users will appear here in real-time.</p>
-        
-        <div class="bg-gray-800 rounded-lg border border-gray-700 shadow-lg">
-            <div class="grid grid-cols-4 font-bold text-gray-400 p-4 border-b border-gray-700">
-                <div>Timestamp</div>
-                <div>User ID</div>
-                <div class="col-span-2">Flagged Message</div>
-            </div>
-            <div id="flagged-users-list" class="divide-y divide-gray-700">
-                <!-- Flagged users will be dynamically inserted here -->
-                <div id="loading-state" class="p-8 text-center text-gray-500">
-                     <p>Connecting and authenticating...</p>
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl text-red-400 flex items-center gap-3"><i data-lucide="shield-alert" class="w-8 h-8"></i> Admin Monitor</h1>
+        </div>
+
+        <!-- Flagged Users Section -->
+        <div id="flagged-users-section">
+            <h2 class="text-2xl text-red-400 mb-4">Flagged Users</h2>
+            <p class="text-gray-400 mb-6">This list shows users with flagged content. For each user, you can view their health report if available, or send them a reminder to complete the screening.</p>
+            
+            <div class="bg-gray-800 rounded-lg border border-gray-700 shadow-lg">
+                <!-- START OF EDIT: Added "Actions" column -->
+                <div class="grid grid-cols-5 font-bold text-gray-400 p-4 border-b border-gray-700">
+                    <div>Timestamp</div>
+                    <div>User ID</div>
+                    <div class="col-span-2">Flagged Message</div>
+                    <div>Actions</div>
+                </div>
+                <!-- END OF EDIT -->
+                <div id="flagged-users-list" class="divide-y divide-gray-700">
+                    <div id="loading-state" class="p-8 text-center text-gray-500">
+                         <p>Connecting and authenticating...</p>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- START OF EDIT: Repurposed this section to show a single report -->
+        <div id="report-viewer-section" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg border border-gray-700 shadow-2xl max-w-4xl w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl text-indigo-400">Student Health Report</h2>
+                    <button id="close-report-btn" class="text-gray-400 hover:text-white">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <div id="single-report-content" class="space-y-4">
+                    <!-- Single report will be rendered here by JS -->
+                </div>
+            </div>
+        </div>
+        <!-- END OF EDIT -->
     </div>
+
+    <!-- Custom Notification Toast -->
+    <div id="notification-toast" class="hidden fixed bottom-5 right-5 bg-green-600 text-white p-3 rounded-lg shadow-lg z-50 text-base">
+        <span id="notification-message"></span>
+    </div>
+
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, query, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, query, onSnapshot, getDocs, where, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // IMPORTANT: Use the same Firebase config as your student dashboard
         const firebaseConfig = {
             apiKey: "AIzaSyCOveO-NFW_X5FkINfh5KMgCBBMlOej8M4",
             authDomain: "student-dashboard-4ec02.firebaseapp.com",
@@ -67,6 +104,103 @@
 
         const flaggedUsersList = document.getElementById('flagged-users-list');
         const loadingState = document.getElementById('loading-state');
+        
+        // --- START OF EDIT: New and repurposed DOM Elements ---
+        const reportViewerSection = document.getElementById('report-viewer-section');
+        const closeReportBtn = document.getElementById('close-report-btn');
+        const singleReportContent = document.getElementById('single-report-content');
+        const notificationToast = document.getElementById('notification-toast');
+        const notificationMessage = document.getElementById('notification-message');
+        // --- END OF EDIT ---
+        
+        // --- START OF EDIT: Added Toast Notification function ---
+        function showToast(message, type = 'success') {
+            notificationMessage.textContent = message;
+            notificationToast.classList.remove('hidden', 'bg-green-600', 'bg-blue-600');
+            notificationToast.classList.add(type === 'success' ? 'bg-green-600' : 'bg-blue-600');
+            notificationToast.classList.remove('hidden');
+            setTimeout(() => {
+                notificationToast.classList.add('hidden');
+            }, 3000);
+        }
+        // --- END OF EDIT ---
+
+        // --- START OF EDIT: New functions for viewing reports and sending reminders ---
+        async function checkReportStatus(userId, actionCell) {
+            actionCell.innerHTML = `<div class="h-5 w-5 border-2 border-t-transparent border-gray-400 rounded-full animate-spin"></div>`; // Loading spinner
+            
+            const reportsRef = collection(db, `artifacts/${sanitizedAppId}/public/data/mental_health_reports`);
+            const q = query(reportsRef, where("userId", "==", userId));
+            const querySnapshot = await getDocs(q);
+
+            actionCell.innerHTML = ''; // Clear spinner
+
+            if (!querySnapshot.empty) {
+                // Report exists
+                const reportDoc = querySnapshot.docs[0]; // Get the first report found
+                const viewBtn = document.createElement('button');
+                viewBtn.className = "bg-indigo-600 text-white px-3 py-1 text-sm rounded hover:bg-indigo-700 transition-colors flex items-center gap-1";
+                viewBtn.innerHTML = `<i data-lucide="file-text" class="w-4 h-4"></i> View Report`;
+                viewBtn.onclick = () => displaySingleReport(reportDoc.data());
+                actionCell.appendChild(viewBtn);
+            } else {
+                // No report exists
+                const remindBtn = document.createElement('button');
+                remindBtn.className = "bg-yellow-600 text-white px-3 py-1 text-sm rounded hover:bg-yellow-700 transition-colors flex items-center gap-1";
+                remindBtn.innerHTML = `<i data-lucide="bell-ring" class="w-4 h-4"></i> Send Reminder`;
+                remindBtn.onclick = async () => {
+                    await sendScreeningReminder(userId, remindBtn);
+                };
+                actionCell.appendChild(remindBtn);
+            }
+            lucide.createIcons();
+        }
+
+        function displaySingleReport(reportData) {
+            const timestamp = reportData.createdAt?.toDate ? reportData.createdAt.toDate().toLocaleString() : 'N/A';
+            singleReportContent.innerHTML = `
+                <div class="grid grid-cols-3 gap-4 text-base">
+                    <div><strong>User ID:</strong> <span class="font-mono text-cyan-400">${reportData.userId}</span></div>
+                    <div><strong>Report Date:</strong> ${timestamp}</div>
+                </div>
+                 <div class="grid grid-cols-3 gap-4 text-base">
+                    <div><strong>PHQ-9 Score:</strong> <span class="font-bold text-lg ${reportData.phqScore >= 10 ? 'text-yellow-400' : 'text-green-400'}">${reportData.phqScore}</span> / 27</div>
+                    <div><strong>GAD-7 Score:</strong> <span class="font-bold text-lg ${reportData.gadScore >= 10 ? 'text-yellow-400' : 'text-green-400'}">${reportData.gadScore}</span> / 21</div>
+                </div>
+                <div class="pt-4 border-t border-gray-600">
+                    <h3 class="text-lg text-gray-300 mb-2">AI-Generated Summary:</h3>
+                    <div class="text-gray-200 bg-gray-900 p-3 rounded report-text">${reportData.report}</div>
+                </div>
+            `;
+            reportViewerSection.classList.remove('hidden');
+        }
+
+        async function sendScreeningReminder(userId, button) {
+             button.disabled = true;
+             button.textContent = 'Sending...';
+            try {
+                // NOTE: This relies on the student dashboard listening to this private path.
+                const notificationsRef = collection(db, `artifacts/${sanitizedAppId}/users/${userId}/notifications`);
+                await addDoc(notificationsRef, {
+                    title: "Wellness Check-in Recommended",
+                    message: "A wellness check-in is recommended. Please take a moment to complete the Mental Health Screening.",
+                    type: "screening_reminder",
+                    read: false,
+                    createdAt: serverTimestamp()
+                });
+                showToast(`Reminder sent to user ${userId.substring(0, 6)}...`, 'info');
+                button.className = "bg-gray-500 text-white px-3 py-1 text-sm rounded cursor-not-allowed flex items-center gap-1";
+                button.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Sent`;
+                lucide.createIcons();
+            } catch (error) {
+                console.error("Failed to send reminder:", error);
+                showToast("Error: Could not send reminder.", "error"); // Assuming error type exists for showToast
+                button.disabled = false;
+                button.textContent = 'Send Reminder';
+            }
+        }
+        // --- END OF EDIT ---
+
 
         function listenForFlaggedUsers() {
             if (!db) return;
@@ -92,16 +226,26 @@
                     if (change.type === "added") {
                         const userData = change.doc.data();
                         const newRow = document.createElement('div');
-                        newRow.className = 'grid grid-cols-4 p-4 items-center bg-red-900/20 hover:bg-red-900/40 transition-colors duration-300';
+                        // START OF EDIT: Changed grid layout to 5 columns
+                        newRow.className = 'grid grid-cols-5 p-4 items-center bg-red-900/20 hover:bg-red-900/40 transition-colors duration-300';
                         
                         const timestamp = userData.timestamp?.toDate ? userData.timestamp.toDate().toLocaleString() : 'N/A';
-
+                        
+                        const actionCell = document.createElement('div');
+                        actionCell.className = "flex justify-start"; // Action cell
+                        
                         newRow.innerHTML = `
                             <div class="text-sm text-gray-400">${timestamp}</div>
                             <div class="text-sm font-mono text-yellow-400" title="${userData.userId}">${userData.userId.substring(0, 12)}...</div>
                             <div class="col-span-2 text-sm text-gray-200 bg-gray-900 p-2 rounded">${userData.message}</div>
                         `;
+                        
+                        newRow.appendChild(actionCell);
                         flaggedUsersList.prepend(newRow);
+
+                        // Asynchronously check for the user's report status and add the correct button
+                        checkReportStatus(userData.userId, actionCell);
+                        // END OF EDIT
                     }
                 });
 
@@ -117,13 +261,16 @@
                 return;
             };
 
+            // START OF EDIT: Added event listener for the close button
+            closeReportBtn.addEventListener('click', () => {
+                reportViewerSection.classList.add('hidden');
+            });
+            // END OF EDIT
+
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    // User is signed in. It's safe to listen.
                     listenForFlaggedUsers();
                 } else {
-                    // No user. Attempt to sign in.
-                    // This will trigger this same listener again on success.
                     try {
                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                             await signInWithCustomToken(auth, __initial_auth_token);
