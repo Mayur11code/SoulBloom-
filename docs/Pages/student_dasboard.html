@@ -822,6 +822,64 @@
         </div>
     </div>
 
+    <div class="mt-8 pt-6 border-t border-white/20">
+        <div class="flex justify-between items-center">
+            <h3 class="text-lg font-semibold flex items-center gap-2">
+                <i data-lucide="package-check" class="w-5 h-5"></i>
+                Offline Coping Kit
+            </h3>
+            <div class="flex items-center rounded-full coping-kit-button text-white">
+                <button id="download-all-kit-btn" title="Download All Resources as .zip"
+                    class="flex items-center gap-2 px-3 py-1 text-sm">
+                    <i data-lucide="download-cloud" class="w-4 h-4"></i>
+                    <span id="download-all-text">All</span>
+                </button>
+                <div class="border-l border-white/30 h-4"></div>
+                <button id="toggle-kit-dropdown-btn" title="Show Individual Files" class="px-2 py-1">
+                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="coping-kit-dropdown-menu" class="coping-kit-dropdown">
+            <div class="space-y-2 text-base p-3">
+                <button data-kit-item="contacts"
+                    class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <i data-lucide="contact" class="w-5 h-5 text-cyan-400"></i>
+                    <span>Emergency Contacts (.txt)</span>
+                </button>
+                <button data-kit-item="exercises"
+                    class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <i data-lucide="feather" class="w-5 h-5 text-green-400"></i>
+                    <span>Calming Exercises (.txt)</span>
+                </button>
+                <button data-kit-item="affirmations"
+                    class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-yellow-400"></i>
+                    <span>Positive Affirmations (.txt)</span>
+                </button>
+                <button data-kit-item="prompts"
+                    class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <i data-lucide="book-open-text" class="w-5 h-5 text-orange-400"></i>
+                    <span>5-Min Journal Prompts (.txt)</span>
+                </button>
+                <button data-kit-item="hope-card"
+                    class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <i data-lucide="image" class="w-5 h-5 text-purple-400"></i>
+                    <span>Digital Hope Card (.png)</span>
+                </button>
+                <button data-kit-item="mandala"
+                    class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <i data-lucide="circle-dot" class="w-5 h-5 text-fuchsia-400"></i>
+                    <span>Mindfulness Mandala (.png)</span>
+                </button>
+            </div>
+        </div>
+
+        <p class="text-xs text-gray-400 mt-4">Download a complete kit or select individual resources to use them
+            anytime, even without an internet connection.</p>
+    </div>
+
     <!-- Journal Analysis Modal -->
     <div id="journal-analysis-modal"
         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
@@ -2852,7 +2910,217 @@
             renderDefaultYtPlayer();
         }
 
+        function initializeOfflineCopingKit() {
+            const downloadAllBtn = document.getElementById('download-all-kit-btn');
+            const downloadAllText = document.getElementById('download-all-text');
+            const toggleDropdownBtn = document.getElementById('toggle-kit-dropdown-btn');
+            const dropdownMenu = document.getElementById('coping-kit-dropdown-menu');
+            const kitItemBtns = document.querySelectorAll('.kit-item-btn');
 
+            // --- Content Generation Functions ---
+
+            function getContactsContent() {
+                return `
+EMERGENCY CONTACTS & HELPLINES (INDIA)
+=======================================
+Mental Health Support:
+- Tele MANAS: 14416 or 1800-891-4416
+- Vandrevala Foundation: 1800-233-3330 or 9999666555 (WhatsApp)
+- The Samaritans Mumbai: +91 84229 84528 / +91 84229 84529 / +91 84229 84530
+- Aasra: +91-9820466726
+Emergency Services:
+- National Emergency Number: 112
+- Police: 100
+- Fire: 101
+- Ambulance: 102 / 108
+Women Helpline:
+- National Commission for Women: 181 or 7827170170 (WhatsApp)
+Child Helpline:
+- Childline India: 1098
+Add your personal emergency contacts below:
+- Friend/Family 1: [Enter Name and Number]
+- Friend/Family 2: [Enter Name and Number]
+- Doctor/Therapist: [Enter Name and Number]
+                `.trim();
+            }
+
+            function getExercisesContent() {
+                return `
+SIMPLE CALMING EXERCISES
+========================
+** 1. Box Breathing **
+A simple technique to calm your nervous system.
+1. Breathe In: Slowly inhale through your nose for 4 seconds.
+2. Hold: Hold your breath for 4 seconds.
+3. Breathe Out: Slowly exhale through your mouth for 4 seconds.
+4. Hold: Hold your breath for 4 seconds.
+5. Repeat: Continue for a few minutes until you feel centered.
+
+** 2. 4-7-8 Breathing **
+A technique to promote relaxation and help with sleep.
+1. Exhale completely through your mouth, making a whoosh sound.
+2. Close your mouth and inhale quietly through your nose for a count of 4.
+3. Hold your breath for a count of 7.
+4. Exhale completely through your mouth, making a whoosh sound to a count of 8.
+5. This is one breath. Inhale again and repeat the cycle three more times.
+
+** 3. The 5-4-3-2-1 Grounding Technique **
+Use this to ground yourself when you feel overwhelmed. Acknowledge:
+- 5 things you can SEE around you.
+- 4 things you can TOUCH.
+- 3 things you can HEAR.
+- 2 things you can SMELL.
+- 1 thing you can TASTE.
+                `.trim();
+            }
+
+            function getAffirmationsContent() {
+                return `
+POSITIVE AFFIRMATIONS
+=====================
+Repeat these to yourself when you need a boost.
+
+- I am capable of handling challenges.
+- I am worthy of peace and happiness.
+- I choose to be kind to myself.
+- I am resilient and can overcome this.
+- My feelings are valid, and I allow myself to feel them.
+- I am in control of my own life.
+- I am proud of the person I am becoming.
+- It is enough to do my best.
+                `.trim();
+            }
+
+            function getJournalPromptsContent() {
+                return `
+5-MINUTE JOURNAL PROMPTS
+========================
+Use these when you don't know what to write.
+
+1. What is one small thing that brought you joy today?
+2. Write down something you are looking forward to this week.
+3. What is a challenge you recently overcame, no matter how small?
+4. Describe a place where you feel completely at peace.
+5. What is one thing you can do today to take care of yourself?
+6. Write a letter of gratitude to a part of your body.
+7. What is a quality you admire in others that you also see in yourself?
+                `.trim();
+            }
+
+            async function generateHopeCardBlob() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 800; canvas.height = 400;
+                const ctx = canvas.getContext('2d');
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, '#434343'); gradient.addColorStop(1, '#000000');
+                ctx.fillStyle = gradient; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                const quotes = ["This too shall pass.", "You are stronger than you think.", "Just one step at a time.", "Breathe. You've got this.", "It's okay not to be okay.", "You are not alone."];
+                const quote = quotes[Math.floor(Math.random() * quotes.length)];
+                ctx.fillStyle = 'white'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = 'bold 48px sans-serif';
+                ctx.fillText(quote, canvas.width / 2, canvas.height / 2);
+                ctx.font = '16px sans-serif'; ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.fillText('Your daily reminder from the Green Dashboard', canvas.width / 2, canvas.height - 30);
+                return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            }
+
+            async function generateMandalaBlob() {
+                const canvas = document.createElement('canvas');
+                const size = 600;
+                canvas.width = size; canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const centerX = size / 2;
+                const centerY = size / 2;
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, size, size);
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 1.5;
+
+                const segments = 12;
+                for (let i = 0; i < segments; i++) {
+                    ctx.save();
+                    ctx.translate(centerX, centerY);
+                    ctx.rotate((Math.PI * 2 / segments) * i);
+                    // Draw a pattern
+                    ctx.beginPath();
+                    ctx.arc(0, 100, 50, 0, Math.PI * 1.5);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(0, -250);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(0, -200, 30, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+                return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            }
+
+
+            // --- Download Logic ---
+
+            function downloadFile(filename, content) {
+                const blob = (content instanceof Blob) ? content : new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            // --- Event Listeners ---
+
+            toggleDropdownBtn.addEventListener('click', () => {
+                dropdownMenu.classList.toggle('show');
+                toggleDropdownBtn.classList.toggle('open');
+            });
+
+            kitItemBtns.forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const item = btn.dataset.kitItem;
+                    switch (item) {
+                        case 'contacts': downloadFile('emergency_contacts.txt', getContactsContent()); break;
+                        case 'exercises': downloadFile('calming_exercises.txt', getExercisesContent()); break;
+                        case 'affirmations': downloadFile('positive_affirmations.txt', getAffirmationsContent()); break;
+                        case 'prompts': downloadFile('5_minute_journal_prompts.txt', getJournalPromptsContent()); break;
+                        case 'hope-card': downloadFile('hope_card.png', await generateHopeCardBlob()); break;
+                        case 'mandala': downloadFile('mindfulness_mandala.png', await generateMandalaBlob()); break;
+                    }
+                });
+            });
+
+            downloadAllBtn.addEventListener('click', async () => {
+                downloadAllBtn.disabled = true;
+                downloadAllText.textContent = 'Zipping...';
+
+                try {
+                    const zip = new JSZip();
+                    zip.file('emergency_contacts.txt', getContactsContent());
+                    zip.file('calming_exercises.txt', getExercisesContent());
+                    zip.file('positive_affirmations.txt', getAffirmationsContent());
+                    zip.file('5_minute_journal_prompts.txt', getJournalPromptsContent());
+
+                    const hopeCardBlob = await generateHopeCardBlob();
+                    zip.file('hope_card.png', hopeCardBlob);
+
+                    const mandalaBlob = await generateMandalaBlob();
+                    zip.file('mindfulness_mandala.png', mandalaBlob);
+
+                    const zipContent = await zip.generateAsync({ type: "blob" });
+                    downloadFile('Coping_Kit.zip', zipContent);
+
+                } catch (error) {
+                    console.error("Error creating zip file:", error);
+                    showNotification("Could not create zip file.", "error");
+                } finally {
+                    downloadAllBtn.disabled = false;
+                    downloadAllText.textContent = 'All';
+                }
+            });
+        }
 
 
 
@@ -2873,6 +3141,7 @@
             setupJournalEventListeners();
             initializeStudyHelp();
             initializeMeditationWidget();
+            initializeOfflineCopingKit();
 
             const sosBtn = document.getElementById('sos-btn');
             const sosSidebar = document.getElementById('sos-sidebar');

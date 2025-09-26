@@ -11,4 +11,185 @@
         updated music player Logic
 
 
+        study help logic
+        const studyHelpBtn = document.getElementById('study-help-btn');
+        const studyHelpModal = document.getElementById('study-help-modal');
+        const closeStudyHelpModal = document.getElementById('close-study-help-modal');
+        const studyFileUpload = document.getElementById('study-file-upload');
+        const studyFileName = document.getElementById('study-file-name');
+        const studyUploadView = document.getElementById('study-upload-view');
+        const studyChatView = document.getElementById('study-chat-view');
+        const studyChatFileName = document.getElementById('study-chat-file-name');
+        const studyEndChatBtn = document.getElementById('study-end-chat-btn');
+        const studyChatMessages = document.getElementById('study-chat-messages');
+        const studyChatInput = document.getElementById('study-chat-input');
+        const studyChatSendBtn = document.getElementById('study-chat-send-btn');
+
+        let documentChunks = [];
+
+        function chunkText(text, chunkSize = 2000, overlap = 200) {
+            const chunks = [];
+            let i = 0;
+            while (i < text.length) {
+                chunks.push(text.slice(i, i + chunkSize));
+                i += chunkSize - overlap;
+            }
+            return chunks;
+        }
         
+        function findRelevantChunks(query, chunks, topN = 3) {
+            const queryWords = new Set(query.toLowerCase().split(/\s+/).filter(w => w.length > 2));
+            const scoredChunks = chunks.map((chunk) => {
+                let score = 0;
+                const chunkWords = new Set(chunk.toLowerCase().split(/\s+/));
+                for (const word of queryWords) {
+                    if (chunkWords.has(word)) score++;
+                }
+                return { score, chunk };
+            });
+
+            scoredChunks.sort((a, b) => b.score - a.score);
+            let context = "";
+            for(let i=0; i < Math.min(topN, scoredChunks.length); i++){
+                if(scoredChunks[i].score > 0){
+                   context += scoredChunks[i].chunk + "\n\n";
+                }
+            }
+            return context.trim();
+        }
+
+        async function getTextFromPdf(arrayBuffer) {
+            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+            const pdf = await loadingTask.promise;
+            let fullText = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                fullText += textContent.items.map(item => item.str).join(' ') + '\n\n';
+            }
+            return fullText;
+        }
+        
+        function initializeStudyHelp() {
+            function resetStudyModal() {
+                studyUploadView.classList.remove('hidden');
+                studyChatView.classList.add('hidden');
+                studyChatMessages.innerHTML = '';
+                studyChatInput.value = '';
+                studyFileName.textContent = 'PDF, TXT, MD, etc. (MAX. 5MB)';
+                studyFileUpload.value = '';
+                documentChunks = [];
+            }
+
+            studyHelpBtn.addEventListener('click', () => {
+                studyHelpModal.classList.remove('hidden');
+                lucide.createIcons();
+            });
+            closeStudyHelpModal.addEventListener('click', () => {
+                studyHelpModal.classList.add('hidden');
+                resetStudyModal();
+            });
+            studyHelpModal.addEventListener('click', (e) => {
+                if (e.target === studyHelpModal) {
+                    studyHelpModal.classList.add('hidden');
+                    resetStudyModal();
+                }
+            });
+
+            function processFileContent(content, fileName) {
+                documentChunks = chunkText(content);
+                const processingMessage = studyChatMessages.querySelector('.processing-indicator');
+                if (processingMessage) processingMessage.remove();
+
+                studyUploadView.classList.add('hidden');
+                studyChatView.classList.remove('hidden');
+                studyChatFileName.textContent = fileName;
+                displayStudyChatMessage(`File "${fileName}" is ready. Ask me anything about its content.`, 'ai');
+            }
+
+            studyFileUpload.addEventListener('change', (e) => {
+                if (e.target.files.length === 0) return;
+                const file = e.target.files[0];
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification("File is too large (max 5MB).", "error");
+                    return resetStudyModal();
+                }
+
+                const reader = new FileReader();
+                if (file.type === 'application/pdf') {
+                    displayStudyChatMessage('Processing PDF... this may take a moment.', 'ai', true);
+                    reader.onload = async (event) => {
+                        try {
+                            processFileContent(await getTextFromPdf(event.target.result), file.name);
+                        } catch (err) {
+                            console.error("Error parsing PDF:", err);
+                            showNotification("Could not parse the PDF file.", "error");
+                            resetStudyModal();
+                        }
+                    };
+                    reader.readAsArrayBuffer(file);
+                } else if (file.type.startsWith('text/') || file.name.endsWith('.md')) {
+                    reader.onload = (event) => processFileContent(event.target.result, file.name);
+                    reader.readAsText(file);
+                } else {
+                     showNotification("Unsupported file type. Please upload a PDF or plain text file.", "error");
+                     resetStudyModal();
+                }
+            });
+
+            studyEndChatBtn.addEventListener('click', resetStudyModal);
+
+            function displayStudyChatMessage(text, sender, isProcessing = false) {
+                const messageContainer = document.createElement('div');
+                messageContainer.className = `chat-message ${sender}`;
+                if (isProcessing) messageContainer.classList.add('processing-indicator');
+                
+                const bubble = document.createElement('div');
+                bubble.className = `chat-bubble ${sender === 'user' ? 'user' : 'ai'}`;
+                bubble.innerHTML = text; // Use innerHTML for loader
+                messageContainer.appendChild(bubble);
+                studyChatMessages.appendChild(messageContainer);
+                studyChatMessages.scrollTop = studyChatMessages.scrollHeight;
+            }
+
+            async function handleStudySendMessage() {
+                const userRequest = studyChatInput.value.trim();
+                if (!userRequest || documentChunks.length === 0) return;
+
+                displayStudyChatMessage(userRequest, 'user');
+                studyChatInput.value = '';
+                displayStudyChatMessage('<div class="loader" style="width:20px; height:20px; margin:0;"></div>', 'ai', true);
+
+                let context = '';
+                const lowerUserRequest = userRequest.toLowerCase();
+                const summaryKeywords = ['what is this', 'summarize', 'summary', 'overview', 'tldr', 'give me the gist', 'what is this document'];
+
+                const isSummaryRequest = summaryKeywords.some(keyword => lowerUserRequest.includes(keyword));
+
+                if (isSummaryRequest) {
+                    // For summary requests, use the beginning of the document as context.
+                    context = documentChunks.slice(0, 3).join('\n\n'); 
+                } else {
+                    // For specific questions, find the most relevant chunks.
+                    context = findRelevantChunks(userRequest, documentChunks);
+                }
+                
+                const systemInstruction = "You are a helpful study assistant. Your primary goal is to answer questions and follow instructions based on the provided text from a document. Analyze the user's entire prompt to understand their request (e.g., 'summarize', 'explain', 'list key points'). Use the provided CONTEXT to formulate your answer. If the user asks a general question like 'What is this document?', use the provided context (which will be from the beginning of the document) to give a summary. If the context doesn't contain the answer for a specific question, clearly state that the information was not found in the provided text.";
+
+                const prompt = context 
+                    ? `Here is the relevant context from the document:\n\n---\nCONTEXT:\n${context}\n---\n\nNow, please follow the user's request based on this context.\n\nUSER'S REQUEST: "${userRequest}"`
+                    : `The user asked: "${userRequest}". However, no relevant section was found in the document to answer this. Inform the user that you couldn't find specifics in the document for their request.`;
+                
+                const aiResponse = await getGeminiResponse(prompt, systemInstruction);
+                
+                const typingIndicator = studyChatMessages.querySelector('.processing-indicator');
+                if (typingIndicator) typingIndicator.remove();
+                
+                displayStudyChatMessage(aiResponse, 'ai');
+            }
+
+            studyChatSendBtn.addEventListener('click', handleStudySendMessage);
+            studyChatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleStudySendMessage();
+            });
+        }
