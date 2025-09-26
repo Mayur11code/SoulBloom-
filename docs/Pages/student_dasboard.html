@@ -340,6 +340,36 @@
         }
     </style>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        .coping-kit-button {
+            background-image: linear-gradient(to right, #8e2de2, #4a00e0);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px 0 rgba(142, 45, 226, 0.55);
+        }
+        .coping-kit-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px 0 rgba(142, 45, 226, 0.7);
+        }
+        .coping-kit-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 0.5rem;
+        }
+        .coping-kit-dropdown.show {
+            max-height: 500px; /* Adjust as needed */
+            margin-top: 0.5rem;
+        }
+        #toggle-kit-dropdown-btn .lucide-chevron-down {
+            transition: transform 0.3s ease-in-out;
+        }
+        #toggle-kit-dropdown-btn.open .lucide-chevron-down {
+            transform: rotate(180deg);
+        }
+    </style>
+
 </head>
 
 <body class="p-4 md:p-8">
@@ -819,65 +849,65 @@
                     <span>Breathing Exercise</span>
                 </button>
             </div>
-        </div>
-    </div>
-
-    <div class="mt-8 pt-6 border-t border-white/20">
-        <div class="flex justify-between items-center">
-            <h3 class="text-lg font-semibold flex items-center gap-2">
-                <i data-lucide="package-check" class="w-5 h-5"></i>
-                Offline Coping Kit
-            </h3>
-            <div class="flex items-center rounded-full coping-kit-button text-white">
-                <button id="download-all-kit-btn" title="Download All Resources as .zip"
-                    class="flex items-center gap-2 px-3 py-1 text-sm">
-                    <i data-lucide="download-cloud" class="w-4 h-4"></i>
-                    <span id="download-all-text">All</span>
-                </button>
-                <div class="border-l border-white/30 h-4"></div>
-                <button id="toggle-kit-dropdown-btn" title="Show Individual Files" class="px-2 py-1">
-                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                </button>
+            <div class="mt-8 pt-6 border-t border-white/20">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold flex items-center gap-2">
+                        <i data-lucide="package-check" class="w-5 h-5"></i>
+                        Offline Coping Kit
+                    </h3>
+                    <div class="flex items-center rounded-full coping-kit-button text-white">
+                        <button id="download-all-kit-btn" title="Download All Resources as .zip"
+                            class="flex items-center gap-2 px-3 py-1 text-sm">
+                            <i data-lucide="download-cloud" class="w-4 h-4"></i>
+                            <span id="download-all-text">All</span>
+                        </button>
+                        <div class="border-l border-white/30 h-4"></div>
+                        <button id="toggle-kit-dropdown-btn" title="Show Individual Files" class="px-2 py-1">
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+        
+                <div id="coping-kit-dropdown-menu" class="coping-kit-dropdown">
+                    <div class="space-y-2 text-base p-3">
+                        <button data-kit-item="contacts"
+                            class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="contact" class="w-5 h-5 text-cyan-400"></i>
+                            <span>Emergency Contacts (.txt)</span>
+                        </button>
+                        <button data-kit-item="exercises"
+                            class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="feather" class="w-5 h-5 text-green-400"></i>
+                            <span>Calming Exercises (.txt)</span>
+                        </button>
+                        <button data-kit-item="affirmations"
+                            class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="sparkles" class="w-5 h-5 text-yellow-400"></i>
+                            <span>Positive Affirmations (.txt)</span>
+                        </button>
+                        <button data-kit-item="prompts"
+                            class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="book-open-text" class="w-5 h-5 text-orange-400"></i>
+                            <span>5-Min Journal Prompts (.txt)</span>
+                        </button>
+                        <button data-kit-item="hope-card"
+                            class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="image" class="w-5 h-5 text-purple-400"></i>
+                            <span>Digital Hope Card (.png)</span>
+                        </button>
+                        <button data-kit-item="mandala"
+                            class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="circle-dot" class="w-5 h-5 text-fuchsia-400"></i>
+                            <span>Mindfulness Mandala (.png)</span>
+                        </button>
+                    </div>
+                </div>
+        
+                <p class="text-xs text-gray-400 mt-4">Download a complete kit or select individual resources to use them
+                    anytime, even without an internet connection.</p>
             </div>
         </div>
-
-        <div id="coping-kit-dropdown-menu" class="coping-kit-dropdown">
-            <div class="space-y-2 text-base p-3">
-                <button data-kit-item="contacts"
-                    class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="contact" class="w-5 h-5 text-cyan-400"></i>
-                    <span>Emergency Contacts (.txt)</span>
-                </button>
-                <button data-kit-item="exercises"
-                    class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="feather" class="w-5 h-5 text-green-400"></i>
-                    <span>Calming Exercises (.txt)</span>
-                </button>
-                <button data-kit-item="affirmations"
-                    class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="sparkles" class="w-5 h-5 text-yellow-400"></i>
-                    <span>Positive Affirmations (.txt)</span>
-                </button>
-                <button data-kit-item="prompts"
-                    class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="book-open-text" class="w-5 h-5 text-orange-400"></i>
-                    <span>5-Min Journal Prompts (.txt)</span>
-                </button>
-                <button data-kit-item="hope-card"
-                    class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="image" class="w-5 h-5 text-purple-400"></i>
-                    <span>Digital Hope Card (.png)</span>
-                </button>
-                <button data-kit-item="mandala"
-                    class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="circle-dot" class="w-5 h-5 text-fuchsia-400"></i>
-                    <span>Mindfulness Mandala (.png)</span>
-                </button>
-            </div>
-        </div>
-
-        <p class="text-xs text-gray-400 mt-4">Download a complete kit or select individual resources to use them
-            anytime, even without an internet connection.</p>
+        
     </div>
 
     <!-- Journal Analysis Modal -->
