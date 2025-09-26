@@ -1137,7 +1137,7 @@
             }
         }
 
-        // --- Guided Meditation Logic ---
+             // --- Guided Meditation Logic ---
         function initializeMeditationWidget() {
             const topicInput = document.getElementById('meditation-topic-input');
             const languageSelect = document.getElementById('meditation-language-select');
@@ -1217,7 +1217,13 @@
                 playBtn.disabled = true;
                 playBtn.innerHTML = '<div class="loader" style="width:20px; height:20px; border-width: 2px; margin: auto;"></div>';
 
-                const ttsPrompt = `Say in a calm, slow, and soothing voice in ${lastUsedLanguage}: ${script}`;
+                // --- START OF CHANGE ---
+                // FIX: Removed the explicit language from the TTS prompt.
+                // The model will now auto-detect the language from the script itself,
+                // which allows custom languages to be synthesized correctly.
+                const ttsPrompt = `Say in a calm, slow, and soothing voice: ${script}`;
+                // --- END OF CHANGE ---
+                
                 try {
                     const audioData = await fetchTTS(ttsPrompt);
                     if (audioData) {
@@ -1225,7 +1231,7 @@
                         const pcm16 = new Int16Array(pcmData);
                         const wavBlob = pcmToWav(pcm16, 24000);
                         const audioUrl = URL.createObjectURL(wavBlob);
-
+                        
                         audioPlayer.src = audioUrl;
                         audioPlayer.controls = true;
                         audioPlayer.classList.remove('hidden');
@@ -1234,14 +1240,14 @@
                         showNotification("Could not generate audio. Please try again.", "error");
                     }
                 } catch (error) {
-                    showNotification("An error occurred while generating audio.", "error");
-                    console.error("TTS Error:", error);
+                     showNotification("An error occurred while generating audio.", "error");
+                     console.error("TTS Error:", error);
                 } finally {
                     playBtn.disabled = false;
                     playBtn.innerHTML = 'Play Meditation';
                 }
             }
-
+            
             async function fetchTTS(prompt) {
                 const TTS_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${GEMINI_API_KEY}`;
                 const payload = {
@@ -1261,7 +1267,7 @@
                     return null;
                 }
             }
-
+            
             function base64ToArrayBuffer(base64) {
                 const binaryString = window.atob(base64);
                 const len = binaryString.length;
@@ -1279,7 +1285,7 @@
                 const blockAlign = numChannels * (bitsPerSample / 8);
                 const dataSize = pcmData.length * (bitsPerSample / 8);
                 const fileSize = 36 + dataSize;
-
+                
                 const buffer = new ArrayBuffer(44 + dataSize);
                 const view = new DataView(buffer);
 
@@ -1287,8 +1293,8 @@
                 view.setUint32(4, fileSize, true);
                 writeString(view, 8, 'WAVE');
                 writeString(view, 12, 'fmt ');
-                view.setUint32(16, 16, true);
-                view.setUint16(20, 1, true);
+                view.setUint32(16, 16, true); 
+                view.setUint16(20, 1, true); 
                 view.setUint16(22, numChannels, true);
                 view.setUint32(24, sampleRate, true);
                 view.setUint32(28, byteRate, true);
@@ -1344,7 +1350,7 @@
                 generateScript();
                 document.getElementById('sos-sidebar').classList.add('translate-x-full');
             });
-
+            
             generateBtn.addEventListener('click', generateScript);
             playBtn.addEventListener('click', playAudio);
 

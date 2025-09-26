@@ -10,13 +10,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-
+    
     <!-- Leaflet.js for Maps -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
     <!-- 
       The Google Sign-In script is loaded asynchronously. 
       The 'onGoogleScriptsLoad' function will be our single entry point
@@ -33,320 +31,13 @@
         }
     </script>
     <script src="https://accounts.google.com/gsi/client" onload="onGoogleScriptsLoad()" async defer></script>
-     <style>
-        body {
-            font-family: 'VT323', monospace;
-            background-color: #0F2923;
-            /* Deep Green */
-            color: #E0E0E0;
-            position: relative;
-            overflow-x: hidden;
-            /* Prevent horizontal scrollbar */
-        }
-
-        .widget {
-            background-color: rgba(57, 65, 74, 0.5);
-            /* Semi-transparent background */
-            backdrop-filter: blur(10px);
-            /* Frosted glass effect */
-            -webkit-backdrop-filter: blur(10px);
-            /* Safari support */
-            border-radius: 8px;
-            padding: 1.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            /* Subtle border */
-        }
-
-        .pixelated-bg {
-            /* The background image will be set by JavaScript */
-            background-color: #5B6F55;
-            /* Added a fallback color */
-            background-size: cover;
-            background-position: center;
-            height: 200px;
-            image-rendering: pixelated;
-        }
-
-        .music-progress::-webkit-progress-bar {
-            background-color: #4A5568;
-            border-radius: 5px;
-        }
-
-        .music-progress::-webkit-progress-value {
-            background-color: #68D391;
-            border-radius: 5px;
-        }
-
-        .music-progress::-moz-progress-bar {
-            background-color: #68D391;
-            border-radius: 5px;
-        }
-
-        .task-checkbox {
-            appearance: none;
-            width: 1.25rem;
-            height: 1.25rem;
-            border: 2px solid #A0AEC0;
-            border-radius: 4px;
-            display: inline-block;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .task-checkbox:checked {
-            background-color: #68D391;
-            border-color: #68D391;
-        }
-
-        .task-checkbox:checked::after {
-            content: '✔';
-            font-size: 1rem;
-            color: #2E3338;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .task-item.completed span {
-            text-decoration: line-through;
-            color: #A0AEC0;
-        }
-
-        .course-tag {
-            background-color: #ECC94B;
-            color: #2E3338;
-            font-size: 0.8rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-        }
-
-        /* Floating elements styles */
-        .floating-elements {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .floaty {
-            position: absolute;
-            background: rgba(104, 211, 145, 0.15);
-            border-radius: 50%;
-            animation: floatUp 25s infinite ease-in-out;
-            opacity: 0;
-            bottom: -100px;
-            /* Start from below the screen */
-        }
-
-        @keyframes floatUp {
-            0% {
-                transform: translateY(0) scale(1);
-                opacity: 0;
-            }
-
-            10%,
-            90% {
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(-120vh) scale(1.5);
-                opacity: 0;
-            }
-        }
-
-        .gemini-response {
-            white-space: pre-wrap;
-            background: #2E3338;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-            min-height: 50px;
-        }
-
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #68D391;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 1rem auto;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Chat styles */
-        .chat-message {
-            display: flex;
-            margin-bottom: 1rem;
-            align-items: flex-end;
-            gap: 0.5rem;
-        }
-
-        .chat-message.user {
-            justify-content: flex-end;
-        }
-
-        .chat-bubble {
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            max-width: 80%;
-            line-height: 1.5;
-        }
-
-        .chat-bubble.other-user,
-        .chat-bubble.ai {
-            background-color: #2E3338;
-        }
-
-        .chat-bubble.user {
-            background-color: #48BB78;
-            color: #1A202C;
-        }
-
-        .chat-sender-id {
-            font-size: 0.75rem;
-            color: #A0AEC0;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Health Gauge Styles */
-        .health-gauge {
-            position: relative;
-            width: 120px;
-            height: 60px;
-            /* Half of width */
-            margin: 0 auto;
-        }
-
-        .gauge-arc {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .gauge-arc-segments {
-            width: 120px;
-            height: 60px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .gauge-arc-segments::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 200%;
-            /* Double height for full circle */
-            border-radius: 50%;
-            background: conic-gradient(from -90deg,
-                    #F87171 0deg 36deg,
-                    /* Red */
-                    #FBBF24 36deg 72deg,
-                    /* Amber */
-                    #FCD34D 72deg 108deg,
-                    /* Yellow */
-                    #A3E635 108deg 144deg,
-                    /* Lime */
-                    #4ADE80 144deg 180deg
-                    /* Green */
-                );
-        }
-
-        .gauge-arc-mask {
-            position: absolute;
-            top: 10px;
-            /* Arc thickness */
-            left: 10px;
-            /* Arc thickness */
-            width: 100px;
-            /* Width - 2 * thickness */
-            height: 100px;
-            background: #39414A;
-            /* Same as widget background */
-            border-radius: 50%;
-        }
-
-        .gauge-needle-container {
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            width: 2px;
-            height: 50px;
-            transform-origin: bottom center;
-            animation: sweep-needle 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-            transform: rotate(var(--needle-angle, -90deg));
-        }
-
-        @keyframes sweep-needle {
-            from {
-                transform: rotate(-90deg);
-            }
-
-            to {
-                transform: rotate(var(--needle-angle));
-            }
-        }
-
-        .gauge-needle {
-            width: 100%;
-            height: 100%;
-            background-color: #F87171;
-            border-radius: 2px;
-        }
-
-        .gauge-text {
-            margin-top: 0.5rem;
-            text-align: center;
-        }
-
-        .gauge-value {
-            font-size: 1.5rem;
-            display: block;
-        }
-
-        .gauge-label {
-            font-size: 0.9rem;
-            color: #A0AEC0;
-        }
-
-        .journal-entry-item {
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .gradient-button-container {
-            padding: 2px;
-            border-radius: 12px;
-            background: conic-gradient(from 180deg at 50% 50%, #FBBF24, #A3E635, #4ADE80, #F87171, #FBBF24);
-        }
-    </style>
-
+    
 </head>
 
 <body class="p-4 md:p-8">
 
     <!-- Custom Notification Banner -->
-    <div id="notification-banner"
-        class="hidden fixed top-5 right-5 bg-green-500 text-white p-3 rounded-lg shadow-lg z-50 text-base">
+    <div id="notification-banner" class="hidden fixed top-5 right-5 bg-green-500 text-white p-3 rounded-lg shadow-lg z-50 text-base">
         <span id="notification-message"></span>
         <button id="notification-close-btn" class="ml-4 font-bold">X</button>
     </div>
@@ -445,12 +136,10 @@
                             <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="link-2"
                                     class="w-5 h-5"></i> Helpful Links</h2>
                             <button id="helpful-link-btn"
-                                class="text-sm bg-green-500/80 text-white px-3 py-1 rounded hover:bg-green-600">✨ Find a
-                                Link</button>
+                                class="text-sm bg-green-500/80 text-white px-3 py-1 rounded hover:bg-green-600">✨ Find a Link</button>
                         </div>
                         <ul id="helpful-links-list" class="space-y-2 mt-2">
-                            <li><a href="https://telemanas.mohfw.gov.in/" target="_blank" class="hover:text-green-400">✧
-                                    Tele MANAS</a></li>
+                             <li><a href="https://telemanas.mohfw.gov.in/" target="_blank" class="hover:text-green-400">✧ Tele MANAS</a></li>
                         </ul>
                     </div>
 
@@ -468,9 +157,7 @@
                                     </div>
                                 </label>
                                 <span>Server</span>
-                                <button id="sync-journal-btn"
-                                    class="ml-2 text-sm text-cyan-400 hover:text-cyan-300 hidden">Sync to
-                                    Server</button>
+                                <button id="sync-journal-btn" class="ml-2 text-sm text-cyan-400 hover:text-cyan-300 hidden">Sync to Server</button>
                             </div>
                         </div>
                         <button id="shadow-work-prompt-btn"
@@ -495,7 +182,8 @@
                     <div class="widget">
                         <h2 class="text-xl mb-4 flex items-center gap-2"><i data-lucide="heart-pulse"
                                 class="w-5 h-5"></i> User Health</h2>
-                        <div id="health-stats-container" class="flex flex-col gap-6 items-center"
+                        <div id="health-stats-container"
+                            class="flex flex-col gap-6 items-center"
                             style="min-height: 150px;">
                             <!-- Health gauges will be injected here by JS -->
                         </div>
@@ -554,26 +242,18 @@
 
                     <!-- Guided Meditation -->
                     <div class="widget">
-                        <div class="flex justify-between items-center mb-3">
-                            <h2 class="text-xl flex items-center gap-2"><i data-lucide="brain-circuit"
-                                    class="w-5 h-5"></i> Guided Meditation</h2>
+                         <div class="flex justify-between items-center mb-3">
+                            <h2 class="text-xl flex items-center gap-2"><i data-lucide="brain-circuit" class="w-5 h-5"></i> Guided Meditation</h2>
                             <div class="flex items-center gap-2">
-                                <button id="clear-meditation-btn" title="Clear Meditation"
-                                    class="text-gray-400 hover:text-white"><i data-lucide="trash-2"
-                                        class="w-4 h-4"></i></button>
-                                <button id="toggle-meditation-btn" title="Minimize"
-                                    class="text-gray-400 hover:text-white"><i data-lucide="chevron-up"
-                                        class="w-5 h-5"></i></button>
+                                <button id="clear-meditation-btn" title="Clear Meditation" class="text-gray-400 hover:text-white"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <button id="toggle-meditation-btn" title="Minimize" class="text-gray-400 hover:text-white"><i data-lucide="chevron-up" class="w-5 h-5"></i></button>
                             </div>
                         </div>
                         <div id="meditation-widget-body">
-                            <p class="text-gray-400 mb-3 text-base">Enter a topic and select a language for your guided
-                                meditation.</p>
+                            <p class="text-gray-400 mb-3 text-base">Enter a topic and select a language for your guided meditation.</p>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                <input type="text" id="meditation-topic-input" placeholder="e.g., Releasing anxiety"
-                                    class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                                <select id="meditation-language-select"
-                                    class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                                <input type="text" id="meditation-topic-input" placeholder="e.g., Releasing anxiety" class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                                <select id="meditation-language-select" class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
                                     <option value="English (India)">English (India)</option>
                                     <option value="Hindi">Hindi</option>
                                     <option value="Bengali">Bengali</option>
@@ -583,36 +263,26 @@
                                     <option value="other">Other...</option>
                                 </select>
                             </div>
-                            <input type="text" id="meditation-language-search"
-                                placeholder="Enter language name (e.g., French)"
-                                class="hidden w-full bg-[#2E3338] p-2 mt-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                            <input type="text" id="meditation-language-search" placeholder="Enter language name (e.g., French)" class="hidden w-full bg-[#2E3338] p-2 mt-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
                             <div class="flex gap-2 mt-2">
-                                <button id="generate-meditation-btn"
-                                    class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Generate
-                                    Script</button>
-                                <button id="play-meditation-btn"
-                                    class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                                    disabled>Play Meditation</button>
+                            <button id="generate-meditation-btn" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Generate Script</button>
+                            <button id="play-meditation-btn" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" disabled>Play Meditation</button>
                             </div>
-                            <div id="meditation-script-container"
-                                class="gemini-response hidden mt-3 max-h-48 overflow-y-auto"></div>
+                            <div id="meditation-script-container" class="gemini-response hidden mt-3 max-h-48 overflow-y-auto"></div>
                             <audio id="meditation-audio-player" class="w-full mt-3 hidden"></audio>
                         </div>
                     </div>
 
                     <!-- Serenity Map -->
                     <div class="widget">
-                        <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="map" class="w-5 h-5"></i>
-                            Serenity Map</h2>
-                        <div class="flex gap-2 mb-3">
-                            <input type="text" id="location-search-input" placeholder="Search any location in India..."
-                                class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                            <button id="location-search-btn"
-                                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Search</button>
-                        </div>
-                        <div id="map" class="w-full h-64 bg-[#2E3338] rounded"></div>
+                         <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="map" class="w-5 h-5"></i> Serenity Map</h2>
+                         <div class="flex gap-2 mb-3">
+                            <input type="text" id="location-search-input" placeholder="Search any location in India..." class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                            <button id="location-search-btn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Search</button>
+                         </div>
+                         <div id="map" class="w-full h-64 bg-[#2E3338] rounded"></div>
                     </div>
-
+                    
                     <!-- Assignments -->
                     <div class="widget">
                         <div class="flex justify-between items-center mb-3">
@@ -627,9 +297,7 @@
                                     </div>
                                 </label>
                                 <span>Server</span>
-                                <button id="sync-assignments-btn"
-                                    class="ml-2 text-sm text-cyan-400 hover:text-cyan-300 hidden">Sync to
-                                    Server</button>
+                                <button id="sync-assignments-btn" class="ml-2 text-sm text-cyan-400 hover:text-cyan-300 hidden">Sync to Server</button>
                             </div>
                         </div>
 
@@ -741,8 +409,7 @@
         class="fixed bottom-24 right-8 w-full max-w-md bg-[#39414A] rounded-lg shadow-2xl border border-[#4A5568] hidden flex flex-col z-30"
         style="height: 500px;">
         <div class="flex justify-between items-center p-3 bg-[#2E3338] rounded-t-lg">
-            <h3 class="text-lg flex items-center gap-2"><i data-lucide="flower-2" class="w-5 h-5 text-fuchsia-400"></i>
-                blossom AI</h3>
+            <h3 class="text-lg flex items-center gap-2"><i data-lucide="flower-2" class="w-5 h-5 text-fuchsia-400"></i> blossom AI</h3>
             <div class="flex items-center gap-3">
                 <select id="ai-personality-selector"
                     class="bg-[#39414A] text-sm rounded p-1 border border-[#4A5568] focus:outline-none text-white">
@@ -803,18 +470,15 @@
                     <i data-lucide="phone" class="w-5 h-5"></i>
                     <span>Tele MANAS: 14416</span>
                 </a>
-                <a href="tel:18005990019"
-                    class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                <a href="tel:18005990019" class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
                     <i data-lucide="shield-half" class="w-5 h-5"></i>
                     <span>Vandrevala Fdn: 1800-599-0019</span>
                 </a>
-                <button id="quick-meditation-sos-btn"
-                    class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                <button id="quick-meditation-sos-btn" class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
                     <i data-lucide="sparkles" class="w-5 h-5"></i>
                     <span>Quick Meditation</span>
                 </button>
-                <button id="breathing-exercise-sos-btn"
-                    class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                <button id="breathing-exercise-sos-btn" class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
                     <i data-lucide="wind" class="w-5 h-5"></i>
                     <span>Breathing Exercise</span>
                 </button>
@@ -859,8 +523,7 @@
                         <p class="mb-1 text-sm text-gray-400"><span class="font-semibold">Click to upload</span></p>
                         <p id="study-file-name" class="text-xs text-gray-400">PDF, TXT, MD, etc. (MAX. 5MB)</p>
                     </div>
-                    <input id="study-file-upload" type="file" class="hidden"
-                        accept=".pdf, .txt, .md, .csv, text/plain, application/pdf" />
+                    <input id="study-file-upload" type="file" class="hidden" accept=".pdf, .txt, .md, .csv, text/plain, application/pdf" />
                 </label>
             </div>
             <div id="study-chat-view" class="hidden flex-1 flex flex-col min-h-0">
@@ -890,7 +553,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+        
         // --- PDF.js Import ---
         // This library allows the browser to read and extract text from PDF files.
         import * as pdfjsLib from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs";
@@ -918,17 +581,17 @@
             measurementId: "G-K159S6DZNP"
         };
         const finalFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
-
+        
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const sanitizedAppId = appId.replace(/\//g, '_');
 
         let db, auth, currentUserId, currentUserAnonymousName;
-
+        
         // --- DOM Element Declarations ---
         const notificationBanner = document.getElementById('notification-banner');
         const notificationMessage = document.getElementById('notification-message');
         const coverElement = document.querySelector('.pixelated-bg');
-
+        
         // Peer Chat
         const chatWindow = document.getElementById('chat-window');
         const chatCloseBtn = document.getElementById('chat-close-btn');
@@ -947,14 +610,14 @@
         const aiChatInput = document.getElementById('ai-chat-input');
         const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
         const aiPersonalitySelector = document.getElementById('ai-personality-selector');
-
+        
         // Assignments
         const assignmentsList = document.getElementById('assignments-list');
         const newAssignmentBtn = document.getElementById('new-assignment-btn');
         const newAssignmentForm = document.getElementById('new-assignment-form');
         const cancelAssignmentBtn = document.getElementById('cancel-assignment-btn');
         const storageToggle = document.getElementById('storage-toggle');
-
+        
         // --- Custom Notification Logic ---
         document.getElementById('notification-close-btn').addEventListener('click', () => {
             notificationBanner.classList.add('hidden');
@@ -988,7 +651,7 @@
         } catch (e) {
             console.error("Firebase initialization failed. Chat features will be disabled.", e);
         }
-
+        
         onAuthStateChanged(auth, user => {
             if (user) {
                 currentUserId = user.uid;
@@ -1004,22 +667,22 @@
                 } else {
                     currentUserAnonymousName = user.displayName || storedName;
                 }
-
+                
                 const userNameElement = document.getElementById('user-anonymous-name');
                 if (userNameElement) {
                     userNameElement.textContent = currentUserAnonymousName;
                 }
-
+                
             } else {
                 currentUserId = null;
                 currentUserAnonymousName = "Guest";
                 const userNameElement = document.getElementById('user-anonymous-name');
-                if (userNameElement) userNameElement.textContent = currentUserAnonymousName;
+                 if (userNameElement) userNameElement.textContent = currentUserAnonymousName;
             }
-
+            
             initializeAssignments();
             initializeJournaling();
-            initializeHealthWidget(); // This function was causing issues, disabling for now.
+            // initializeHealthWidget(); // This function was causing issues, disabling for now.
         });
 
 
@@ -1056,12 +719,12 @@
                 fetchAndSetCoverGif(GIPHY_API_KEY, GIPHY_GIF_IDS);
             }
         }
-
+        
         // --- Content Flagging Logic ---
         async function checkForSuicidalIntent(text) {
             const prompt = `Analyze the following text for suicidal intent. Respond with only "YES" if it contains clear suicidal ideation, plans, or intent, and "NO" otherwise. Text: "${text}"`;
             const systemInstruction = "You are a content safety classifier. Your only job is to detect suicidal intent. You must only respond with 'YES' or 'NO'.";
-
+            
             const response = await getGeminiResponse(prompt, systemInstruction);
             // FIX: Check if the response *includes* "YES" to make the check more robust
             // against conversational AI responses (e.g., "Yes, this should be flagged").
@@ -1088,15 +751,15 @@
                 const messageEl = document.getElementById('notification-message');
 
                 messageEl.innerHTML = `It looks like you're going through a tough time. Help is available. <button id="notification-sos-btn" class="font-bold underline hover:text-yellow-200 ml-2">Open Support Panel</button>`;
-
+                
                 banner.classList.remove('hidden', 'bg-green-500', 'bg-red-500');
-                banner.classList.add('bg-orange-600');
+                banner.classList.add('bg-orange-600'); 
 
                 // FIX: Correctly find the new button and add the event listener to open the SOS sidebar.
                 document.getElementById('notification-sos-btn').addEventListener('click', () => {
                     document.getElementById('sos-sidebar').classList.remove('translate-x-full');
                 });
-
+                
             } catch (error) {
                 console.error("Could not flag user content:", error);
                 // FIX: Throw an error to stop the parent function (e.g., saving the journal) and notify the user.
@@ -1106,11 +769,11 @@
 
         // --- Gemini API Integration ---
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
-
+        
         async function getGeminiResponse(prompt, customSystemInstruction = null) {
             const defaultSystemInstruction = "You are a helpful assistant. Important: You must not provide any medical, clinical, or therapeutic advice. Your goal is to be supportive and provide general information or creative ideas. If the user seems to be in distress or asks for advice related to health or mental well-being, you must gently decline and suggest they consult a qualified professional.";
             try {
-                if (!GEMINI_API_KEY || GEMINI_API_KEY.includes('YOUR_')) {
+                 if (!GEMINI_API_KEY || GEMINI_API_KEY.includes('YOUR_')) {
                     return "Sorry, the AI Assistant is not configured. Please add a Gemini API Key in the code.";
                 }
                 const payload = {
@@ -1217,7 +880,13 @@
                 playBtn.disabled = true;
                 playBtn.innerHTML = '<div class="loader" style="width:20px; height:20px; border-width: 2px; margin: auto;"></div>';
 
-                const ttsPrompt = `Say in a calm, slow, and soothing voice in ${lastUsedLanguage}: ${script}`;
+                // --- START OF CHANGE ---
+                // FIX: Removed the explicit language from the TTS prompt.
+                // The model will now auto-detect the language from the script itself,
+                // which allows custom languages to be synthesized correctly.
+                const ttsPrompt = `Say in a calm, slow, and soothing voice: ${script}`;
+                // --- END OF CHANGE ---
+                
                 try {
                     const audioData = await fetchTTS(ttsPrompt);
                     if (audioData) {
@@ -1225,7 +894,7 @@
                         const pcm16 = new Int16Array(pcmData);
                         const wavBlob = pcmToWav(pcm16, 24000);
                         const audioUrl = URL.createObjectURL(wavBlob);
-
+                        
                         audioPlayer.src = audioUrl;
                         audioPlayer.controls = true;
                         audioPlayer.classList.remove('hidden');
@@ -1234,14 +903,14 @@
                         showNotification("Could not generate audio. Please try again.", "error");
                     }
                 } catch (error) {
-                    showNotification("An error occurred while generating audio.", "error");
-                    console.error("TTS Error:", error);
+                     showNotification("An error occurred while generating audio.", "error");
+                     console.error("TTS Error:", error);
                 } finally {
                     playBtn.disabled = false;
                     playBtn.innerHTML = 'Play Meditation';
                 }
             }
-
+            
             async function fetchTTS(prompt) {
                 const TTS_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${GEMINI_API_KEY}`;
                 const payload = {
@@ -1261,7 +930,7 @@
                     return null;
                 }
             }
-
+            
             function base64ToArrayBuffer(base64) {
                 const binaryString = window.atob(base64);
                 const len = binaryString.length;
@@ -1279,7 +948,7 @@
                 const blockAlign = numChannels * (bitsPerSample / 8);
                 const dataSize = pcmData.length * (bitsPerSample / 8);
                 const fileSize = 36 + dataSize;
-
+                
                 const buffer = new ArrayBuffer(44 + dataSize);
                 const view = new DataView(buffer);
 
@@ -1287,8 +956,8 @@
                 view.setUint32(4, fileSize, true);
                 writeString(view, 8, 'WAVE');
                 writeString(view, 12, 'fmt ');
-                view.setUint32(16, 16, true);
-                view.setUint16(20, 1, true);
+                view.setUint32(16, 16, true); 
+                view.setUint16(20, 1, true); 
                 view.setUint16(22, numChannels, true);
                 view.setUint32(24, sampleRate, true);
                 view.setUint32(28, byteRate, true);
@@ -1344,7 +1013,7 @@
                 generateScript();
                 document.getElementById('sos-sidebar').classList.add('translate-x-full');
             });
-
+            
             generateBtn.addEventListener('click', generateScript);
             playBtn.addEventListener('click', playAudio);
 
@@ -1360,7 +1029,7 @@
             helpfulLinkBtn.disabled = true;
             helpfulLinkBtn.textContent = 'Finding...';
             const response = await getGeminiResponse(prompt);
-
+            
             const parts = response.split('|');
             if (parts.length === 2) {
                 const url = parts[0].trim();
@@ -1369,9 +1038,9 @@
                 newListItem.innerHTML = `<a href="${url}" target="_blank" class="hover:text-green-400">✧ ${description}</a>`;
                 helpfulLinksList.appendChild(newListItem);
             } else {
-                console.warn("Could not parse helpful link response:", response);
+                 console.warn("Could not parse helpful link response:", response);
             }
-
+            
             helpfulLinkBtn.disabled = false;
             helpfulLinkBtn.textContent = '✨ Find a Link';
         });
@@ -1443,13 +1112,13 @@
 
             unsubscribeFromMessages = onSnapshot(q, (snapshot) => {
                 const messages = snapshot.docs.map(doc => doc.data());
-                messages.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+                messages.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
 
-                chatMessages.innerHTML = '';
+                chatMessages.innerHTML = ''; 
                 messages.forEach(messageData => {
                     const messageTimestamp = messageData.createdAt?.toDate();
                     if (clearTimestamp && messageTimestamp && messageTimestamp < new Date(clearTimestamp)) {
-                        return;
+                        return; 
                     }
                     displayPeerChatMessage(messageData);
                 });
@@ -1510,7 +1179,7 @@
                 creative: "You are a creative muse named blossom AI. You think outside the box and provide imaginative and inspiring ideas. You speak in a poetic and slightly eccentric way. Important: You must not provide any medical, clinical, or therapeutic advice. If the user asks for this type of advice, you must gently decline and suggest they consult a qualified professional.",
                 sarcastic: "You are a sarcastic, witty bot named blossom AI. You answer questions correctly but with a dry sense of humor and a bit of sass. You're not mean, just amusingly unimpressed. Important: You must not provide any medical, clinical, or therapeutic advice. If the user asks for this type of advice, you must gently decline and suggest they consult a qualified professional."
             };
-
+            
             const systemPrompt = personalityPrompts[personality] || personalityPrompts['helpful'];
 
             const contents = history.map(msg => ({
@@ -1529,7 +1198,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                if (!response.ok) {
+                 if (!response.ok) {
                     const errorData = await response.json().catch(() => null);
                     const errorMessage = errorData?.error?.message || response.statusText;
                     throw new Error(`API error (${response.status}): ${errorMessage}`);
@@ -1561,7 +1230,7 @@
         async function handleAiSendMessage() {
             const userInput = aiChatInput.value.trim();
             if (!userInput) return;
-
+            
             aiChatSendBtn.disabled = true;
             aiChatInput.value = '';
             displayAiChatMessage(userInput, 'user');
@@ -1575,7 +1244,7 @@
 
             try {
                 await checkForSuicidalIntent(userInput);
-
+                
                 const personality = aiPersonalitySelector.value;
                 const aiResponse = await getGeminiResponseWithPersonality(userInput, aiChatHistory, personality);
 
@@ -1639,7 +1308,7 @@
                 emoteGrid.appendChild(button);
             });
         }
-
+        
         function initializeProfilePic() {
             profilePicContainer.addEventListener('click', () => emotePickerModal.classList.remove('hidden'));
             closeEmoteModalBtn.addEventListener('click', () => emotePickerModal.classList.add('hidden'));
@@ -1769,7 +1438,7 @@
             clearAssignmentsList();
             localTasks.forEach(task => renderAssignment(task, task.id));
         }
-
+        
         function setupAssignmentEventListeners() {
             storageToggle.addEventListener('change', () => {
                 assignmentStorageMode = storageToggle.checked ? 'server' : 'local';
@@ -1798,7 +1467,7 @@
 
                 if (assignmentStorageMode === 'server') {
                     if (!db || !currentUserId) {
-                        showNotification("Cannot save to server. Connection not ready, please wait a moment.", "error");
+                         showNotification("Cannot save to server. Connection not ready, please wait a moment.", "error");
                         return;
                     }
                     await addDoc(collection(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/assignments`), {
@@ -1826,7 +1495,7 @@
                 const id = taskItem.dataset.id;
 
                 if (assignmentStorageMode === 'server') {
-                    if (!db || !currentUserId) return;
+                     if (!db || !currentUserId) return;
                     const docRef = doc(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/assignments`, id);
                     if (target.matches('.task-checkbox')) {
                         await updateDoc(docRef, { completed: target.checked });
@@ -1885,7 +1554,7 @@
                     localStorage.removeItem('localAssignments');
                     assignmentStorageMode = 'server';
                     localStorage.setItem('assignmentStorageMode', assignmentStorageMode);
-                    initializeAssignments();
+                    initializeAssignments(); 
                     showNotification("Local assignments synced successfully and storage switched to server mode.");
 
                 } catch (error) {
@@ -1897,156 +1566,7 @@
                 }
             });
         }
-
-
-        // --- User Health Logic (Final Fix) ---
-        const healthStatsContainer = document.getElementById('health-stats-container');
-        const googleFitAuthContainer = document.getElementById('google-fit-auth-container');
-        let fitTokenClient;
-        let isFetchingFitData = false; // Flag to prevent re-entrant calls
-
-        function renderHealthGauge(id, label, value, goal) {
-            const container = document.createElement('div');
-            container.className = 'flex flex-col items-center';
-
-            const percent = Math.min((value / goal) * 100, 100);
-            const angle = (percent / 100) * 180 - 90; // -90 to 90 degrees
-
-            const gaugeHTML = `
-                <div class="health-gauge">
-                    <div class="gauge-arc">
-                        <div class="gauge-arc-segments">
-                            <div class="gauge-arc-mask"></div>
-                        </div>
-                    </div>
-                    <div class="gauge-needle-container" style="--needle-angle: ${angle}deg;">
-                        <div class="gauge-needle"></div>
-                    </div>
-                </div>
-                <div class="gauge-text">
-                    <span class="gauge-value">${value.toLocaleString()}</span>
-                    <span class="gauge-label">${label}</span>
-                </div>
-            `;
-            container.innerHTML = gaugeHTML;
-            return container;
-        }
-
-        function displayDummyHealthData() {
-            healthStatsContainer.innerHTML = ''; // Clear previous
-            healthStatsContainer.appendChild(renderHealthGauge('steps', 'Steps', 0, 10000));
-            healthStatsContainer.appendChild(renderHealthGauge('move', 'Move Mins', 0, 60));
-            healthStatsContainer.appendChild(renderHealthGauge('heart', 'Heart Pts', 0, 25));
-        }
-
-        async function fetchGoogleFitData(accessToken) {
-            if (isFetchingFitData) {
-                console.warn("Fetch already in progress. Aborting.");
-                return;
-            }
-            isFetchingFitData = true;
-
-            const FIT_API_URL = 'https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate';
-            const now = new Date();
-            const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0); 
-            const endTime = new Date(); 
-
-            const requestBody = {
-                aggregateBy: [{
-                    dataTypeName: "com.google.step_count.delta"
-                }, {
-                    dataTypeName: "com.google.active_minutes"
-                }, {
-                     dataTypeName: "com.google.heart_minutes"
-                }],
-                bucketByTime: { durationMillis: 86400000 }, 
-                startTimeMillis: startTime.getTime(),
-                endTimeMillis: endTime.getTime()
-            };
-
-            try {
-                const response = await fetch(FIT_API_URL, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestBody)
-                });
-
-                if (!response.ok) {
-                    if (response.status === 401 || response.status === 403) {
-                        localStorage.removeItem('googleFitToken');
-                    }
-                    throw new Error(`Google Fit API error: ${response.statusText}`);
-                }
-                const data = await response.json();
-                healthStatsContainer.innerHTML = '';
-                
-                const stepBucket = data.bucket[0]?.dataset[0]?.point[0];
-                const steps = stepBucket?.value[0]?.intVal || 0;
-                healthStatsContainer.appendChild(renderHealthGauge('steps', 'Steps', steps, 10000));
-
-                const moveMinutesBucket = data.bucket[0]?.dataset[1]?.point[0];
-                const moveMinutes = moveMinutesBucket?.value[0]?.intVal || 0;
-                healthStatsContainer.appendChild(renderHealthGauge('move', 'Move Mins', moveMinutes, 60));
-                
-                const heartPointsBucket = data.bucket[0]?.dataset[2]?.point[0];
-                const heartPoints = Math.round(heartPointsBucket?.value[0]?.fpVal || 0);
-                healthStatsContainer.appendChild(renderHealthGauge('heart', 'Heart Pts', heartPoints, 25));
-
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-green-400">Synced just now.</p>`;
-            } catch (error) {
-                console.error("Failed to fetch Google Fit data:", error);
-                displayDummyHealthData();
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-red-400">Sync failed. Please reconnect.</p>
-                    <button id="google-fit-login-btn" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Reconnect</button>`;
-                document.getElementById('google-fit-login-btn').addEventListener('click', handleFitLogin);
-            } finally {
-                isFetchingFitData = false; 
-            }
-        }
-
-        function initializeHealthWidget() {
-            const fitToken = localStorage.getItem('googleFitToken');
-            
-            if (fitToken && !isFetchingFitData) {
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-green-400">Syncing Google Fit...</p>`;
-                fetchGoogleFitData(fitToken);
-            } else if (!fitToken) {
-                displayDummyHealthData();
-                if (GOOGLE_FIT_CLIENT_ID.includes('YOUR_')) {
-                    googleFitAuthContainer.innerHTML = `<p class="text-sm text-gray-400">Add Google Fit Client ID in code to connect.</p>`;
-                } else {
-                    googleFitAuthContainer.innerHTML = `<button id="google-fit-login-btn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Connect Google Fit</button>`;
-                    document.getElementById('google-fit-login-btn').addEventListener('click', handleFitLogin);
-                }
-            }
-        }
-
-        function handleFitLogin() {
-            if (typeof google === 'undefined' || !google.accounts) {
-                showNotification("Google scripts not loaded yet. Please try again.", "error"); return;
-            }
-            try {
-                fitTokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: GOOGLE_FIT_CLIENT_ID,
-                    scope: 'https://www.googleapis.com/auth/fitness.activity.read',
-                    callback: handleFitAuthResponse,
-                });
-                fitTokenClient.requestAccessToken({ prompt: 'consent' });
-            } catch (e) {
-                console.error("GSI Init Failed for Google Fit. Check Client ID.", e);
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-red-400">Error: Check Google Fit Client ID.</p>`;
-            }
-        }
-
-        async function handleFitAuthResponse(tokenResponse) {
-            if (tokenResponse.access_token) {
-                localStorage.setItem('googleFitToken', tokenResponse.access_token);
-                initializeHealthWidget();
-            } else {
-                googleFitAuthContainer.innerHTML = `<p class="text-sm text-red-400">Failed to connect Google Fit.</p>`;
-            }
-        }
-
+       
         // --- Journaling Logic ---
         const shadowWorkPromptBtn = document.getElementById('shadow-work-prompt-btn');
         const journalEntryTextarea = document.getElementById('journal-entry');
@@ -2135,7 +1655,7 @@
             const analysis = await getGeminiResponse(prompt, systemInstruction);
             journalAnalysisContent.textContent = analysis;
         }
-
+        
         function setupJournalEventListeners() {
             closeJournalAnalysisModal.addEventListener('click', () => journalAnalysisModal.classList.add('hidden'));
             journalAnalysisModal.addEventListener('click', (e) => {
@@ -2164,18 +1684,18 @@
                 if (!entryText) return;
 
                 saveJournalEntryBtn.disabled = true;
-
+                
                 if (journalStorageMode === 'server') {
                     if (!db || !currentUserId) {
                         showNotification("Cannot save to server. Please ensure you are connected.", "error");
                         saveJournalEntryBtn.disabled = false;
                         return;
                     }
-
+                    
                     try {
                         // First, perform the safety check. If it fails, the error will be caught.
                         await checkForSuicidalIntent(entryText);
-
+                        
                         // If the check succeeds (or doesn't find anything), save the entry.
                         await addDoc(collection(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/journal`), {
                             entry: entryText, createdAt: serverTimestamp(), userId: currentUserId
@@ -2200,7 +1720,7 @@
                     localEntries.push(newEntry);
                     localStorage.setItem('localJournalEntries', JSON.stringify(localEntries));
                     initializeLocalJournal();
-
+                    
                     journalEntryTextarea.value = '';
                     saveJournalEntryBtn.textContent = 'Saved!';
                     setTimeout(() => { saveJournalEntryBtn.textContent = 'Save Entry'; }, 2000);
@@ -2240,7 +1760,7 @@
                     localStorage.removeItem('localJournalEntries');
                     journalStorageMode = 'server';
                     localStorage.setItem('journalStorageMode', journalStorageMode);
-                    initializeJournaling();
+                    initializeJournaling(); 
                     showNotification("Local entries synced successfully and storage switched to server mode.");
 
                 } catch (error) {
@@ -2252,7 +1772,7 @@
                 }
             });
         }
-
+        
         // --- Study Help Logic (ENHANCED with PDF Support) ---
         const studyHelpBtn = document.getElementById('study-help-btn');
         const studyHelpModal = document.getElementById('study-help-modal');
@@ -2278,7 +1798,7 @@
             }
             return chunks;
         }
-
+        
         function findRelevantChunks(query, chunks, topN = 3) {
             const queryWords = new Set(query.toLowerCase().split(/\s+/).filter(w => w.length > 2));
             const scoredChunks = chunks.map((chunk) => {
@@ -2292,9 +1812,9 @@
 
             scoredChunks.sort((a, b) => b.score - a.score);
             let context = "";
-            for (let i = 0; i < Math.min(topN, scoredChunks.length); i++) {
-                if (scoredChunks[i].score > 0) {
-                    context += scoredChunks[i].chunk + "\n\n";
+            for(let i=0; i < Math.min(topN, scoredChunks.length); i++){
+                if(scoredChunks[i].score > 0){
+                   context += scoredChunks[i].chunk + "\n\n";
                 }
             }
             return context.trim();
@@ -2311,7 +1831,7 @@
             }
             return fullText;
         }
-
+        
         function initializeStudyHelp() {
             function resetStudyModal() {
                 studyUploadView.classList.remove('hidden');
@@ -2374,8 +1894,8 @@
                     reader.onload = (event) => processFileContent(event.target.result, file.name);
                     reader.readAsText(file);
                 } else {
-                    showNotification("Unsupported file type. Please upload a PDF or plain text file.", "error");
-                    resetStudyModal();
+                     showNotification("Unsupported file type. Please upload a PDF or plain text file.", "error");
+                     resetStudyModal();
                 }
             });
 
@@ -2385,7 +1905,7 @@
                 const messageContainer = document.createElement('div');
                 messageContainer.className = `chat-message ${sender}`;
                 if (isProcessing) messageContainer.classList.add('processing-indicator');
-
+                
                 const bubble = document.createElement('div');
                 bubble.className = `chat-bubble ${sender === 'user' ? 'user' : 'ai'}`;
                 bubble.innerHTML = text; // Use innerHTML for loader
@@ -2410,23 +1930,23 @@
 
                 if (isSummaryRequest) {
                     // For summary requests, use the beginning of the document as context.
-                    context = documentChunks.slice(0, 3).join('\n\n');
+                    context = documentChunks.slice(0, 3).join('\n\n'); 
                 } else {
                     // For specific questions, find the most relevant chunks.
                     context = findRelevantChunks(userRequest, documentChunks);
                 }
-
+                
                 const systemInstruction = "You are a helpful study assistant. Your primary goal is to answer questions and follow instructions based on the provided text from a document. Analyze the user's entire prompt to understand their request (e.g., 'summarize', 'explain', 'list key points'). Use the provided CONTEXT to formulate your answer. If the user asks a general question like 'What is this document?', use the provided context (which will be from the beginning of the document) to give a summary. If the context doesn't contain the answer for a specific question, clearly state that the information was not found in the provided text.";
 
-                const prompt = context
+                const prompt = context 
                     ? `Here is the relevant context from the document:\n\n---\nCONTEXT:\n${context}\n---\n\nNow, please follow the user's request based on this context.\n\nUSER'S REQUEST: "${userRequest}"`
                     : `The user asked: "${userRequest}". However, no relevant section was found in the document to answer this. Inform the user that you couldn't find specifics in the document for their request.`;
-
+                
                 const aiResponse = await getGeminiResponse(prompt, systemInstruction);
-
+                
                 const typingIndicator = studyChatMessages.querySelector('.processing-indicator');
                 if (typingIndicator) typingIndicator.remove();
-
+                
                 displayStudyChatMessage(aiResponse, 'ai');
             }
 
@@ -2435,420 +1955,15 @@
                 if (e.key === 'Enter') handleStudySendMessage();
             });
         }
-
+        
         // --- Serenity Map Logic ---
-
-        let map;
-        let mapMarkers = [];
-
         function initializeSerenityMap() {
-            if (typeof L === 'undefined') {
-                document.getElementById('map').innerHTML = `<div class="flex items-center justify-center h-full text-red-400 p-4 text-center">Error: Could not load Leaflet mapping library.</div>`;
-                return;
-            }
-            try {
-                var container = L.DomUtil.get('map');
-                if (container != null) { container._leaflet_id = null; }
-                map = L.map('map').setView([20.5937, 78.9629], 5);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                }).addTo(map);
-                document.getElementById('location-search-btn').addEventListener('click', () => {
-                    const query = document.getElementById('location-search-input').value;
-                    if (query) searchPlaces(query);
-                });
-            } catch (e) {
-                console.error("Leaflet map initialization failed:", e);
-                document.getElementById('map').innerHTML = `<div class="flex items-center justify-center h-full text-red-400 p-4 text-center">Map initialization failed.</div>`;
-            }
-        }
-
-        function clearMapMarkers() {
-            mapMarkers.forEach(marker => map.removeLayer(marker));
-            mapMarkers = [];
-        }
-
-        async function searchPlaces(query) {
-            clearMapMarkers();
-            const searchButton = document.getElementById('location-search-btn');
-            searchButton.disabled = true;
-            searchButton.innerHTML = '<div class="loader" style="width:20px; height:20px; border-width: 2px; margin: auto;"></div>';
-
-            const geminiPrompt = `Find 5 serene public places (like parks, libraries, quiet cafes) in or very near ${query}, India. Respond with ONLY a valid JSON array of objects. Each object must have "name" (string), "lat" (number), and "lon" (number) properties. The coordinates must be accurate. Example: [{"name": "Lodi Garden", "lat": 28.5931, "lon": 77.2196}]`;
-
-            try {
-                const responseText = await getGeminiResponse(geminiPrompt, "You are a helpful location finding assistant. You only respond with JSON.");
-
-                const cleanedResponse = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-                const places = JSON.parse(cleanedResponse);
-
-                if (places && places.length > 0 && places[0].lat && places[0].lon) {
-                    map.setView([places[0].lat, places[0].lon], 13);
-                    places.forEach(createMapMarker);
-                } else {
-                    showNotification('The AI could not find any specific quiet locations. Please try a different search.', 'error');
-                }
-            } catch (error) {
-                console.error("Error parsing Gemini response or searching places:", error);
-                showNotification("An error occurred while searching. The AI might have returned an invalid format. Please try again.", "error");
-            } finally {
-                searchButton.disabled = false;
-                searchButton.textContent = 'Search';
-            }
-        }
-
-        function createMapMarker(place) {
-            if (!place.lat || !place.lon) return;
-            const marker = L.marker([place.lat, place.lon]).addTo(map);
-            marker.bindPopup(`<b>${place.name}</b>`);
-            mapMarkers.push(marker);
+            // Placeholder function
         }
         // --- Music Player Logic ---
         function initializeMusicPlayer() {
-            const spotifyBtn = document.getElementById('spotify-btn');
-            const ytMusicBtn = document.getElementById('yt-music-btn');
-            const musicPlayerContainer = document.getElementById('music-player-container');
-            const YOUTUBE_DEFAULT_EMBED_URL = 'https://www.youtube.com/embed/jfKfPfyJRdk';
-
-            // --- YouTube Music Variables & Functions ---
-            let tokenClient;
-            let gapiReady = false;
-            let gsiReady = false;
-            let ytSyncError = null;
-
-            function updateYtLoginButtonState() {
-                const loginBtn = document.getElementById('yt-login-btn');
-                if (!loginBtn) return;
-                if (ytSyncError) {
-                    loginBtn.disabled = true; loginBtn.textContent = 'Sync Error'; loginBtn.title = ytSyncError; return;
-                }
-                if (gapiReady && gsiReady) {
-                    loginBtn.disabled = false; loginBtn.textContent = 'Sync YouTube Music'; loginBtn.title = 'Login to see your playlists.';
-                } else {
-                    loginBtn.disabled = true; loginBtn.textContent = 'Loading Sync...'; loginBtn.title = 'Waiting for Google libraries...';
-                }
-            }
-            function initializeGapiClient() {
-                if (YOUTUBE_API_KEY.includes('YOUR_')) {
-                    ytSyncError = "YouTube API Key is missing."; updateYtLoginButtonState(); return;
-                }
-                gapi.load('client', () => {
-                    gapi.client.init({
-                        apiKey: YOUTUBE_API_KEY,
-                        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest'],
-                    }).then(() => {
-                        gapiReady = true; updateYtLoginButtonState();
-                    }).catch(error => {
-                        console.error("GAPI client init error:", error);
-                        ytSyncError = `GAPI Error: The YouTube Data API is not enabled.`; updateYtLoginButtonState();
-                    });
-                });
-            }
-            function loadGapiScript() {
-                const script = document.createElement('script'); script.src = 'https://apis.google.com/js/api.js';
-                script.onload = initializeGapiClient; document.body.appendChild(script);
-            }
-            function initializeGsiClient() {
-                if (typeof google === 'undefined' || !google.accounts) {
-                    ytSyncError = "Google script failed to load."; updateYtLoginButtonState(); return;
-                }
-                if (YT_MUSIC_CLIENT_ID.includes('YOUR_')) {
-                    ytSyncError = "YouTube Music OAuth Client ID is missing."; updateYtLoginButtonState(); return;
-                }
-                try {
-                    tokenClient = google.accounts.oauth2.initTokenClient({
-                        client_id: YT_MUSIC_CLIENT_ID, scope: 'https://www.googleapis.com/auth/youtube.readonly', callback: handleAuthResponse
-                    });
-                    gsiReady = true; loadGapiScript();
-                } catch (e) {
-                    console.error("GSI Init Failed for YT Music:", e);
-                    ytSyncError = "GSI Init Failed for YT Music. Check Client ID."; updateYtLoginButtonState();
-                }
-            }
-            async function handleAuthResponse(tokenResponse) {
-                if (tokenResponse.access_token) {
-                    gapi.client.setToken(tokenResponse);
-                    musicPlayerContainer.innerHTML = '<div class="loader mx-auto mt-16"></div>';
-                    try {
-                        const response = await gapi.client.youtube.playlists.list({ part: 'snippet', mine: true, maxResults: 50 });
-                        if (response.result.items && response.result.items.length > 0) {
-                            renderUserPlaylists(response.result.items);
-                        } else {
-                            musicPlayerContainer.innerHTML = `<div class="text-center p-4">No public playlists found. <button id="yt-logout-btn" class="text-sm text-red-400 hover:text-white block mx-auto mt-2">Logout</button></div>`;
-                            document.getElementById('yt-logout-btn').addEventListener('click', handleYtLogout);
-                        }
-                    } catch (err) {
-                        console.error("Error fetching YT playlists:", err);
-                        musicPlayerContainer.innerHTML = `<div class="text-center p-4">Could not fetch playlists. <button id="yt-logout-btn" class="mx-auto block text-sm text-gray-400 hover:text-white mt-2">Logout</button></div>`;
-                        document.getElementById('yt-logout-btn').addEventListener('click', handleYtLogout);
-                    }
-                } else {
-                    console.error("Auth response did not contain access token.", tokenResponse);
-                    musicPlayerContainer.innerHTML = `<div class="text-center p-4">Authentication failed. Please try again.</div>`;
-                }
-            }
-            function handleYtLogin() {
-                if (gapiReady && gsiReady && tokenClient) tokenClient.requestAccessToken({ prompt: 'consent' });
-            }
-            function handleYtLogout() {
-                gapi.client.setToken(null); renderDefaultYtPlayer();
-            }
-
-            async function fetchPlaylistItems(playlistId, container) {
-                try {
-                    const response = await gapi.client.youtube.playlistItems.list({
-                        part: 'snippet',
-                        playlistId: playlistId,
-                        maxResults: 50
-                    });
-                    renderPlaylistItems(response.result.items, container);
-                } catch (err) {
-                    console.error("Error fetching playlist items:", err);
-                    container.innerHTML = `<p class="text-xs text-gray-400 p-2">Could not load videos.</p>`;
-                }
-            }
-
-            function renderPlaylistItems(items, container) {
-                const videoList = document.createElement('div');
-                videoList.className = "space-y-2";
-
-                if (!items || items.length === 0) {
-                    container.innerHTML = `<p class="text-xs text-gray-400 p-2">This playlist is empty.</p>`;
-                    return;
-                }
-
-                videoList.innerHTML = items.map(item => {
-                    const snippet = item.snippet;
-                    const videoId = snippet.resourceId.videoId;
-                    const title = snippet.title;
-                    const thumbnailUrl = snippet.thumbnails.default.url;
-                    // Skip deleted or private videos
-                    if (title === "Deleted video" || title === "Private video") return '';
-
-                    return `
-                        <button class="yt-video-item flex items-center gap-2 w-full text-left p-1.5 hover:bg-white/10 rounded transition-colors duration-200" data-video-id="${videoId}">
-                            <img src="${thumbnailUrl}" class="w-10 h-10 rounded object-cover" alt="Video thumbnail">
-                            <span class="flex-1 text-xs font-medium truncate">${title}</span>
-                        </button>
-                    `;
-                }).join('');
-
-                container.innerHTML = '';
-                container.appendChild(videoList);
-
-                container.querySelectorAll('.yt-video-item').forEach(item => {
-                    item.addEventListener('click', () => {
-                        document.getElementById('music-player-iframe').src = `https://www.youtube.com/embed/${item.dataset.videoId}?autoplay=1`;
-                    });
-                });
-            }
-
-            async function renderUserPlaylists(playlists) {
-                musicPlayerContainer.innerHTML = `
-                    <div class="flex flex-col h-full bg-black/20 rounded-lg">
-                        <div class="w-full h-2/5 relative">
-                             <iframe id="music-player-iframe" class="rounded-t-lg w-full h-full" src="https://www.youtube.com/embed/videoseries?list=${playlists[0].id}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        </div>
-                        <div class="flex-1 flex flex-row min-h-0">
-                            <!-- Left: Playlist List -->
-                            <div class="w-1/2 flex flex-col border-r border-white/10">
-                                <div class="flex justify-between items-center p-2 border-b border-white/10">
-                                    <h4 class="font-bold text-base truncate">Your Playlists</h4>
-                                    <button id="yt-logout-btn" class="text-xs text-gray-400 hover:text-white flex-shrink-0">Logout</button>
-                                </div>
-                                <div id="yt-playlist-list" class="flex-1 overflow-y-auto p-1 space-y-1">
-                                    ${playlists.map((p, index) => `
-                                        <button class="yt-playlist-item flex items-center gap-2 w-full text-left p-1.5 hover:bg-white/10 rounded transition-colors duration-200 ${index === 0 ? 'bg-white/20' : ''}" data-playlist-id="${p.id}" title="${p.snippet.title}">
-                                            <img src="${p.snippet.thumbnails.default.url}" class="w-10 h-10 rounded object-cover" alt="Playlist thumbnail">
-                                            <span class="flex-1 text-xs font-medium truncate">${p.snippet.title}</span>
-                                        </button>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            <!-- Right: Video List -->
-                            <div class="w-1/2 flex flex-col">
-                                 <div class="p-2 border-b border-white/10">
-                                     <h4 id="yt-video-list-header" class="font-bold text-base truncate">${playlists[0].snippet.title}</h4>
-                                 </div>
-                                 <div id="yt-video-list" class="flex-1 overflow-y-auto p-1">
-                                     <div class="loader"></div>
-                                 </div>
-                            </div>
-                        </div>
-                    </div>`;
-
-                document.getElementById('yt-logout-btn').addEventListener('click', handleYtLogout);
-                const videoListContainer = document.getElementById('yt-video-list');
-                const videoListHeader = document.getElementById('yt-video-list-header');
-
-                const playlistItems = document.querySelectorAll('.yt-playlist-item');
-                playlistItems.forEach(item => {
-                    item.addEventListener('click', () => {
-                        playlistItems.forEach(el => el.classList.remove('bg-white/20'));
-                        item.classList.add('bg-white/20');
-
-                        const playlistId = item.dataset.playlistId;
-                        const playlistTitle = item.getAttribute('title');
-
-                        videoListHeader.textContent = playlistTitle;
-                        videoListContainer.innerHTML = '<div class="loader"></div>';
-                        document.getElementById('music-player-iframe').src = `https://www.youtube.com/embed/videoseries?list=${playlistId}`;
-                        fetchPlaylistItems(playlistId, videoListContainer);
-                    });
-                });
-                // Initially load videos for the first playlist
-                fetchPlaylistItems(playlists[0].id, videoListContainer);
-            }
-
-            // --- Spotify Variables & Functions ---
-            const SPOTIFY_REDIRECT_URI = window.location.origin + window.location.pathname;
-
-            async function redirectToAuthCodeFlow() {
-                const verifier = generateCodeVerifier(128);
-                const challenge = await generateCodeChallenge(verifier);
-                localStorage.setItem("spotify_verifier", verifier);
-                const params = new URLSearchParams();
-                params.append("client_id", SPOTIFY_CLIENT_ID);
-                params.append("response_type", "code");
-                params.append("redirect_uri", SPOTIFY_REDIRECT_URI);
-                params.append("scope", "playlist-read-private playlist-read-collaborative");
-                params.append("code_challenge_method", "S256");
-                params.append("code_challenge", challenge);
-                document.location = `https://accounts.spotify.com/authorize?${params.toString()}`;
-            }
-            async function getSpotifyToken(code) {
-                const verifier = localStorage.getItem("spotify_verifier");
-                const params = new URLSearchParams();
-                params.append("client_id", SPOTIFY_CLIENT_ID);
-                params.append("grant_type", "authorization_code");
-                params.append("code", code);
-                params.append("redirect_uri", SPOTIFY_REDIRECT_URI);
-                params.append("code_verifier", verifier);
-                try {
-                    const result = await fetch("https://accounts.spotify.com/api/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params });
-                    const { access_token } = await result.json();
-                    localStorage.setItem('spotify_access_token', access_token);
-                    await renderSpotifyPlayer();
-                } catch (e) { console.error("Could not get Spotify token", e); }
-            }
-            async function fetchSpotifyPlaylists() {
-                const token = localStorage.getItem('spotify_access_token');
-                if (!token) return;
-                try {
-                    const result = await fetch("https://api.spotify.com/v1/me/playlists", { method: "GET", headers: { Authorization: `Bearer ${token}` } });
-                    if (result.status === 401) { handleSpotifyLogout(); return; }
-                    const data = await result.json();
-                    if (data.items && data.items.length > 0) {
-                        renderSpotifyUserPlaylists(data.items);
-                    } else {
-                        renderNoSpotifyPlaylistsMessage();
-                    }
-                } catch (e) { console.error("Could not fetch Spotify playlists", e); }
-            }
-            function handleSpotifyLogout() {
-                localStorage.removeItem('spotify_access_token');
-                renderSpotifyPlayer();
-            }
-            function renderNoSpotifyPlaylistsMessage() {
-                musicPlayerContainer.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-full gap-4 text-center">
-                        <i data-lucide="music-4" class="w-16 h-16 text-gray-500"></i>
-                        <h4 class="text-lg font-bold">No Playlists Found</h4>
-                        <p class="text-sm text-gray-400">We couldn't find any playlists in your Spotify account.</p>
-                        <button id="spotify-logout-btn" class="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 text-sm">Logout from Spotify</button>
-                    </div>
-                `;
-                document.getElementById('spotify-logout-btn').addEventListener('click', handleSpotifyLogout);
-                lucide.createIcons();
-            }
-            function renderSpotifyUserPlaylists(playlists) {
-                musicPlayerContainer.innerHTML = `
-                    <div class="flex flex-col h-full bg-black/20 rounded-lg">
-                        <iframe id="spotify-player-iframe" class="rounded-t-lg w-full h-3/5" src="https://open.spotify.com/embed/playlist/${playlists[0].id}" frameborder="0" allow="encrypted-media"></iframe>
-                        <div class="flex-1 flex flex-col min-h-0">
-                            <div class="flex justify-between items-center p-2 border-b border-white/10"><h4 class="font-bold text-base">Your Playlists</h4><button id="spotify-logout-btn" class="text-xs text-gray-400 hover:text-white">Logout</button></div>
-                            <div class="flex-1 overflow-y-auto p-1">
-                                ${playlists.map(p => `<button class="spotify-playlist-item w-full text-left p-2 hover:bg-white/10 rounded text-sm truncate" data-playlist-id="${p.id}" title="${p.name}">${p.name}</button>`).join('')}
-                            </div>
-                        </div>
-                    </div>`;
-                document.getElementById('spotify-logout-btn').addEventListener('click', handleSpotifyLogout);
-                document.querySelectorAll('.spotify-playlist-item').forEach(item => {
-                    item.addEventListener('click', () => {
-                        document.getElementById('spotify-player-iframe').src = `https://open.spotify.com/embed/playlist/${item.dataset.playlistId}`;
-                    });
-                });
-            }
-
-            // --- Player Rendering Functions ---
-            async function renderSpotifyPlayer() {
-                ytMusicBtn.classList.remove('ring-2', 'ring-white');
-                spotifyBtn.classList.add('ring-2', 'ring-white');
-                const token = localStorage.getItem('spotify_access_token');
-                if (token) {
-                    musicPlayerContainer.innerHTML = '<div class="loader mx-auto mt-16"></div>';
-                    await fetchSpotifyPlaylists();
-                } else {
-                    const isClientIdSet = SPOTIFY_CLIENT_ID && !SPOTIFY_CLIENT_ID.includes('YOUR_');
-                    const savedSpotifyUrl = localStorage.getItem('spotifyPlaylistUrl') || 'https://open.spotify.com/embed/playlist/37i9dQZF1DX4sWSpwq3LiO';
-                    musicPlayerContainer.innerHTML = `
-                        <div class="flex flex-col h-full gap-2">
-                            <iframe id="spotify-iframe" class="rounded-lg w-full flex-1" src="${savedSpotifyUrl}" title="Spotify Playlist" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                            <div class="flex flex-col gap-3 pt-2 border-t border-white/10">
-                                <div class="flex gap-2">
-                                    <input type="text" id="spotify-link-input" placeholder="Paste Public Playlist Link" class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-sm">
-                                    <button id="spotify-link-save-btn" class="bg-[#1DB954] text-white px-3 py-1 rounded hover:bg-[#1aaf54] text-sm">Set</button>
-                                </div>
-                                <button id="spotify-login-btn" class="w-full bg-[#1DB954] text-white px-4 py-2 rounded hover:bg-[#1aaf54] text-sm ${!isClientIdSet ? 'opacity-50 cursor-not-allowed' : ''}" ${!isClientIdSet ? 'disabled' : ''}>Sync Your Spotify Playlists</button>
-                                ${!isClientIdSet ? '<p class="text-xs text-center text-gray-400">Add Spotify Client ID in code to enable sync.</p>' : ''}
-                            </div>
-                        </div>`;
-                    if (isClientIdSet) document.getElementById('spotify-login-btn').addEventListener('click', redirectToAuthCodeFlow);
-                    document.getElementById('spotify-link-save-btn').addEventListener('click', () => {
-                        const input = document.getElementById('spotify-link-input');
-                        const link = input.value.trim();
-                        if (link.startsWith('https://open.spotify.com/playlist/')) {
-                            const playlistId = new URL(link).pathname.split('/').pop();
-                            if (playlistId) {
-                                const embedUrl = `https://open.spotify.com/embed/playlist/${playlistId}`;
-                                document.getElementById('spotify-iframe').src = embedUrl;
-                                localStorage.setItem('spotifyPlaylistUrl', embedUrl);
-                                input.value = ''; input.placeholder = "Playlist updated!";
-                            }
-                        }
-                    });
-                }
-            }
-            function renderDefaultYtPlayer() {
-                spotifyBtn.classList.remove('ring-2', 'ring-white');
-                ytMusicBtn.classList.add('ring-2', 'ring-white');
-                musicPlayerContainer.innerHTML = `<div class="flex flex-col items-center justify-center h-full gap-4"> <iframe class="rounded-lg w-full h-4/5" src="${YOUTUBE_DEFAULT_EMBED_URL}" title="YouTube Music Mix" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> <button id="yt-login-btn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" disabled>Loading Sync...</button> </div>`;
-                const loginBtn = document.getElementById('yt-login-btn');
-                if (loginBtn) { loginBtn.addEventListener('click', handleYtLogin); updateYtLoginButtonState(); }
-            }
-
-            // --- Initialization Logic ---
-            const params = new URLSearchParams(window.location.search);
-            if (params.get("code")) {
-                const isSpotify = !params.get("scope"); // Google's redirect includes a 'scope' param
-                if (isSpotify) {
-                    getSpotifyToken(params.get("code"));
-                    history.replaceState({}, document.title, window.location.pathname);
-                }
-            }
-            spotifyBtn.addEventListener('click', renderSpotifyPlayer);
-            ytMusicBtn.addEventListener('click', renderDefaultYtPlayer);
-            if (window.googleGsiIsReady) initializeGsiClient();
-            else window.addEventListener('google-gsi-loaded', initializeGsiClient, { once: true });
-            renderDefaultYtPlayer();
+             // Placeholder function
         }
-
-
-
-
-
-
 
         // --- General Initialization ---
         document.addEventListener('DOMContentLoaded', async () => {
@@ -2863,7 +1978,7 @@
             initializeProfilePic();
             setupAssignmentEventListeners();
             setupJournalEventListeners();
-            initializeStudyHelp();
+            initializeStudyHelp(); 
             initializeMeditationWidget();
 
             const sosBtn = document.getElementById('sos-btn');
@@ -2888,7 +2003,7 @@
             } catch (error) {
                 console.error("Initial authentication failed:", error);
                 if (!auth.currentUser) {
-                    try {
+                     try {
                         await signInAnonymously(auth);
                     } catch (anonError) {
                         console.error("Fallback anonymous sign-in also failed.", anonError);
@@ -2901,3 +2016,4 @@
 </body>
 
 </html>
+
