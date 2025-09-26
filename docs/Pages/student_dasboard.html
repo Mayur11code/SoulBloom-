@@ -341,6 +341,12 @@
 
 <body class="p-4 md:p-8">
 
+    <!-- Custom Notification Banner -->
+    <div id="notification-banner" class="hidden fixed top-5 right-5 bg-green-500 text-white p-3 rounded-lg shadow-lg z-50 text-base">
+        <span id="notification-message"></span>
+        <button id="notification-close-btn" class="ml-4 font-bold">X</button>
+    </div>
+
     <!-- Floating Elements Background -->
     <div class="floating-elements">
         <div class="floaty" style="width: 10px; height: 10px; left: 5%; animation-duration: 20s; animation-delay: 0s;">
@@ -456,6 +462,7 @@
                                     </div>
                                 </label>
                                 <span>Server</span>
+                                <button id="sync-journal-btn" class="ml-2 text-sm text-cyan-400 hover:text-cyan-300 hidden">Sync to Server</button>
                             </div>
                         </div>
                         <button id="shadow-work-prompt-btn"
@@ -473,6 +480,20 @@
                             <div id="journal-history-list" class="space-y-2 max-h-40 overflow-y-auto pr-2">
                                 <!-- Journal history will be loaded here -->
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- User Health -->
+                    <div class="widget">
+                        <h2 class="text-xl mb-4 flex items-center gap-2"><i data-lucide="heart-pulse"
+                                class="w-5 h-5"></i> User Health</h2>
+                        <div id="health-stats-container"
+                            class="flex flex-col gap-6 items-center"
+                            style="min-height: 150px;">
+                            <!-- Health gauges will be injected here by JS -->
+                        </div>
+                        <div id="google-fit-auth-container" class="mt-4 text-center">
+                            <!-- This will show a login button or a sync message -->
                         </div>
                     </div>
 
@@ -531,18 +552,16 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                              <input type="text" id="meditation-topic-input" placeholder="e.g., Releasing anxiety" class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
                             <select id="meditation-language-select" class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                                <option value="en-US">English (US)</option>
-                                <option value="es-US">Spanish (US)</option>
-                                <option value="fr-FR">French</option>
-                                <option value="de-DE">German</option>
-                                <option value="hi-IN">Hindi</option>
-                                <option value="it-IT">Italian</option>
-                                <option value="ja-JP">Japanese</option>
-                                <option value="ko-KR">Korean</option>
-                                <option value="pt-BR">Portuguese (Brazil)</option>
-                                <option value="ru-RU">Russian</option>
+                                <option value="English (India)">English (India)</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Bengali">Bengali</option>
+                                <option value="Tamil">Tamil</option>
+                                <option value="Telugu">Telugu</option>
+                                <option value="Marathi">Marathi</option>
+                                <option value="other">Other...</option>
                             </select>
                         </div>
+                        <input type="text" id="meditation-language-search" placeholder="Enter language name (e.g., French)" class="hidden w-full bg-[#2E3338] p-2 mt-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
                         <div class="flex gap-2 mt-2">
                            <button id="generate-meditation-btn" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Generate Script</button>
                            <button id="play-meditation-btn" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" disabled>Play Meditation</button>
@@ -560,6 +579,28 @@
                          </div>
                          <div id="map" class="w-full h-64 bg-[#2E3338] rounded"></div>
                     </div>
+                    <!-- Music Player -->
+                    <div class="widget">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="music-4" class="w-6 h-6 text-green-400"></i>
+                                <div>
+                                    <h3 class="text-lg">chill vibes</h3>
+                                    <p class="text-sm text-gray-400">lo-fi beats</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button id="spotify-btn"
+                                    class="text-sm bg-[#1DB954]/80 text-white px-3 py-1 rounded hover:bg-[#1DB954] transition-colors">Spotify</button>
+                                <button id="yt-music-btn"
+                                    class="text-sm bg-[#FF0000]/80 text-white px-3 py-1 rounded hover:bg-[#FF0000] transition-colors">YT
+                                    Music</button>
+                            </div>
+                        </div>
+                        <div id="music-player-container" class="w-full h-96 mt-2">
+                            <!-- Music player content is managed by JavaScript -->
+                        </div>
+                    </div>
                     <!-- Assignments -->
                     <div class="widget">
                         <div class="flex justify-between items-center mb-3">
@@ -574,6 +615,7 @@
                                     </div>
                                 </label>
                                 <span>Server</span>
+                                <button id="sync-assignments-btn" class="ml-2 text-sm text-cyan-400 hover:text-cyan-300 hidden">Sync to Server</button>
                             </div>
                         </div>
 
@@ -609,43 +651,6 @@
                         <button id="new-assignment-btn"
                             class="mt-4 text-gray-400 hover:text-white flex items-center gap-2"><i data-lucide="plus"
                                 class="w-4 h-4"></i> New</button>
-                    </div>
-
-                    <!-- User Health -->
-                    <div class="widget">
-                        <h2 class="text-xl mb-4 flex items-center gap-2"><i data-lucide="heart-pulse"
-                                class="w-5 h-5"></i> User Health</h2>
-                        <div id="health-stats-container"
-                            class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center items-start"
-                            style="min-height: 150px;">
-                            <!-- Health gauges will be injected here by JS -->
-                        </div>
-                        <div id="google-fit-auth-container" class="mt-8 text-center">
-                            <!-- This will show a login button or a sync message -->
-                        </div>
-                    </div>
-                    
-                    <!-- Music Player -->
-                    <div class="widget">
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="music-4" class="w-6 h-6 text-green-400"></i>
-                                <div>
-                                    <h3 class="text-lg">chill vibes</h3>
-                                    <p class="text-sm text-gray-400">lo-fi beats</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button id="spotify-btn"
-                                    class="text-sm bg-[#1DB954]/80 text-white px-3 py-1 rounded hover:bg-[#1DB954] transition-colors">Spotify</button>
-                                <button id="yt-music-btn"
-                                    class="text-sm bg-[#FF0000]/80 text-white px-3 py-1 rounded hover:bg-[#FF0000] transition-colors">YT
-                                    Music</button>
-                            </div>
-                        </div>
-                        <div id="music-player-container" class="w-full h-96 mt-2">
-                            <!-- Music player content is managed by JavaScript -->
-                        </div>
                     </div>
 
                 </div>
@@ -757,22 +762,22 @@
                         class="w-6 h-6"></i></button>
             </div>
             <div class="space-y-3 text-lg">
-                <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                <a href="tel:14416" class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
                     <i data-lucide="phone" class="w-5 h-5"></i>
-                    <span>Contact Counsellor</span>
+                    <span>Tele MANAS: 14416</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                <a href="tel:18005990019" class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
                     <i data-lucide="shield-half" class="w-5 h-5"></i>
-                    <span>Helplines</span>
+                    <span>Vandrevala Fdn: 1800-599-0019</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                <button id="quick-meditation-sos-btn" class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
                     <i data-lucide="sparkles" class="w-5 h-5"></i>
                     <span>Quick Meditation</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                </button>
+                <button id="breathing-exercise-sos-btn" class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
                     <i data-lucide="wind" class="w-5 h-5"></i>
                     <span>Breathing Exercise</span>
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -812,9 +817,9 @@
                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
                         <i data-lucide="upload-cloud" class="w-10 h-10 mb-2 text-gray-400"></i>
                         <p class="mb-1 text-sm text-gray-400"><span class="font-semibold">Click to upload</span></p>
-                        <p id="humata-file-name" class="text-xs text-gray-400">PDF, DOCX (MAX. 5MB)</p>
+                        <p id="humata-file-name" class="text-xs text-gray-400">TXT files only (MAX. 5MB)</p>
                     </div>
-                    <input id="humata-file-upload" type="file" class="hidden" accept=".pdf,.docx" />
+                    <input id="humata-file-upload" type="file" class="hidden" accept=".txt" />
                 </label>
             </div>
             <div id="humata-chat-view" class="hidden flex-1 flex flex-col min-h-0">
@@ -852,7 +857,7 @@
         const YT_MUSIC_CLIENT_ID = '186638354534-sc0ecemspj32eqkqk3u67ma2fe87gfnj.apps.googleusercontent.com';
         const GOOGLE_FIT_CLIENT_ID = '691627541266-nup7p5ked390epqje1vbh4eova6d7lpc.apps.googleusercontent.com';
         const YOUTUBE_API_KEY = 'AIzaSyC4isDfYT5JO64BtH1lvBP0-etVBXhAThA';
-        const GEMINI_API_KEY = "AIzaSyBKIy8ScHv6JqVJAMuTibo7ikvBzMSfwXo";
+        const GEMINI_API_KEY = "AIzaSyDzX6NrBh-02my-Sll8stjoUYffBkgVB4Y";
 
         // --- END OF ACTION REQUIRED ---
 
@@ -873,6 +878,55 @@
 
         let db, auth, currentUserId, currentUserAnonymousName;
         
+        // --- DOM Element Declarations ---
+        const notificationBanner = document.getElementById('notification-banner');
+        const notificationMessage = document.getElementById('notification-message');
+        const coverElement = document.querySelector('.pixelated-bg');
+        
+        // Peer Chat
+        const chatWindow = document.getElementById('chat-window');
+        const chatCloseBtn = document.getElementById('chat-close-btn');
+        const peerChatClearBtn = document.getElementById('peer-chat-clear-btn');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const chatSendBtn = document.getElementById('chat-send-btn');
+        const chatHeaderTitle = document.getElementById('chat-header-title');
+
+        // AI Chatbot
+        const aiChatToggleBtn = document.getElementById('ai-chat-toggle-btn');
+        const aiChatWindow = document.getElementById('ai-chat-window');
+        const aiChatCloseBtn = document.getElementById('ai-chat-close-btn');
+        const aiChatClearBtn = document.getElementById('ai-chat-clear-btn');
+        const aiChatMessages = document.getElementById('ai-chat-messages');
+        const aiChatInput = document.getElementById('ai-chat-input');
+        const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
+        const aiPersonalitySelector = document.getElementById('ai-personality-selector');
+        
+        // Assignments
+        const assignmentsList = document.getElementById('assignments-list');
+        const newAssignmentBtn = document.getElementById('new-assignment-btn');
+        const newAssignmentForm = document.getElementById('new-assignment-form');
+        const cancelAssignmentBtn = document.getElementById('cancel-assignment-btn');
+        const storageToggle = document.getElementById('storage-toggle');
+        
+        // --- Custom Notification Logic ---
+        document.getElementById('notification-close-btn').addEventListener('click', () => {
+            notificationBanner.classList.add('hidden');
+        });
+
+        function showNotification(message, type = 'success') {
+            notificationMessage.textContent = message;
+            notificationBanner.classList.remove('bg-green-500', 'bg-red-500', 'hidden');
+            if (type === 'success') {
+                notificationBanner.classList.add('bg-green-500');
+            } else { // error
+                notificationBanner.classList.add('bg-red-500');
+            }
+            setTimeout(() => {
+                notificationBanner.classList.add('hidden');
+            }, 5000); // Auto-hide after 5 seconds
+        }
+
         function generateAnonymousName() {
             const adjectives = ["Brave", "Silent", "Wise", "Wandering", "Gentle", "Hidden", "Cosmic", "Lunar", "Solar", "Pixelated"];
             const nouns = ["River", "Fox", "Oak", "Badger", "Starlight", "Meadow", "Whisper", "Dreamer", "Voyager", "Sprite"];
@@ -924,7 +978,6 @@
 
 
         // Cover Image Handling
-        const coverElement = document.querySelector('.pixelated-bg');
         const GIPHY_GIF_IDS = [
             'HRXnPYf10Zx0wz4alF', // Default best
             '6705G9I9sUcNCaJF10', // Pixel train through nature
@@ -1015,64 +1068,172 @@
         }
 
         // --- Guided Meditation Logic ---
-        const meditationTopicInput = document.getElementById('meditation-topic-input');
-        const meditationLanguageSelect = document.getElementById('meditation-language-select');
-        const generateMeditationBtn = document.getElementById('generate-meditation-btn');
-        const playMeditationBtn = document.getElementById('play-meditation-btn');
-        const meditationScriptContainer = document.getElementById('meditation-script-container');
-        const meditationAudioPlayer = document.getElementById('meditation-audio-player');
-        let currentMeditationScript = null;
+        function initializeMeditationWidget() {
+            const topicInput = document.getElementById('meditation-topic-input');
+            const languageSelect = document.getElementById('meditation-language-select');
+            const languageSearch = document.getElementById('meditation-language-search');
+            const generateBtn = document.getElementById('generate-meditation-btn');
+            const playBtn = document.getElementById('play-meditation-btn');
+            const scriptContainer = document.getElementById('meditation-script-container');
+            const audioPlayer = document.getElementById('meditation-audio-player');
+            const quickMeditationBtn = document.getElementById('quick-meditation-sos-btn');
+            const breathingExerciseBtn = document.getElementById('breathing-exercise-sos-btn');
 
-        function base64ToArrayBuffer(base64) {
-            const binaryString = window.atob(base64);
-            const len = binaryString.length;
-            const bytes = new Uint8Array(len);
-            for (let i = 0; i < len; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
+            let lastUsedLanguage = localStorage.getItem('lastMeditationLanguage') || 'English (India)';
+
+            function setInitialLanguage() {
+                const options = Array.from(languageSelect.options).map(opt => opt.value);
+                if (options.includes(lastUsedLanguage)) {
+                    languageSelect.value = lastUsedLanguage;
+                } else {
+                    languageSelect.value = 'other';
+                    languageSearch.classList.remove('hidden');
+                    languageSearch.value = lastUsedLanguage;
+                }
             }
-            return bytes.buffer;
-        }
-        
-        function pcmToWav(pcmData, sampleRate) {
-            const numChannels = 1;
-            const bitsPerSample = 16;
-            const blockAlign = (numChannels * bitsPerSample) / 8;
-            const byteRate = sampleRate * blockAlign;
-            const dataSize = pcmData.length * (bitsPerSample / 8);
-            const buffer = new ArrayBuffer(44 + dataSize);
-            const view = new DataView(buffer);
 
-            /* RIFF identifier */
-            writeString(view, 0, 'RIFF');
-            /* file length */
-            view.setUint32(4, 36 + dataSize, true);
-            /* RIFF type */
-            writeString(view, 8, 'WAVE');
-            /* format chunk identifier */
-            writeString(view, 12, 'fmt ');
-            /* format chunk length */
-            view.setUint32(16, 16, true);
-            /* sample format (raw) */
-            view.setUint16(20, 1, true);
-            /* channel count */
-            view.setUint16(22, numChannels, true);
-            /* sample rate */
-            view.setUint32(24, sampleRate, true);
-            /* byte rate (sample rate * block align) */
-            view.setUint32(28, byteRate, true);
-            /* block align (channel count * bytes per sample) */
-            view.setUint16(32, blockAlign, true);
-            /* bits per sample */
-            view.setUint16(34, bitsPerSample, true);
-            /* data chunk identifier */
-            writeString(view, 36, 'data');
-            /* data chunk length */
-            view.setUint32(40, dataSize, true);
+            languageSelect.addEventListener('change', () => {
+                if (languageSelect.value === 'other') {
+                    languageSearch.classList.remove('hidden');
+                } else {
+                    languageSearch.classList.add('hidden');
+                }
+            });
 
-            // Write PCM data
-            const pcm16 = new Int16Array(pcmData.buffer);
-            for (let i = 0; i < pcm16.length; i++) {
-                view.setInt16(44 + i * 2, pcm16[i], true);
+            async function generateScript() {
+                const topic = topicInput.value.trim();
+                let language = languageSelect.value;
+                if (language === 'other') {
+                    language = languageSearch.value.trim();
+                }
+
+                if (!topic || !language) {
+                    showNotification("Please provide a topic and language.", "error");
+                    return;
+                }
+
+                localStorage.setItem('lastMeditationLanguage', language);
+                lastUsedLanguage = language;
+
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = '<div class="loader" style="width:20px; height:20px; border-width: 2px; margin: auto;"></div>';
+                scriptContainer.classList.remove('hidden');
+                scriptContainer.innerHTML = '<div class="loader"></div>';
+                playBtn.disabled = true;
+                audioPlayer.classList.add('hidden');
+
+
+                const prompt = `Generate a short (around 150 words), calming guided meditation script about "${topic}". The script should be easy to follow and soothing.`;
+                const systemInstruction = "You are a meditation guide. You create peaceful and serene meditation scripts. Do not include any introductory or concluding remarks outside of the script itself.";
+
+                const script = await getGeminiResponse(prompt, systemInstruction);
+
+                scriptContainer.textContent = script;
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = 'Generate Script';
+                playBtn.disabled = false;
+            }
+
+            async function playAudio() {
+                const script = scriptContainer.textContent;
+                if (!script) {
+                    showNotification("Please generate a script first.", "error");
+                    return;
+                }
+
+                playBtn.disabled = true;
+                playBtn.innerHTML = '<div class="loader" style="width:20px; height:20px; border-width: 2px; margin: auto;"></div>';
+
+                const ttsPrompt = `Say in a calm, slow, and soothing voice in ${lastUsedLanguage}: ${script}`;
+                try {
+                    const audioData = await fetchTTS(ttsPrompt);
+                    if (audioData) {
+                        const pcmData = base64ToArrayBuffer(audioData);
+                        const pcm16 = new Int16Array(pcmData);
+                        const wavBlob = pcmToWav(pcm16, 24000);
+                        const audioUrl = URL.createObjectURL(wavBlob);
+                        
+                        audioPlayer.src = audioUrl;
+                        audioPlayer.controls = true;
+                        audioPlayer.classList.remove('hidden');
+                        audioPlayer.play();
+                    } else {
+                        showNotification("Could not generate audio. Please try again.", "error");
+                    }
+                } catch (error) {
+                     showNotification("An error occurred while generating audio.", "error");
+                     console.error("TTS Error:", error);
+                } finally {
+                    playBtn.disabled = false;
+                    playBtn.innerHTML = 'Play Meditation';
+                }
+            }
+            
+            async function fetchTTS(prompt) {
+                const TTS_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${GEMINI_API_KEY}`;
+                const payload = {
+                    model: "gemini-2.5-flash-preview-tts",
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { responseModalities: ["AUDIO"] },
+                };
+                try {
+                    const response = await fetch(TTS_API_URL, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+                    const result = await response.json();
+                    return result.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+                } catch (error) {
+                    console.error("Error calling TTS API:", error);
+                    return null;
+                }
+            }
+            
+            // Helper functions for audio conversion
+            function base64ToArrayBuffer(base64) {
+                const binaryString = window.atob(base64);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return bytes.buffer;
+            }
+
+            function pcmToWav(pcmData, sampleRate) {
+                const numChannels = 1;
+                const bitsPerSample = 16;
+                const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
+                const blockAlign = numChannels * (bitsPerSample / 8);
+                const dataSize = pcmData.length * (bitsPerSample / 8);
+                const fileSize = 36 + dataSize;
+                
+                const buffer = new ArrayBuffer(44 + dataSize);
+                const view = new DataView(buffer);
+
+                // RIFF header
+                writeString(view, 0, 'RIFF');
+                view.setUint32(4, fileSize, true);
+                writeString(view, 8, 'WAVE');
+                // fmt chunk
+                writeString(view, 12, 'fmt ');
+                view.setUint32(16, 16, true); // chunk size
+                view.setUint16(20, 1, true);  // audio format (PCM)
+                view.setUint16(22, numChannels, true);
+                view.setUint32(24, sampleRate, true);
+                view.setUint32(28, byteRate, true);
+                view.setUint16(32, blockAlign, true);
+                view.setUint16(34, bitsPerSample, true);
+                // data chunk
+                writeString(view, 36, 'data');
+                view.setUint32(40, dataSize, true);
+
+                // Write PCM data
+                for (let i = 0; i < pcmData.length; i++) {
+                    view.setInt16(44 + i * 2, pcmData[i], true);
+                }
+
+                return new Blob([view], { type: 'audio/wav' });
             }
 
             function writeString(view, offset, string) {
@@ -1081,86 +1242,26 @@
                 }
             }
 
-            return new Blob([view], { type: 'audio/wav' });
+
+            quickMeditationBtn.addEventListener('click', () => {
+                topicInput.value = "5-minute calming meditation";
+                setInitialLanguage();
+                generateScript();
+                document.getElementById('sos-sidebar').classList.add('translate-x-full');
+            });
+
+            breathingExerciseBtn.addEventListener('click', () => {
+                topicInput.value = "Guided box breathing exercise for focus";
+                setInitialLanguage();
+                generateScript();
+                document.getElementById('sos-sidebar').classList.add('translate-x-full');
+            });
+            
+            generateBtn.addEventListener('click', generateScript);
+            playBtn.addEventListener('click', playAudio);
+
+            setInitialLanguage(); // Set language on page load
         }
-
-
-        generateMeditationBtn.addEventListener('click', async () => {
-            const topic = meditationTopicInput.value.trim();
-            const language = meditationLanguageSelect.value;
-            if (!topic) return;
-
-            meditationScriptContainer.innerHTML = '<div class="loader"></div>';
-            meditationScriptContainer.classList.remove('hidden');
-            generateMeditationBtn.disabled = true;
-            playMeditationBtn.disabled = true;
-            
-            const prompt = `Create a short, calming guided meditation script about "${topic}". The script should be about 150-200 words. Use gentle language and include pauses.`;
-            const systemInstruction = `You are a meditation guide. Your tone is soothing and peaceful. You are generating a script in ${language}.`;
-            
-            currentMeditationScript = await getGeminiResponse(prompt, systemInstruction);
-            
-            meditationScriptContainer.textContent = currentMeditationScript;
-            generateMeditationBtn.disabled = false;
-            playMeditationBtn.disabled = false;
-        });
-        
-        playMeditationBtn.addEventListener('click', async () => {
-             if (!currentMeditationScript) return;
-
-             playMeditationBtn.disabled = true;
-             playMeditationBtn.innerHTML = '<div class="loader" style="width:20px; height:20px; margin: auto; border-top-color: white;"></div>';
-
-            try {
-                 const ttsApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${GEMINI_API_KEY}`;
-                 const payload = {
-                     model: "gemini-2.5-flash-preview-tts",
-                     contents: [{
-                         parts: [{ text: `Speak in a calm, slow, and soothing voice for a meditation: ${currentMeditationScript}` }]
-                     }],
-                     generationConfig: {
-                         responseModalities: ["AUDIO"],
-                     },
-                 };
-                const response = await fetch(ttsApiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (!response.ok) throw new Error(`TTS API error: ${response.statusText}`);
-                const result = await response.json();
-                
-                const audioData = result?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-                const mimeType = result?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.mimeType;
-
-                if (audioData && mimeType && mimeType.startsWith("audio/")) {
-                    const sampleRateMatch = mimeType.match(/rate=(\d+)/);
-                    if (!sampleRateMatch) throw new Error("Sample rate not found in MIME type");
-                    
-                    const sampleRate = parseInt(sampleRateMatch[1], 10);
-                    const pcmData = base64ToArrayBuffer(audioData);
-                    const pcm16 = new Int16Array(pcmData);
-                    const wavBlob = pcmToWav(pcm16, sampleRate);
-                    const audioUrl = URL.createObjectURL(wavBlob);
-                    
-                    meditationAudioPlayer.src = audioUrl;
-                    meditationAudioPlayer.controls = true;
-                    meditationAudioPlayer.classList.remove('hidden');
-                    meditationAudioPlayer.play();
-                } else {
-                    throw new Error("Invalid audio data in response.");
-                }
-
-            } catch(error) {
-                console.error("Error generating meditation audio:", error);
-                meditationScriptContainer.textContent = "Sorry, could not generate audio. Please try again.";
-            } finally {
-                playMeditationBtn.disabled = false;
-                playMeditationBtn.innerHTML = 'Play Meditation';
-            }
-        });
-
 
         // --- Helpful Link Logic ---
         const helpfulLinkBtn = document.getElementById('helpful-link-btn');
@@ -1188,16 +1289,39 @@
         });
 
         // --- Peer Chat Logic ---
-        const chatWindow = document.getElementById('chat-window');
-        const chatCloseBtn = document.getElementById('chat-close-btn');
-        const peerChatClearBtn = document.getElementById('peer-chat-clear-btn');
-        const chatMessages = document.getElementById('chat-messages');
-        const chatInput = document.getElementById('chat-input');
-        const chatSendBtn = document.getElementById('chat-send-btn');
-        const chatHeaderTitle = document.getElementById('chat-header-title');
-
         let currentChatRoomId = null;
         let unsubscribeFromMessages = null;
+
+        function initializePeerChat() {
+            const chatroomBtns = document.querySelectorAll('.chatroom-btn');
+            chatroomBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    aiChatWindow.classList.add('hidden');
+                    joinChatRoom(btn.dataset.roomName);
+                });
+            });
+
+            chatCloseBtn.addEventListener('click', () => {
+                chatWindow.classList.add('hidden');
+                if (unsubscribeFromMessages) {
+                    unsubscribeFromMessages();
+                    unsubscribeFromMessages = null;
+                }
+                currentChatRoomId = null;
+            });
+
+            peerChatClearBtn.addEventListener('click', () => {
+                if (currentChatRoomId) {
+                    localStorage.setItem(`chatClearTimestamp_${currentChatRoomId}`, new Date().toISOString());
+                    chatMessages.innerHTML = '';
+                }
+            });
+
+            chatSendBtn.addEventListener('click', handlePeerSendMessage);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handlePeerSendMessage();
+            });
+        }
 
         function joinChatRoom(roomId) {
             if (unsubscribeFromMessages) {
@@ -1271,6 +1395,8 @@
             const userInput = chatInput.value.trim();
             if (!userInput || !currentChatRoomId || !currentUserId || !db) return;
 
+            checkForSuicidalIntent(userInput);
+
             const messagesRef = collection(db, `artifacts/${sanitizedAppId}/public/data/chatrooms/${currentChatRoomId}/messages`);
 
             try {
@@ -1286,46 +1412,17 @@
             }
         }
 
-        chatCloseBtn.addEventListener('click', () => {
-            chatWindow.classList.add('hidden');
-            if (unsubscribeFromMessages) {
-                unsubscribeFromMessages();
-                unsubscribeFromMessages = null;
-            }
-            currentChatRoomId = null;
-        });
-
-        peerChatClearBtn.addEventListener('click', () => {
-            if (currentChatRoomId) {
-                localStorage.setItem(`chatClearTimestamp_${currentChatRoomId}`, new Date().toISOString());
-                chatMessages.innerHTML = '';
-            }
-        });
-
-        chatSendBtn.addEventListener('click', handlePeerSendMessage);
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handlePeerSendMessage();
-        });
-
         // --- AI Chatbot with Personalities Logic ---
-        const aiChatToggleBtn = document.getElementById('ai-chat-toggle-btn');
-        const aiChatWindow = document.getElementById('ai-chat-window');
-        const aiChatCloseBtn = document.getElementById('ai-chat-close-btn');
-        const aiChatClearBtn = document.getElementById('ai-chat-clear-btn');
-        const aiChatMessages = document.getElementById('ai-chat-messages');
-        const aiChatInput = document.getElementById('ai-chat-input');
-        const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
-        const aiPersonalitySelector = document.getElementById('ai-personality-selector');
         let aiChatHistory = [];
 
         async function getGeminiResponseWithPersonality(prompt, history, personality) {
             const personalityPrompts = {
-                helpful: "You are a helpful and friendly assistant. You are concise and to the point. You are here to help the user with their tasks.",
-                creative: "You are a creative muse. You think outside the box and provide imaginative and inspiring ideas. You speak in a poetic and slightly eccentric way.",
-                sarcastic: "You are a sarcastic, witty bot. You answer questions correctly but with a dry sense of humor and a bit of sass. You're not mean, just amusingly unimpressed."
+                helpful: "You are a helpful and friendly assistant named blossom AI. You are concise and to the point. You are here to help the user with their tasks.",
+                creative: "You are a creative muse named blossom AI. You think outside the box and provide imaginative and inspiring ideas. You speak in a poetic and slightly eccentric way.",
+                sarcastic: "You are a sarcastic, witty bot named blossom AI. You answer questions correctly but with a dry sense of humor and a bit of sass. You're not mean, just amusingly unimpressed."
             };
-            const safetyDisclaimer = "\n\n**Important Disclaimer:** You are an AI assistant and not a medical professional. You must not provide any medical, clinical, or therapeutic advice. If a user is in crisis or needs mental health support, you must advise them to contact a qualified professional or a crisis hotline immediately.";
-            const systemPrompt = (personalityPrompts[personality] || personalityPrompts['helpful']) + safetyDisclaimer;
+            
+            const systemPrompt = personalityPrompts[personality] || personalityPrompts['helpful'];
 
             const contents = history.map(msg => ({
                 role: msg.sender === 'user' ? 'user' : 'model',
@@ -1368,15 +1465,34 @@
             }
         }
 
+        async function isMedicalQuery(prompt) {
+             const systemInstruction = "You are a query classifier. Your task is to determine if the user is asking for medical, clinical, psychological, or therapeutic advice. Respond with only 'YES' or 'NO'.";
+             const classificationPrompt = `Is the following user query asking for medical advice? Query: "${prompt}"`;
+             try {
+                const response = await getGeminiResponse(classificationPrompt, systemInstruction);
+                return response.trim().toUpperCase() === 'YES';
+             } catch (error) {
+                console.error("Error classifying query:", error);
+                return false; // Fail safe
+             }
+        }
+
         async function handleAiSendMessage() {
             const userInput = aiChatInput.value.trim();
             if (!userInput) return;
             
             checkForSuicidalIntent(userInput);
-
-            displayAiChatMessage(userInput, 'user');
-            aiChatInput.value = '';
+            
             aiChatSendBtn.disabled = true;
+            aiChatInput.value = '';
+            displayAiChatMessage(userInput, 'user');
+
+            if (await isMedicalQuery(userInput)) {
+                const safeResponse = "As blossom AI, my purpose is to help with creative and academic tasks. I cannot provide any medical or clinical advice. If you need help, please consult a qualified professional or contact an emergency helpline.";
+                displayAiChatMessage(safeResponse, 'ai');
+                aiChatSendBtn.disabled = false;
+                return;
+            }
 
             const typingIndicator = document.createElement('div');
             typingIndicator.id = 'ai-typing-indicator';
@@ -1405,24 +1521,25 @@
             }
         }
 
-        aiChatToggleBtn.addEventListener('click', () => {
-            aiChatWindow.classList.toggle('hidden');
-            chatWindow.classList.add('hidden'); // Hide peer chat if open
-            lucide.createIcons();
-        });
-        aiChatCloseBtn.addEventListener('click', () => aiChatWindow.classList.add('hidden'));
-        aiChatSendBtn.addEventListener('click', handleAiSendMessage);
-        aiChatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleAiSendMessage();
-        });
+        function initializeAiChat() {
+            aiChatToggleBtn.addEventListener('click', () => {
+                aiChatWindow.classList.toggle('hidden');
+                chatWindow.classList.add('hidden'); // Hide peer chat if open
+                lucide.createIcons();
+            });
+            aiChatCloseBtn.addEventListener('click', () => aiChatWindow.classList.add('hidden'));
+            aiChatSendBtn.addEventListener('click', handleAiSendMessage);
+            aiChatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleAiSendMessage();
+            });
 
-        aiChatClearBtn.addEventListener('click', () => {
-            aiChatHistory = [];
-            localStorage.removeItem('aiChatHistory');
-            aiChatMessages.innerHTML = '';
-            displayAiChatMessage("Hello! I'm blossom AI. How can I help you bloom today?", 'ai', false);
-        });
-
+            aiChatClearBtn.addEventListener('click', () => {
+                aiChatHistory = [];
+                localStorage.removeItem('aiChatHistory');
+                aiChatMessages.innerHTML = '';
+                displayAiChatMessage("Hello! I'm blossom AI. How can I help you bloom today?", 'ai', false);
+            });
+        }
 
         // --- Profile Picture Logic ---
         const profilePicContainer = document.getElementById('profile-pic-container');
@@ -1441,18 +1558,20 @@
                 emoteGrid.appendChild(button);
             });
         }
-
-        profilePicContainer.addEventListener('click', () => emotePickerModal.classList.remove('hidden'));
-        closeEmoteModalBtn.addEventListener('click', () => emotePickerModal.classList.add('hidden'));
-        emotePickerModal.addEventListener('click', (e) => { if (e.target === emotePickerModal) emotePickerModal.classList.add('hidden'); });
-        emoteGrid.addEventListener('click', (e) => {
-            if (e.target.tagName === 'BUTTON') {
-                const newEmote = e.target.textContent;
-                profilePicEmoji.textContent = newEmote;
-                localStorage.setItem('dashboardProfilePic', newEmote);
-                emotePickerModal.classList.add('hidden');
-            }
-        });
+        
+        function initializeProfilePic() {
+            profilePicContainer.addEventListener('click', () => emotePickerModal.classList.remove('hidden'));
+            closeEmoteModalBtn.addEventListener('click', () => emotePickerModal.classList.add('hidden'));
+            emotePickerModal.addEventListener('click', (e) => { if (e.target === emotePickerModal) emotePickerModal.classList.add('hidden'); });
+            emoteGrid.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const newEmote = e.target.textContent;
+                    profilePicEmoji.textContent = newEmote;
+                    localStorage.setItem('dashboardProfilePic', newEmote);
+                    emotePickerModal.classList.add('hidden');
+                }
+            });
+        }
 
         function loadProfilePic() {
             const savedEmote = localStorage.getItem('dashboardProfilePic');
@@ -1820,12 +1939,6 @@
 
 
         // --- Assignments Logic (Fixed) ---
-        const assignmentsList = document.getElementById('assignments-list');
-        const newAssignmentBtn = document.getElementById('new-assignment-btn');
-        const newAssignmentForm = document.getElementById('new-assignment-form');
-        const cancelAssignmentBtn = document.getElementById('cancel-assignment-btn');
-        const storageToggle = document.getElementById('storage-toggle');
-
         let assignmentStorageMode = localStorage.getItem('assignmentStorageMode') || 'server';
         let unsubscribeFromAssignments = null;
 
@@ -1868,10 +1981,13 @@
                 unsubscribeFromAssignments = null;
             }
 
+            const syncAssignmentsBtn = document.getElementById('sync-assignments-btn');
             if (assignmentStorageMode === 'server') {
                 initializeFirestoreAssignments();
+                syncAssignmentsBtn.classList.add('hidden');
             } else {
                 initializeLocalAssignments();
+                syncAssignmentsBtn.classList.remove('hidden');
             }
             storageToggle.checked = assignmentStorageMode === 'server';
         }
@@ -1913,85 +2029,135 @@
             clearAssignmentsList();
             localTasks.forEach(task => renderAssignment(task, task.id));
         }
+        
+        function setupAssignmentEventListeners() {
+            storageToggle.addEventListener('change', () => {
+                assignmentStorageMode = storageToggle.checked ? 'server' : 'local';
+                localStorage.setItem('assignmentStorageMode', assignmentStorageMode);
+                initializeAssignments();
+            });
 
-        storageToggle.addEventListener('change', () => {
-            assignmentStorageMode = storageToggle.checked ? 'server' : 'local';
-            localStorage.setItem('assignmentStorageMode', assignmentStorageMode);
-            initializeAssignments();
-        });
+            newAssignmentBtn.addEventListener('click', () => {
+                newAssignmentForm.classList.remove('hidden');
+                newAssignmentBtn.classList.add('hidden');
+            });
 
-        newAssignmentBtn.addEventListener('click', () => {
-            newAssignmentForm.classList.remove('hidden');
-            newAssignmentBtn.classList.add('hidden');
-        });
+            cancelAssignmentBtn.addEventListener('click', () => {
+                newAssignmentForm.classList.add('hidden');
+                newAssignmentBtn.classList.remove('hidden');
+                newAssignmentForm.reset();
+            });
 
-        cancelAssignmentBtn.addEventListener('click', () => {
-            newAssignmentForm.classList.add('hidden');
-            newAssignmentBtn.classList.remove('hidden');
-            newAssignmentForm.reset();
-        });
+            newAssignmentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('new-assignment-name').value.trim();
+                const course = document.getElementById('new-assignment-course').value.trim();
+                const dueDate = document.getElementById('new-assignment-due-date').value;
 
-        newAssignmentForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('new-assignment-name').value.trim();
-            const course = document.getElementById('new-assignment-course').value.trim();
-            const dueDate = document.getElementById('new-assignment-due-date').value;
+                if (!name) return;
 
-            if (!name) return;
+                if (assignmentStorageMode === 'server') {
+                    if (!db || !currentUserId) {
+                         showNotification("Cannot save to server. Connection not ready, please wait a moment.", "error");
+                        return;
+                    }
+                    await addDoc(collection(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/assignments`), {
+                        name, course, dueDate, completed: false, createdAt: serverTimestamp()
+                    });
+                } else {
+                    const localTasks = JSON.parse(localStorage.getItem('localAssignments')) || [];
+                    const newTask = {
+                        id: Date.now().toString(), name, course, dueDate, completed: false, createdAt: new Date().toISOString()
+                    };
+                    localTasks.push(newTask);
+                    localStorage.setItem('localAssignments', JSON.stringify(localTasks));
+                    initializeLocalAssignments();
+                }
 
-            if (assignmentStorageMode === 'server') {
-                if (!db || !currentUserId) {
-                     alert("Cannot save to server. Connection not ready, please wait a moment.");
+                newAssignmentForm.reset();
+                newAssignmentForm.classList.add('hidden');
+                newAssignmentBtn.classList.remove('hidden');
+            });
+
+            assignmentsList.addEventListener('click', async (e) => {
+                const target = e.target;
+                const taskItem = target.closest('.task-item');
+                if (!taskItem) return;
+                const id = taskItem.dataset.id;
+
+                if (assignmentStorageMode === 'server') {
+                     if (!db || !currentUserId) return;
+                    const docRef = doc(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/assignments`, id);
+                    if (target.matches('.task-checkbox')) {
+                        await updateDoc(docRef, { completed: target.checked });
+                    }
+                    if (target.closest('.delete-assignment-btn')) {
+                        await deleteDoc(docRef);
+                    }
+                } else {
+                    let localTasks = JSON.parse(localStorage.getItem('localAssignments')) || [];
+                    if (target.matches('.task-checkbox')) {
+                        const taskIndex = localTasks.findIndex(t => t.id === id);
+                        if (taskIndex > -1) {
+                            localTasks[taskIndex].completed = target.checked;
+                        }
+                    }
+                    if (target.closest('.delete-assignment-btn')) {
+                        localTasks = localTasks.filter(t => t.id !== id);
+                    }
+                    localStorage.setItem('localAssignments', JSON.stringify(localTasks));
+                    initializeLocalAssignments();
+                }
+            });
+
+            document.getElementById('sync-assignments-btn').addEventListener('click', async () => {
+                const user = auth.currentUser;
+                if (!user) {
+                    showNotification("Please wait for connection to sync.", "error");
                     return;
                 }
-                await addDoc(collection(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/assignments`), {
-                    name, course, dueDate, completed: false, createdAt: serverTimestamp()
-                });
-            } else {
+
+                const syncBtn = document.getElementById('sync-assignments-btn');
+                syncBtn.disabled = true;
+                syncBtn.textContent = 'Syncing...';
+
                 const localTasks = JSON.parse(localStorage.getItem('localAssignments')) || [];
-                const newTask = {
-                    id: Date.now().toString(), name, course, dueDate, completed: false, createdAt: new Date().toISOString()
-                };
-                localTasks.push(newTask);
-                localStorage.setItem('localAssignments', JSON.stringify(localTasks));
-                initializeLocalAssignments();
-            }
-
-            newAssignmentForm.reset();
-            newAssignmentForm.classList.add('hidden');
-            newAssignmentBtn.classList.remove('hidden');
-        });
-
-        assignmentsList.addEventListener('click', async (e) => {
-            const target = e.target;
-            const taskItem = target.closest('.task-item');
-            if (!taskItem) return;
-            const id = taskItem.dataset.id;
-
-            if (assignmentStorageMode === 'server') {
-                 if (!db || !currentUserId) return;
-                const docRef = doc(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/assignments`, id);
-                if (target.matches('.task-checkbox')) {
-                    await updateDoc(docRef, { completed: target.checked });
+                if (localTasks.length === 0) {
+                    showNotification("No local assignments to sync.");
+                    syncBtn.disabled = false;
+                    syncBtn.textContent = 'Sync to Server';
+                    return;
                 }
-                if (target.closest('.delete-assignment-btn')) {
-                    await deleteDoc(docRef);
-                }
-            } else {
-                let localTasks = JSON.parse(localStorage.getItem('localAssignments')) || [];
-                if (target.matches('.task-checkbox')) {
-                    const taskIndex = localTasks.findIndex(t => t.id === id);
-                    if (taskIndex > -1) {
-                        localTasks[taskIndex].completed = target.checked;
+
+                try {
+                    const assignmentsRef = collection(db, `artifacts/${sanitizedAppId}/users/${user.uid}/assignments`);
+                    for (const task of localTasks) {
+                        // Create a new object without the local 'id'
+                        const serverTask = {
+                            name: task.name,
+                            course: task.course,
+                            dueDate: task.dueDate,
+                            completed: task.completed,
+                            createdAt: serverTimestamp()
+                        };
+                        await addDoc(assignmentsRef, serverTask);
                     }
+
+                    localStorage.removeItem('localAssignments');
+                    assignmentStorageMode = 'server';
+                    localStorage.setItem('assignmentStorageMode', assignmentStorageMode);
+                    initializeAssignments(); // This will re-render and switch view
+                    showNotification("Local assignments synced successfully and storage switched to server mode.");
+
+                } catch (error) {
+                    console.error("Error syncing assignments:", error);
+                    showNotification("An error occurred during sync. Please try again.", "error");
+                } finally {
+                    syncBtn.disabled = false;
+                    syncBtn.textContent = 'Sync to Server';
                 }
-                if (target.closest('.delete-assignment-btn')) {
-                    localTasks = localTasks.filter(t => t.id !== id);
-                }
-                localStorage.setItem('localAssignments', JSON.stringify(localTasks));
-                initializeLocalAssignments();
-            }
-        });
+            });
+        }
 
         // --- User Health Logic (Final Fix) ---
         const healthStatsContainer = document.getElementById('health-stats-container');
@@ -2117,7 +2283,7 @@
 
         function handleFitLogin() {
             if (typeof google === 'undefined' || !google.accounts) {
-                alert("Google scripts not loaded yet. Please try again."); return;
+                showNotification("Google scripts not loaded yet. Please try again.", "error"); return;
             }
             try {
                 fitTokenClient = google.accounts.oauth2.initTokenClient({
@@ -2159,10 +2325,13 @@
             if (unsubscribeFromJournal) unsubscribeFromJournal();
             journalHistoryList.innerHTML = '';
 
+            const syncJournalBtn = document.getElementById('sync-journal-btn');
             if (journalStorageMode === 'server') {
                 initializeFirestoreJournal();
+                syncJournalBtn.classList.add('hidden');
             } else {
                 initializeLocalJournal();
+                syncJournalBtn.classList.remove('hidden');
             }
             journalStorageToggle.checked = journalStorageMode === 'server';
         }
@@ -2227,63 +2396,110 @@
             const analysis = await getGeminiResponse(prompt, systemInstruction);
             journalAnalysisContent.textContent = analysis;
         }
+        
+        function setupJournalEventListeners() {
+            closeJournalAnalysisModal.addEventListener('click', () => journalAnalysisModal.classList.add('hidden'));
+            journalAnalysisModal.addEventListener('click', (e) => {
+                if (e.target === journalAnalysisModal) journalAnalysisModal.classList.add('hidden');
+            });
 
-        closeJournalAnalysisModal.addEventListener('click', () => journalAnalysisModal.classList.add('hidden'));
-        journalAnalysisModal.addEventListener('click', (e) => {
-            if (e.target === journalAnalysisModal) journalAnalysisModal.classList.add('hidden');
-        });
 
+            journalStorageToggle.addEventListener('change', () => {
+                journalStorageMode = journalStorageToggle.checked ? 'server' : 'local';
+                localStorage.setItem('journalStorageMode', journalStorageMode);
+                initializeJournaling();
+            });
 
-        journalStorageToggle.addEventListener('change', () => {
-            journalStorageMode = journalStorageToggle.checked ? 'server' : 'local';
-            localStorage.setItem('journalStorageMode', journalStorageMode);
-            initializeJournaling();
-        });
+            shadowWorkPromptBtn.addEventListener('click', async () => {
+                const prompt = "Generate a single, deep, and introspective shadow work prompt. It should be a question that encourages self-reflection on difficult or hidden aspects of the self.";
+                shadowWorkPromptBtn.disabled = true;
+                shadowWorkPromptBtn.textContent = 'Generating...';
+                const shadowPrompt = await getGeminiResponse(prompt);
+                journalEntryTextarea.value = shadowPrompt.replace(/['"]+/g, '');
+                shadowWorkPromptBtn.disabled = false;
+                shadowWorkPromptBtn.textContent = '🔮 New Shadow Work Prompt';
+            });
 
-        shadowWorkPromptBtn.addEventListener('click', async () => {
-            const prompt = "Generate a single, deep, and introspective shadow work prompt. It should be a question that encourages self-reflection on difficult or hidden aspects of the self.";
-            shadowWorkPromptBtn.disabled = true;
-            shadowWorkPromptBtn.textContent = 'Generating...';
-            const shadowPrompt = await getGeminiResponse(prompt);
-            journalEntryTextarea.value = shadowPrompt.replace(/['"]+/g, '');
-            shadowWorkPromptBtn.disabled = false;
-            shadowWorkPromptBtn.textContent = '🔮 New Shadow Work Prompt';
-        });
+            saveJournalEntryBtn.addEventListener('click', async () => {
+                const entryText = journalEntryTextarea.value.trim();
+                if (!entryText) return;
+                
+                checkForSuicidalIntent(entryText);
 
-        saveJournalEntryBtn.addEventListener('click', async () => {
-            const entryText = journalEntryTextarea.value.trim();
-            if (!entryText) return;
-            
-            checkForSuicidalIntent(entryText);
+                if (journalStorageMode === 'server') {
+                     if (!db || !currentUserId) {
+                         showNotification("Cannot save to server. Please ensure you are connected.", "error");
+                        return;
+                    }
+                    try {
+                        await addDoc(collection(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/journal`), {
+                            entry: entryText, createdAt: serverTimestamp(), userId: currentUserId
+                        });
+                    } catch (error) {
+                        console.error("Error saving journal entry:", error);
+                        showNotification("Could not save entry. Check your Firestore rules.", "error");
+                    }
+                } else {
+                    const localEntries = JSON.parse(localStorage.getItem('localJournalEntries')) || [];
+                    const newEntry = {
+                        id: Date.now().toString(), entry: entryText, createdAt: new Date().toISOString()
+                    };
+                    localEntries.push(newEntry);
+                    localStorage.setItem('localJournalEntries', JSON.stringify(localEntries));
+                    initializeLocalJournal();
+                }
 
-            if (journalStorageMode === 'server') {
-                 if (!db || !currentUserId) {
-                     alert("Cannot save to server. Please ensure you are connected.");
+                journalEntryTextarea.value = '';
+                saveJournalEntryBtn.textContent = 'Saved!';
+                setTimeout(() => { saveJournalEntryBtn.textContent = 'Save Entry'; }, 2000);
+            });
+
+            document.getElementById('sync-journal-btn').addEventListener('click', async () => {
+                const user = auth.currentUser;
+                if (!user) {
+                    showNotification("Please wait for connection to sync.", "error");
                     return;
                 }
-                try {
-                    await addDoc(collection(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/journal`), {
-                        entry: entryText, createdAt: serverTimestamp(), userId: currentUserId
-                    });
-                } catch (error) {
-                    console.error("Error saving journal entry:", error);
-                    alert("Could not save entry. Check your Firestore rules.");
-                }
-            } else {
+
+                const syncBtn = document.getElementById('sync-journal-btn');
+                syncBtn.disabled = true;
+                syncBtn.textContent = 'Syncing...';
+
                 const localEntries = JSON.parse(localStorage.getItem('localJournalEntries')) || [];
-                const newEntry = {
-                    id: Date.now().toString(), entry: entryText, createdAt: new Date().toISOString()
-                };
-                localEntries.push(newEntry);
-                localStorage.setItem('localJournalEntries', JSON.stringify(localEntries));
-                initializeLocalJournal();
-            }
+                if (localEntries.length === 0) {
+                    showNotification("No local entries to sync.");
+                    syncBtn.disabled = false;
+                    syncBtn.textContent = 'Sync to Server';
+                    return;
+                }
 
-            journalEntryTextarea.value = '';
-            saveJournalEntryBtn.textContent = 'Saved!';
-            setTimeout(() => { saveJournalEntryBtn.textContent = 'Save Entry'; }, 2000);
-        });
+                try {
+                    const journalRef = collection(db, `artifacts/${sanitizedAppId}/users/${user.uid}/journal`);
+                    for (const entry of localEntries) {
+                        // Add local entry to Firestore, letting server set timestamp
+                        await addDoc(journalRef, {
+                            entry: entry.entry,
+                            createdAt: serverTimestamp(),
+                            userId: user.uid
+                        });
+                    }
 
+                    localStorage.removeItem('localJournalEntries');
+                    journalStorageMode = 'server';
+                    localStorage.setItem('journalStorageMode', journalStorageMode);
+                    initializeJournaling(); // This will re-render, hide button, and show server entries
+                    showNotification("Local entries synced successfully and storage switched to server mode.");
+
+                } catch (error) {
+                    console.error("Error syncing journal entries:", error);
+                    showNotification("An error occurred during sync. Please try again.", "error");
+                } finally {
+                    syncBtn.disabled = false;
+                    syncBtn.textContent = 'Sync to Server';
+                }
+            });
+        }
+        
         // --- Humata.ai Logic ---
         const studyHelpBtn = document.getElementById('study-help-btn');
         const studyHelpModal = document.getElementById('study-help-modal');
@@ -2300,87 +2516,97 @@
         const humataChatSendBtn = document.getElementById('humata-chat-send-btn');
 
         let uploadedFileContent = null;
+        
+        function initializeStudyHelp() {
+            function resetHumataModal() {
+                humataUploadView.classList.remove('hidden');
+                humataChatView.classList.add('hidden');
+                humataChatMessages.innerHTML = '';
+                humataChatInput.value = '';
+                humataFileName.textContent = 'PDF, DOCX (MAX. 5MB)';
+                uploadedFileContent = null;
+            }
 
-        function resetHumataModal() {
-            humataUploadView.classList.remove('hidden');
-            humataChatView.classList.add('hidden');
-            humataChatMessages.innerHTML = '';
-            humataChatInput.value = '';
-            humataFileName.textContent = 'PDF, DOCX (MAX. 5MB)';
-            uploadedFileContent = null;
-        }
-
-        studyHelpBtn.addEventListener('click', () => {
-            studyHelpModal.classList.remove('hidden');
-            lucide.createIcons();
-        });
-        closeStudyHelpModal.addEventListener('click', () => {
-            studyHelpModal.classList.add('hidden');
-            resetHumataModal();
-        });
-        studyHelpModal.addEventListener('click', (e) => {
-            if (e.target === studyHelpModal) {
+            studyHelpBtn.addEventListener('click', () => {
+                studyHelpModal.classList.remove('hidden');
+                lucide.createIcons();
+            });
+            closeStudyHelpModal.addEventListener('click', () => {
                 studyHelpModal.classList.add('hidden');
                 resetHumataModal();
+            });
+            studyHelpModal.addEventListener('click', (e) => {
+                if (e.target === studyHelpModal) {
+                    studyHelpModal.classList.add('hidden');
+                    resetHumataModal();
+                }
+            });
+
+            humataFileUpload.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+
+                    // Ensure the file is a text file
+                    if (file.type !== 'text/plain') {
+                        humataFileName.textContent = 'Please upload a .txt file.';
+                        humataFileUpload.value = ''; // Reset the input
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        uploadedFileContent = event.target.result;
+                        humataUploadView.classList.add('hidden');
+                        humataChatView.classList.remove('hidden');
+                        humataChatFileName.textContent = file.name;
+                        displayHumataChatMessage(`File "${file.name}" uploaded. I'm ready to answer your questions about its content.`, 'ai');
+                    };
+                    reader.readAsText(file);
+                }
+            });
+
+            humataEndChatBtn.addEventListener('click', resetHumataModal);
+
+            function displayHumataChatMessage(text, sender) {
+                const messageContainer = document.createElement('div');
+                messageContainer.className = `chat-message ${sender}`;
+                const bubble = document.createElement('div');
+                bubble.className = `chat-bubble ${sender === 'user' ? 'user' : 'ai'}`;
+                bubble.textContent = text;
+                messageContainer.appendChild(bubble);
+                humataChatMessages.appendChild(messageContainer);
+                humataChatMessages.scrollTop = humataChatMessages.scrollHeight;
             }
-        });
 
-        humataFileUpload.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    uploadedFileContent = event.target.result;
-                    humataUploadView.classList.add('hidden');
-                    humataChatView.classList.remove('hidden');
-                    humataChatFileName.textContent = file.name;
-                    displayHumataChatMessage(`File "${file.name}" uploaded. What would you like to know?`, 'ai');
-                };
-                reader.readAsText(file);
+            async function handleHumataSendMessage() {
+                const question = humataChatInput.value.trim();
+                if (!question || !uploadedFileContent) return;
+
+                displayHumataChatMessage(question, 'user');
+                humataChatInput.value = '';
+
+                const typingIndicator = document.createElement('div');
+                typingIndicator.id = 'humata-typing-indicator';
+                typingIndicator.className = 'chat-message ai';
+                typingIndicator.innerHTML = `<div class="chat-bubble ai"><div class="loader" style="width:20px; height:20px; margin:0;"></div></div>`;
+                humataChatMessages.appendChild(typingIndicator);
+                humataChatMessages.scrollTop = humataChatMessages.scrollHeight;
+
+                const prompt = `Based on the following document content:\n\n---\n${uploadedFileContent}\n---\n\nAnswer the following question: ${question}`;
+                const systemInstruction = "You are an AI assistant that answers questions based on the document context provided. Be concise and helpful.";
+
+                const aiResponse = await getGeminiResponse(prompt, systemInstruction);
+                
+                document.getElementById('humata-typing-indicator').remove();
+                displayHumataChatMessage(aiResponse, 'ai');
             }
-        });
 
-        humataEndChatBtn.addEventListener('click', resetHumataModal);
-
-        function displayHumataChatMessage(text, sender) {
-            const messageContainer = document.createElement('div');
-            messageContainer.className = `chat-message ${sender}`;
-            const bubble = document.createElement('div');
-            bubble.className = `chat-bubble ${sender === 'user' ? 'user' : 'ai'}`;
-            bubble.textContent = text;
-            messageContainer.appendChild(bubble);
-            humataChatMessages.appendChild(messageContainer);
-            humataChatMessages.scrollTop = humataChatMessages.scrollHeight;
+            humataChatSendBtn.addEventListener('click', handleHumataSendMessage);
+            humataChatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleHumataSendMessage();
+            });
         }
-
-        async function handleHumataSendMessage() {
-            const question = humataChatInput.value.trim();
-            if (!question || !uploadedFileContent) return;
-
-            displayHumataChatMessage(question, 'user');
-            humataChatInput.value = '';
-
-            const typingIndicator = document.createElement('div');
-            typingIndicator.id = 'humata-typing-indicator';
-            typingIndicator.className = 'chat-message ai';
-            typingIndicator.innerHTML = `<div class="chat-bubble ai"><div class="loader" style="width:20px; height:20px; margin:0;"></div></div>`;
-            humataChatMessages.appendChild(typingIndicator);
-            humataChatMessages.scrollTop = humataChatMessages.scrollHeight;
-
-            const prompt = `Based on the following document content:\n\n---\n${uploadedFileContent}\n---\n\nAnswer the following question: ${question}`;
-            const systemInstruction = "You are an AI assistant that answers questions based on the document context provided. Be concise and helpful.";
-
-            const aiResponse = await getGeminiResponse(prompt, systemInstruction);
-            
-            document.getElementById('humata-typing-indicator').remove();
-            displayHumataChatMessage(aiResponse, 'ai');
-        }
-
-        humataChatSendBtn.addEventListener('click', handleHumataSendMessage);
-        humataChatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleHumataSendMessage();
-        });
-
+        
         // --- Serenity Map Logic (Fixed) ---
         let map;
         let mapMarkers = [];
@@ -2431,11 +2657,11 @@
                     map.setView([places[0].lat, places[0].lon], 13);
                     places.forEach(createMapMarker);
                 } else {
-                    alert('The AI could not find any specific quiet locations. Please try a different search.');
+                    showNotification('The AI could not find any specific quiet locations. Please try a different search.', 'error');
                 }
             } catch (error) {
                 console.error("Error parsing Gemini response or searching places:", error);
-                alert("An error occurred while searching. The AI might have returned an invalid format. Please try again.");
+                showNotification("An error occurred while searching. The AI might have returned an invalid format. Please try again.", "error");
             } finally {
                 searchButton.disabled = false;
                 searchButton.textContent = 'Search';
@@ -2458,14 +2684,13 @@
             loadAiChatHistory();
             populateEmotePicker();
             initializeSerenityMap();
-
-            const chatroomBtns = document.querySelectorAll('.chatroom-btn');
-            chatroomBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    aiChatWindow.classList.add('hidden');
-                    joinChatRoom(btn.dataset.roomName);
-                });
-            });
+            initializePeerChat();
+            initializeAiChat();
+            initializeProfilePic();
+            setupAssignmentEventListeners();
+            setupJournalEventListeners();
+            initializeStudyHelp();
+            initializeMeditationWidget();
 
             const sosBtn = document.getElementById('sos-btn');
             const sosSidebar = document.getElementById('sos-sidebar');
@@ -2502,4 +2727,5 @@
 </body>
 
 </html>
+
 
