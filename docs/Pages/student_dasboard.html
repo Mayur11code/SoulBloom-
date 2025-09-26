@@ -826,9 +826,9 @@
                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
                         <i data-lucide="upload-cloud" class="w-10 h-10 mb-2 text-gray-400"></i>
                         <p class="mb-1 text-sm text-gray-400"><span class="font-semibold">Click to upload</span></p>
-                        <p id="humata-file-name" class="text-xs text-gray-400">TXT files only (MAX. 5MB)</p>
+                        <p id="humata-file-name" class="text-xs text-gray-400">Upload any file (MAX. 5MB)</p>
                     </div>
-                    <input id="humata-file-upload" type="file" class="hidden" accept=".txt" />
+                    <input id="humata-file-upload" type="file" class="hidden" />
                 </label>
             </div>
             <div id="humata-chat-view" class="hidden flex-1 flex flex-col min-h-0">
@@ -1156,7 +1156,7 @@
                 audioPlayer.classList.add('hidden');
 
 
-                const prompt = `Generate a short (around 150 words), calming guided meditation script about "${topic}". The script should be easy to follow and soothing.`;
+                const prompt = `Generate a short (around 150 words), calming guided meditation script in the ${language} language about "${topic}". The script should be easy to follow and soothing.`;
                 const systemInstruction = "You are a meditation guide. You create peaceful and serene meditation scripts. Do not include any introductory or concluding remarks outside of the script itself.";
 
                 const script = await getGeminiResponse(prompt, systemInstruction);
@@ -1470,9 +1470,9 @@
 
         async function getGeminiResponseWithPersonality(prompt, history, personality) {
             const personalityPrompts = {
-                helpful: "You are a helpful and friendly assistant named blossom AI. You are concise and to the point. You are here to help the user with their tasks.",
-                creative: "You are a creative muse named blossom AI. You think outside the box and provide imaginative and inspiring ideas. You speak in a poetic and slightly eccentric way.",
-                sarcastic: "You are a sarcastic, witty bot named blossom AI. You answer questions correctly but with a dry sense of humor and a bit of sass. You're not mean, just amusingly unimpressed."
+                helpful: "You are a helpful and friendly assistant named blossom AI. You are concise and to the point. You are here to help the user with their tasks. Important: You must not provide any medical, clinical, or therapeutic advice. If the user asks for this type of advice, you must gently decline and suggest they consult a qualified professional.",
+                creative: "You are a creative muse named blossom AI. You think outside the box and provide imaginative and inspiring ideas. You speak in a poetic and slightly eccentric way. Important: You must not provide any medical, clinical, or therapeutic advice. If the user asks for this type of advice, you must gently decline and suggest they consult a qualified professional.",
+                sarcastic: "You are a sarcastic, witty bot named blossom AI. You answer questions correctly but with a dry sense of humor and a bit of sass. You're not mean, just amusingly unimpressed. Important: You must not provide any medical, clinical, or therapeutic advice. If the user asks for this type of advice, you must gently decline and suggest they consult a qualified professional."
             };
             
             const systemPrompt = personalityPrompts[personality] || personalityPrompts['helpful'];
@@ -1518,18 +1518,6 @@
             }
         }
 
-        async function isMedicalQuery(prompt) {
-             const systemInstruction = "You are a query classifier. Your task is to determine if the user is asking for medical, clinical, psychological, or therapeutic advice. Respond with only 'YES' or 'NO'.";
-             const classificationPrompt = `Is the following user query asking for medical advice? Query: "${prompt}"`;
-             try {
-                const response = await getGeminiResponse(classificationPrompt, systemInstruction);
-                return response.trim().toUpperCase() === 'YES';
-             } catch (error) {
-                console.error("Error classifying query:", error);
-                return false; // Fail safe
-             }
-        }
-
         async function handleAiSendMessage() {
             const userInput = aiChatInput.value.trim();
             if (!userInput) return;
@@ -1539,13 +1527,6 @@
             aiChatSendBtn.disabled = true;
             aiChatInput.value = '';
             displayAiChatMessage(userInput, 'user');
-
-            if (await isMedicalQuery(userInput)) {
-                const safeResponse = "As blossom AI, my purpose is to help with creative and academic tasks. I cannot provide any medical or clinical advice. If you need help, please consult a qualified professional or contact an emergency helpline.";
-                displayAiChatMessage(safeResponse, 'ai');
-                aiChatSendBtn.disabled = false;
-                return;
-            }
 
             const typingIndicator = document.createElement('div');
             typingIndicator.id = 'ai-typing-indicator';
@@ -2576,7 +2557,7 @@
                 humataChatView.classList.add('hidden');
                 humataChatMessages.innerHTML = '';
                 humataChatInput.value = '';
-                humataFileName.textContent = 'PDF, DOCX (MAX. 5MB)';
+                humataFileName.textContent = 'Upload any file (MAX. 5MB)';
                 uploadedFileContent = null;
             }
 
@@ -2598,13 +2579,6 @@
             humataFileUpload.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
                     const file = e.target.files[0];
-
-                    // Ensure the file is a text file
-                    if (file.type !== 'text/plain') {
-                        humataFileName.textContent = 'Please upload a .txt file.';
-                        humataFileUpload.value = ''; // Reset the input
-                        return;
-                    }
 
                     const reader = new FileReader();
                     reader.onload = (event) => {
@@ -2780,3 +2754,6 @@
 </body>
 
 </html>
+
+
+
