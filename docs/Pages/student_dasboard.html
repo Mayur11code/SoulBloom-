@@ -339,24 +339,27 @@
             background: conic-gradient(from 180deg at 50% 50%, #FBBF24, #A3E635, #4ADE80, #F87171, #FBBF24);
         }
 
-         /* START OF ADDED SCREENING STYLES */
+        /* START OF ADDED SCREENING STYLES */
         .screening-progress-bar {
             transition: width 0.3s ease-in-out;
         }
+
         .screening-option-label {
             transition: all 0.2s ease-in-out;
             cursor: pointer;
         }
+
         .screening-option-label:hover {
             background-color: rgba(255, 255, 255, 0.1);
         }
-        input[type="radio"]:checked + .screening-option-label {
+
+        input[type="radio"]:checked+.screening-option-label {
             background-color: #8e2de2;
             border-color: #a855f7;
             color: white;
         }
-        /* END OF ADDED SCREENING STYLES */
 
+        /* END OF ADDED SCREENING STYLES */
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -366,24 +369,30 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px 0 rgba(142, 45, 226, 0.55);
         }
+
         .coping-kit-button:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 20px 0 rgba(142, 45, 226, 0.7);
         }
+
         .coping-kit-dropdown {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.5s ease-in-out;
-            background-color: rgba(0,0,0,0.2);
+            background-color: rgba(0, 0, 0, 0.2);
             border-radius: 0.5rem;
         }
+
         .coping-kit-dropdown.show {
-            max-height: 500px; /* Adjust as needed */
+            max-height: 500px;
+            /* Adjust as needed */
             margin-top: 0.5rem;
         }
+
         #toggle-kit-dropdown-btn .lucide-chevron-down {
             transition: transform 0.3s ease-in-out;
         }
+
         #toggle-kit-dropdown-btn.open .lucide-chevron-down {
             transform: rotate(180deg);
         }
@@ -422,6 +431,12 @@
 
 
     <div class="max-w-7xl mx-auto relative z-10">
+        <button id="notification-bell-btn"
+            class="fixed top-8 right-24 bg-gray-700 text-white p-3 rounded-full shadow-lg hover:bg-gray-600 transition-colors z-40">
+            <i data-lucide="bell" class="w-6 h-6"></i>
+            <span id="notification-badge"
+                class="hidden absolute -top-1 -right-1 flex justify-center items-center w-5 h-5 text-xs bg-red-500 rounded-full"></span>
+        </button>
         <!-- SOS Button -->
         <button id="sos-btn"
             class="fixed top-8 right-8 bg-orange-400 text-white p-3 rounded-full shadow-lg hover:bg-orange-500 transition-transform hover:scale-110 z-40">
@@ -439,7 +454,7 @@
             </div>
             <div class="absolute bottom-4 left-32 text-2xl">
                 <span id="user-anonymous-name" class="font-bold"></span>
-                 <span id="user-verification-badge" class="hidden" title="Mental Health Screening Completed">
+                <span id="user-verification-badge" class="hidden" title="Mental Health Screening Completed">
                     <i data-lucide="shield-check" class="w-6 h-6 text-green-400"></i>
                 </span>
             </div>
@@ -460,7 +475,7 @@
                     </button>
                 </div>
                 <!-- START OF EDIT: Added Screening Button -->
-                 <div class="widget">
+                <div class="widget">
                     <button id="open-screening-btn" class="w-full">
                         <div
                             class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg p-3 text-center hover:from-purple-600 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:shadow-xl">
@@ -900,7 +915,7 @@
                         </button>
                     </div>
                 </div>
-        
+
                 <div id="coping-kit-dropdown-menu" class="coping-kit-dropdown">
                     <div class="space-y-2 text-base p-3">
                         <button data-kit-item="contacts"
@@ -935,13 +950,27 @@
                         </button>
                     </div>
                 </div>
-        
+
                 <p class="text-xs text-gray-400 mt-4">Download a complete kit or select individual resources to use them
                     anytime, even without an internet connection.</p>
             </div>
         </div>
-        
+
     </div>
+
+    <!-- START OF ADDED NOTIFICATION PANEL -->
+    <div id="notification-panel"
+        class="hidden fixed top-24 right-8 w-80 bg-[#39414A]/90 backdrop-blur-lg border border-white/10 shadow-2xl z-50 rounded-lg">
+        <div class="p-4 border-b border-white/10 flex justify-between items-center">
+            <h3 class="text-lg">Notifications</h3>
+            <button id="clear-notifications-btn" class="text-sm text-gray-400 hover:text-white hidden">Clear
+                All</button>
+        </div>
+        <div id="notification-list" class="p-2 max-h-80 overflow-y-auto">
+            <!-- Notifications will be loaded here -->
+        </div>
+    </div>
+    <!-- END OF ADDED NOTIFICATION PANEL -->
 
     <!-- Journal Analysis Modal -->
     <div id="journal-analysis-modal"
@@ -1006,46 +1035,62 @@
         </div>
     </div>
 
-    <div id="screening-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    <div id="screening-modal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50">
         <div class="widget p-6 rounded-lg max-w-2xl w-full flex flex-col" style="height: 80vh;">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5"></i> Mental Health Screening</h3>
-                <button id="close-screening-modal" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+                <h3 class="text-xl flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5"></i> Mental
+                    Health Screening</h3>
+                <button id="close-screening-modal" class="text-gray-400 hover:text-white"><i data-lucide="x"
+                        class="w-6 h-6"></i></button>
             </div>
-            
+
             <div id="screening-intro-view">
                 <h4 class="text-lg font-semibold mb-2">About this Screening</h4>
-                <p class="text-gray-300 text-base mb-4">This is a confidential screening tool based on the Patient Health Questionnaire (PHQ-9) and the Generalized Anxiety Disorder (GAD-7) assessment. It is intended to help you understand your emotional well-being and is not a substitute for a professional diagnosis.</p>
-                <p class="text-gray-400 text-sm mb-6">Your aggregated, anonymous data may be used to help us understand the well-being of our user community. Your individual responses will not be shared.</p>
-                <button id="start-screening-btn" class="w-full bg-indigo-600 text-white py-3 rounded-lg text-lg hover:bg-indigo-700 transition-colors">Start Screening</button>
+                <p class="text-gray-300 text-base mb-4">This is a confidential screening tool based on the Patient
+                    Health Questionnaire (PHQ-9) and the Generalized Anxiety Disorder (GAD-7) assessment. It is intended
+                    to help you understand your emotional well-being and is not a substitute for a professional
+                    diagnosis.</p>
+                <p class="text-gray-400 text-sm mb-6">Your aggregated, anonymous data may be used to help us understand
+                    the well-being of our user community. Your individual responses will not be shared.</p>
+                <button id="start-screening-btn"
+                    class="w-full bg-indigo-600 text-white py-3 rounded-lg text-lg hover:bg-indigo-700 transition-colors">Start
+                    Screening</button>
             </div>
 
             <div id="screening-questions-view" class="hidden flex-1 flex flex-col min-h-0">
                 <div class="w-full bg-gray-700 rounded-full h-2.5 mb-4">
-                    <div id="screening-progress-bar" class="bg-gradient-to-r from-purple-500 to-indigo-500 h-2.5 rounded-full screening-progress-bar" style="width: 0%"></div>
+                    <div id="screening-progress-bar"
+                        class="bg-gradient-to-r from-purple-500 to-indigo-500 h-2.5 rounded-full screening-progress-bar"
+                        style="width: 0%"></div>
                 </div>
                 <div id="screening-question-container" class="flex-1 overflow-y-auto pr-2">
-                    <p class="text-lg text-gray-300 mb-2">Over the last <strong>2 weeks</strong>, how often have you been bothered by the following problems?</p>
+                    <p class="text-lg text-gray-300 mb-2">Over the last <strong>2 weeks</strong>, how often have you
+                        been bothered by the following problems?</p>
                     <h3 id="screening-question-text" class="text-2xl font-semibold mb-4"></h3>
                     <div id="screening-options" class="space-y-2 text-lg"></div>
                 </div>
                 <div class="mt-4 flex justify-between items-center">
-                    <button id="screening-back-btn" class="text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button id="screening-back-btn"
+                        class="text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">
                         <i data-lucide="arrow-left" class="w-6 h-6"></i>
                     </button>
                     <span id="screening-question-counter" class="text-sm text-gray-400"></span>
-                    <button id="screening-next-btn" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
+                    <button id="screening-next-btn"
+                        class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
                         Next
                     </button>
                 </div>
             </div>
 
-             <div id="screening-results-view" class="hidden flex-1 flex-col min-h-0 items-center justify-center text-center">
+            <div id="screening-results-view"
+                class="hidden flex-1 flex-col min-h-0 items-center justify-center text-center">
                 <i data-lucide="check-circle-2" class="w-16 h-16 text-green-400 mb-4"></i>
                 <h3 class="text-2xl font-bold mb-2">Screening Complete</h3>
-                <p class="text-gray-300 mb-4">Thank you for completing the screening. Your results are being processed.</p>
+                <p class="text-gray-300 mb-4">Thank you for completing the screening. Your results are being processed.
+                </p>
                 <p class="text-sm text-gray-400">Generating your personalized report...</p>
-                 <div class="loader mt-4"></div>
+                <div class="loader mt-4"></div>
             </div>
 
         </div>
@@ -1186,7 +1231,7 @@
 
             initializeAssignments();
             initializeJournaling();
-             initializeScreening();
+            initializeScreening();
             initializeHealthWidget(); // This function was causing issues, disabling for now.
         });
 
@@ -3232,7 +3277,7 @@ Use these when you don't know what to write.
             });
         }
 
- function initializeScreening() {
+        function initializeScreening() {
             const openBtn = document.getElementById('open-screening-btn');
             const modal = document.getElementById('screening-modal');
             const closeBtn = document.getElementById('close-screening-modal');
@@ -3294,7 +3339,7 @@ Use these when you don't know what to write.
                 });
                 updateProgress();
                 nextBtn.disabled = answers[currentQuestionIndex] === null;
-                 optionsContainer.querySelectorAll('input[name="screening-option"]').forEach(radio => {
+                optionsContainer.querySelectorAll('input[name="screening-option"]').forEach(radio => {
                     radio.addEventListener('change', (e) => {
                         answers[currentQuestionIndex] = parseInt(e.target.value);
                         nextBtn.disabled = false;
@@ -3321,46 +3366,61 @@ Use these when you don't know what to write.
                 });
                 return { phqScore, gadScore };
             }
-            
-            async function generateAndSendReport() {
-                const { phqScore, gadScore } = calculateScores();
-                
-                const prompt = `A student has completed a mental health screening. Based on their scores, generate a brief, supportive, and non-clinical summary.
-                - PHQ-9 Score: ${phqScore} (Depression)
-                - GAD-7 Score: ${gadScore} (Anxiety)
-                Provide an interpretation of these scores, potential areas of concern, and suggest general well-being strategies. DO NOT provide a diagnosis. The summary should be structured and empathetic.`;
-                const systemInstruction = "You are an AI assistant designed to interpret mental health screening scores for a report. You must be empathetic, cautious, and avoid any diagnostic language. Your response should be a structured summary, suitable for a confidential student wellness file.";
 
-                const report = await getGeminiResponse(prompt, systemInstruction);
+            async function generateAndSendReport(phqScore, gadScore, rawAnswers) {
+                const systemInstruction = `You are a mental health assistant. Your task is to analyze the results of a PHQ-9 and GAD-7 screening and generate a concise, neutral, and informative report for a wellness coordinator. DO NOT provide a diagnosis. Stick to observational language.`;
+                const prompt = `A student has completed a mental health screening. Analyze the following results and generate a report.
+                    **Scores:**
+                    - PHQ-9 Score: ${phqScore} out of 27
+                    - GAD-7 Score: ${gadScore} out of 21
+                    **Interpretation Guide:**
+                    - PHQ-9 (Depression): 5-9 (Mild), 10-14 (Moderate), 15-19 (Moderately Severe), 20-27 (Severe)
+                    - GAD-7 (Anxiety): 5-9 (Mild), 10-14 (Moderate), 15-21 (Severe)
+                    **Raw Answer Details (0=Not at all, 1=Several days, 2=More than half the days, 3=Nearly every day):**
+                    - PHQ-9 Answers: ${JSON.stringify(rawAnswers.phq9)}
+                    - GAD-7 Answers: ${JSON.stringify(rawAnswers.gad7)}
+                    **Task:**
+                    1. State scores and severity levels.
+                    2. Identify top 2-3 most frequent symptoms (scores of 2 or 3).
+                    3. Note the response to PHQ-9 Question 9 (self-harm), if > 0.
+                    4. Conclude with a neutral summary.`;
 
-                if (db && currentUserId) {
-                    try {
-                        const reportRef = doc(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/mental_health_reports`, new Date().toISOString());
-                        await setDoc(reportRef, {
-                            phqScore,
-                            gadScore,
-                            report,
-                            createdAt: serverTimestamp()
-                        });
+                try {
+                    const reportText = await getGeminiResponse(prompt, systemInstruction);
 
-                        const userProfileRef = doc(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/profile`, 'main');
-                        await setDoc(userProfileRef, { screeningCompleted: true }, { merge: true });
-
-                        verificationBadge.classList.remove('hidden');
-                        showNotification("Your confidential report has been saved.", "success");
-                    } catch (error) {
-                        console.error("Failed to save report:", error);
-                        showNotification("Could not save your report. Please try again.", "error");
+                    if (!db || !currentUserId) {
+                        throw new Error("User is not properly authenticated.");
                     }
-                }
 
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    showView(introView);
-                    resetScreening();
-                }, 2000);
+                    const reportRef = collection(db, `artifacts/${sanitizedAppId}/public/data/mental_health_reports`);
+                    await addDoc(reportRef, {
+                        userId: currentUserId,
+                        report: reportText,
+                        phqScore: phqScore,
+                        gadScore: gadScore,
+                        createdAt: serverTimestamp()
+                    });
+
+                    // On success, update UI and show success notification
+                    localStorage.setItem(`screeningCompleted_${currentUserId}`, 'true');
+                    document.getElementById('screening-intro-text').classList.add('hidden');
+                    document.getElementById('screening-complete-text').classList.remove('hidden');
+                    document.getElementById('screening-btn-text').textContent = "Retake Screening";
+                    verifiedBadge.classList.remove('hidden');
+                    screeningModal.classList.add('hidden');
+                    showNotification("Screening submitted successfully!", "success");
+
+                } catch (error) {
+                    console.error("Error submitting screening report:", error);
+                    showNotification(`Failed to submit screening. This may be a permission issue with the database. Please check the console for errors.`, "error");
+                } finally {
+                    // Always re-enable the button, whether it succeeded or failed
+                    submitScreeningBtn.disabled = false;
+                    submitScreeningBtn.textContent = 'Submit';
+                }
             }
-            
+
+
             async function checkVerificationStatus() {
                 if (db && currentUserId) {
                     const userProfileRef = doc(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/profile`, 'main');
@@ -3378,7 +3438,7 @@ Use these when you don't know what to write.
                 currentQuestionIndex = 0;
                 answers.fill(null);
             }
-            
+
             openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
             closeBtn.addEventListener('click', () => {
                 modal.classList.add('hidden');
@@ -3404,8 +3464,8 @@ Use these when you don't know what to write.
                     renderQuestion();
                 }
             });
-            
-             checkVerificationStatus();
+
+            checkVerificationStatus();
 
         }
 
