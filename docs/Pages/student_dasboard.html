@@ -33,7 +33,7 @@
         }
     </script>
     <script src="https://accounts.google.com/gsi/client" onload="onGoogleScriptsLoad()" async defer></script>
-     <style>
+    <style>
         body {
             font-family: 'VT323', monospace;
             background-color: #0F2923;
@@ -1108,7 +1108,7 @@
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
 
         async function getGeminiResponse(prompt, customSystemInstruction = null) {
-            const defaultSystemInstruction = "You are a helpful assistant.";
+            const defaultSystemInstruction = "You are a helpful assistant.You will act as a companion, a close friend, always chat like a good friend and help the user take out their emotions, help them feel light and vent";
             try {
                 if (!GEMINI_API_KEY || GEMINI_API_KEY.includes('YOUR_')) {
                     return "Sorry, the AI Assistant is not configured. Please add a Gemini API Key in the code.";
@@ -1137,7 +1137,7 @@
             }
         }
 
-             // --- Guided Meditation Logic ---
+        // --- Guided Meditation Logic ---
         function initializeMeditationWidget() {
             const topicInput = document.getElementById('meditation-topic-input');
             const languageSelect = document.getElementById('meditation-language-select');
@@ -1223,7 +1223,7 @@
                 // which allows custom languages to be synthesized correctly.
                 const ttsPrompt = `Say in a calm, slow, and soothing voice: ${script}`;
                 // --- END OF CHANGE ---
-                
+
                 try {
                     const audioData = await fetchTTS(ttsPrompt);
                     if (audioData) {
@@ -1231,7 +1231,7 @@
                         const pcm16 = new Int16Array(pcmData);
                         const wavBlob = pcmToWav(pcm16, 24000);
                         const audioUrl = URL.createObjectURL(wavBlob);
-                        
+
                         audioPlayer.src = audioUrl;
                         audioPlayer.controls = true;
                         audioPlayer.classList.remove('hidden');
@@ -1240,14 +1240,14 @@
                         showNotification("Could not generate audio. Please try again.", "error");
                     }
                 } catch (error) {
-                     showNotification("An error occurred while generating audio.", "error");
-                     console.error("TTS Error:", error);
+                    showNotification("An error occurred while generating audio.", "error");
+                    console.error("TTS Error:", error);
                 } finally {
                     playBtn.disabled = false;
                     playBtn.innerHTML = 'Play Meditation';
                 }
             }
-            
+
             async function fetchTTS(prompt) {
                 const TTS_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${GEMINI_API_KEY}`;
                 const payload = {
@@ -1267,7 +1267,7 @@
                     return null;
                 }
             }
-            
+
             function base64ToArrayBuffer(base64) {
                 const binaryString = window.atob(base64);
                 const len = binaryString.length;
@@ -1285,7 +1285,7 @@
                 const blockAlign = numChannels * (bitsPerSample / 8);
                 const dataSize = pcmData.length * (bitsPerSample / 8);
                 const fileSize = 36 + dataSize;
-                
+
                 const buffer = new ArrayBuffer(44 + dataSize);
                 const view = new DataView(buffer);
 
@@ -1293,8 +1293,8 @@
                 view.setUint32(4, fileSize, true);
                 writeString(view, 8, 'WAVE');
                 writeString(view, 12, 'fmt ');
-                view.setUint32(16, 16, true); 
-                view.setUint16(20, 1, true); 
+                view.setUint32(16, 16, true);
+                view.setUint16(20, 1, true);
                 view.setUint16(22, numChannels, true);
                 view.setUint32(24, sampleRate, true);
                 view.setUint32(28, byteRate, true);
@@ -1350,7 +1350,7 @@
                 generateScript();
                 document.getElementById('sos-sidebar').classList.add('translate-x-full');
             });
-            
+
             generateBtn.addEventListener('click', generateScript);
             playBtn.addEventListener('click', playAudio);
 
@@ -1512,7 +1512,7 @@
 
         async function getGeminiResponseWithPersonality(prompt, history, personality) {
             const personalityPrompts = {
-                helpful: "You are a helpful and friendly assistant named blossom AI. You are concise and to the point. You are here to help the user with their tasks.",
+                helpful: "You are a helpful and friendly assistant named blossom AI. You are concise and to the point. You will act as a companion, a close friend, always chat like a good friend and help the user take out their emotions, help them feel light and vent",
                 creative: "You are a creative muse named blossom AI. You think outside the box and provide imaginative and inspiring ideas. You speak in a poetic and slightly eccentric way. ",
                 sarcastic: "You are a sarcastic, witty bot named blossom AI. You answer questions correctly but with a dry sense of humor and a bit of sass. You're not mean, just amusingly unimpressed. "
             };
@@ -1954,8 +1954,8 @@
 
             const FIT_API_URL = 'https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate';
             const now = new Date();
-            const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0); 
-            const endTime = new Date(); 
+            const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+            const endTime = new Date();
 
             const requestBody = {
                 aggregateBy: [{
@@ -1963,9 +1963,9 @@
                 }, {
                     dataTypeName: "com.google.active_minutes"
                 }, {
-                     dataTypeName: "com.google.heart_minutes"
+                    dataTypeName: "com.google.heart_minutes"
                 }],
-                bucketByTime: { durationMillis: 86400000 }, 
+                bucketByTime: { durationMillis: 86400000 },
                 startTimeMillis: startTime.getTime(),
                 endTimeMillis: endTime.getTime()
             };
@@ -1985,7 +1985,7 @@
                 }
                 const data = await response.json();
                 healthStatsContainer.innerHTML = '';
-                
+
                 const stepBucket = data.bucket[0]?.dataset[0]?.point[0];
                 const steps = stepBucket?.value[0]?.intVal || 0;
                 healthStatsContainer.appendChild(renderHealthGauge('steps', 'Steps', steps, 10000));
@@ -1993,7 +1993,7 @@
                 const moveMinutesBucket = data.bucket[0]?.dataset[1]?.point[0];
                 const moveMinutes = moveMinutesBucket?.value[0]?.intVal || 0;
                 healthStatsContainer.appendChild(renderHealthGauge('move', 'Move Mins', moveMinutes, 60));
-                
+
                 const heartPointsBucket = data.bucket[0]?.dataset[2]?.point[0];
                 const heartPoints = Math.round(heartPointsBucket?.value[0]?.fpVal || 0);
                 healthStatsContainer.appendChild(renderHealthGauge('heart', 'Heart Pts', heartPoints, 25));
@@ -2006,13 +2006,13 @@
                     <button id="google-fit-login-btn" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Reconnect</button>`;
                 document.getElementById('google-fit-login-btn').addEventListener('click', handleFitLogin);
             } finally {
-                isFetchingFitData = false; 
+                isFetchingFitData = false;
             }
         }
 
         function initializeHealthWidget() {
             const fitToken = localStorage.getItem('googleFitToken');
-            
+
             if (fitToken && !isFetchingFitData) {
                 googleFitAuthContainer.innerHTML = `<p class="text-sm text-green-400">Syncing Google Fit...</p>`;
                 fetchGoogleFitData(fitToken);
@@ -2236,6 +2236,8 @@
                 try {
                     const journalRef = collection(db, `artifacts/${sanitizedAppId}/users/${user.uid}/journal`);
                     for (const entry of localEntries) {
+
+                        await checkForSuicidalIntent(entry.entry);
                         await addDoc(journalRef, {
                             entry: entry.entry,
                             createdAt: serverTimestamp(),
