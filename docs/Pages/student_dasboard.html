@@ -992,7 +992,7 @@
         onAuthStateChanged(auth, user => {
             if (user) {
                 currentUserId = user.uid;
-
+                console.log("Anonymous User ID:", currentUserId);
                 let storedName = localStorage.getItem('anonymousUserName');
                 if (!storedName) {
                     storedName = generateAnonymousName();
