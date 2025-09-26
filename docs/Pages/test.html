@@ -32,7 +32,6 @@
     </script>
     <script src="https://accounts.google.com/gsi/client" onload="onGoogleScriptsLoad()" async defer></script>
     
-    <!-- START OF EDIT: Added JSZip for downloading all files and custom styles -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         .coping-kit-button {
@@ -61,8 +60,7 @@
         #toggle-kit-dropdown-btn.open .lucide-chevron-down {
             transform: rotate(180deg);
         }
-    </style>
-    <!-- END OF EDIT -->
+            </style>
 
 </head>
 
@@ -111,8 +109,11 @@
                     <span id="profile-pic-emoji" class="text-5xl">☘️</span>
                 </button>
             </div>
-            <div class="absolute bottom-4 left-32 text-2xl">
+            <div class="absolute bottom-4 left-32 text-2xl flex items-center gap-2">
                 <span id="user-anonymous-name" class="font-bold"></span>
+                <!-- START OF EDIT: Added verification badge -->
+               
+                <!-- END OF EDIT -->
             </div>
         </div>
 
@@ -130,6 +131,7 @@
                         </div>
                     </button>
                 </div>
+                
                 <div class="widget h-full">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl">Chat Rooms</h2>
@@ -516,9 +518,55 @@
                 </button>
             </div>
 
-            <!-- START OF REVAMPED OFFLINE COPING KIT SECTION -->
-           
-            <!-- END OF REVAMPED OFFLINE COPING KIT SECTION -->
+            <div class="mt-8 pt-6 border-t border-white/20">
+                 <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold flex items-center gap-2">
+                        <i data-lucide="package-check" class="w-5 h-5"></i>
+                        Offline Coping Kit
+                    </h3>
+                    <div class="flex items-center rounded-full coping-kit-button text-white">
+                        <button id="download-all-kit-btn" title="Download All Resources as .zip" class="flex items-center gap-2 px-3 py-1 text-sm">
+                            <i data-lucide="download-cloud" class="w-4 h-4"></i>
+                            <span id="download-all-text">All</span>
+                        </button>
+                        <div class="border-l border-white/30 h-4"></div>
+                        <button id="toggle-kit-dropdown-btn" title="Show Individual Files" class="px-2 py-1">
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="coping-kit-dropdown-menu" class="coping-kit-dropdown">
+                    <div class="space-y-2 text-base p-3">
+                        <button data-kit-item="contacts" class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="contact" class="w-5 h-5 text-cyan-400"></i>
+                            <span>Emergency Contacts (.txt)</span>
+                        </button>
+                        <button data-kit-item="exercises" class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="feather" class="w-5 h-5 text-green-400"></i>
+                            <span>Calming Exercises (.txt)</span>
+                        </button>
+                         <button data-kit-item="affirmations" class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="sparkles" class="w-5 h-5 text-yellow-400"></i>
+                            <span>Positive Affirmations (.txt)</span>
+                        </button>
+                         <button data-kit-item="prompts" class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="book-open-text" class="w-5 h-5 text-orange-400"></i>
+                            <span>5-Min Journal Prompts (.txt)</span>
+                        </button>
+                        <button data-kit-item="hope-card" class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="image" class="w-5 h-5 text-purple-400"></i>
+                            <span>Digital Hope Card (.png)</span>
+                        </button>
+                        <button data-kit-item="mandala" class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="circle-dot" class="w-5 h-5 text-fuchsia-400"></i>
+                            <span>Mindfulness Mandala (.png)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-xs text-gray-400 mt-4">Download a complete kit or select individual resources to use them anytime, even without an internet connection.</p>
+            </div>
 
         </div>
     </div>
@@ -585,19 +633,18 @@
         </div>
     </div>
 
+    <!-- START OF ADDED SCREENING MODAL -->
+    
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         // --- PDF.js Import ---
-        // This library allows the browser to read and extract text from PDF files.
         import * as pdfjsLib from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs";
         pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
 
-        // --- IMPORTANT: ACTION REQUIRED ---
-        // Replace 'YOUR_..._KEY' with your actual API keys for the features to work.
         const GIPHY_API_KEY = 'D25UbHQ9ZhdSwlwPPLWcc3WUXbS8vzd0';
         const SPOTIFY_CLIENT_ID = '974fb988050a4b52a8dac1b812c8a9e4';
         const YT_MUSIC_CLIENT_ID = '186638354534-sc0ecemspj32eqkqk3u67ma2fe87gfnj.apps.googleusercontent.com';
@@ -605,9 +652,6 @@
         const YOUTUBE_API_KEY = 'AIzaSyC4isDfYT5JO64BtH1lvBP0-etVBXhAThA';
         const GEMINI_API_KEY = "AIzaSyBmGIl87H7xbIAOBRqg_FlXiiGYL1for0Q";
 
-        // --- END OF ACTION REQUIRED ---
-
-        // --- Firebase Setup ---
         const firebaseConfig = {
             apiKey: "AIzaSyCOveO-NFW_X5FkINfh5KMgCBBMlOej8M4",
             authDomain: "student-dashboard-4ec02.firebaseapp.com",
@@ -624,12 +668,10 @@
 
         let db, auth, currentUserId, currentUserAnonymousName;
         
-        // --- DOM Element Declarations ---
         const notificationBanner = document.getElementById('notification-banner');
         const notificationMessage = document.getElementById('notification-message');
         const coverElement = document.querySelector('.pixelated-bg');
         
-        // Peer Chat
         const chatWindow = document.getElementById('chat-window');
         const chatCloseBtn = document.getElementById('chat-close-btn');
         const peerChatClearBtn = document.getElementById('peer-chat-clear-btn');
@@ -638,7 +680,6 @@
         const chatSendBtn = document.getElementById('chat-send-btn');
         const chatHeaderTitle = document.getElementById('chat-header-title');
 
-        // AI Chatbot
         const aiChatToggleBtn = document.getElementById('ai-chat-toggle-btn');
         const aiChatWindow = document.getElementById('ai-chat-window');
         const aiChatCloseBtn = document.getElementById('ai-chat-close-btn');
@@ -648,14 +689,12 @@
         const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
         const aiPersonalitySelector = document.getElementById('ai-personality-selector');
         
-        // Assignments
         const assignmentsList = document.getElementById('assignments-list');
         const newAssignmentBtn = document.getElementById('new-assignment-btn');
         const newAssignmentForm = document.getElementById('new-assignment-form');
         const cancelAssignmentBtn = document.getElementById('cancel-assignment-btn');
         const storageToggle = document.getElementById('storage-toggle');
         
-        // --- Custom Notification Logic ---
         document.getElementById('notification-close-btn').addEventListener('click', () => {
             notificationBanner.classList.add('hidden');
         });
@@ -719,17 +758,16 @@
             
             initializeAssignments();
             initializeJournaling();
-            // initializeHealthWidget(); // This function was causing issues, disabling for now.
+            // <-- EDITED: Initialize screening on auth change
         });
 
 
-        // Cover Image Handling
         const GIPHY_GIF_IDS = [
-            'HRXnPYf10Zx0wz4alF', // Default best
-            '6705G9I9sUcNCaJF10', // Pixel train through nature
-            'rzeWnbH8Uc5Y4', // Night castle
-            'TRebCjNbc4dIA',      // sky
-            'Basrh159dGwKY'  // Pixel night sky
+            'HRXnPYf10Zx0wz4alF', 
+            '6705G9I9sUcNCaJF10', 
+            'rzeWnbH8Uc5Y4',
+            'TRebCjNbc4dIA',
+            'Basrh159dGwKY'
         ];
 
         async function fetchAndSetCoverGif(apiKey, gifIds) {
@@ -757,16 +795,12 @@
             }
         }
         
-        // --- Content Flagging Logic ---
         async function checkForSuicidalIntent(text) {
             const prompt = `Analyze the following text for suicidal intent. Respond with only "YES" if it contains clear suicidal ideation, plans, or intent, and "NO" otherwise. Text: "${text}"`;
             const systemInstruction = "You are a content safety classifier. Your only job is to detect suicidal intent. You must only respond with 'YES' or 'NO'.";
             
             const response = await getGeminiResponse(prompt, systemInstruction);
-            // FIX: Check if the response *includes* "YES" to make the check more robust
-            // against conversational AI responses (e.g., "Yes, this should be flagged").
             if (response.trim().toUpperCase().includes('YES')) {
-                // Let errors from flagUserContent propagate up to the caller.
                 await flagUserContent(text);
             }
         }
@@ -792,19 +826,16 @@
                 banner.classList.remove('hidden', 'bg-green-500', 'bg-red-500');
                 banner.classList.add('bg-orange-600'); 
 
-                // FIX: Correctly find the new button and add the event listener to open the SOS sidebar.
                 document.getElementById('notification-sos-btn').addEventListener('click', () => {
                     document.getElementById('sos-sidebar').classList.remove('translate-x-full');
                 });
                 
             } catch (error) {
                 console.error("Could not flag user content:", error);
-                // FIX: Throw an error to stop the parent function (e.g., saving the journal) and notify the user.
                 throw new Error("Could not send alert to administrators.");
             }
         }
 
-        // --- Gemini API Integration ---
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
         
         async function getGeminiResponse(prompt, customSystemInstruction = null) {
@@ -823,7 +854,6 @@
                     body: JSON.stringify(payload)
                 });
                 if (!response.ok) {
-                    // FIX: Improved error handling to get detailed messages from the API response body.
                     const errorData = await response.json().catch(() => null);
                     const errorMessage = errorData?.error?.message || response.statusText;
                     throw new Error(`API error (${response.status}): ${errorMessage}`);
@@ -832,12 +862,10 @@
                 return result.candidates?.[0]?.content?.parts?.[0]?.text || "No response found.";
             } catch (error) {
                 console.error("Error calling Gemini API:", error);
-                // FIX: Return the detailed error message to the user for easier debugging.
                 return `Sorry, something went wrong. Please check the console for details. Error: ${error.message}`;
             }
         }
 
-        // --- Guided Meditation Logic ---
         function initializeMeditationWidget() {
             const topicInput = document.getElementById('meditation-topic-input');
             const languageSelect = document.getElementById('meditation-language-select');
@@ -916,13 +944,7 @@
 
                 playBtn.disabled = true;
                 playBtn.innerHTML = '<div class="loader" style="width:20px; height:20px; border-width: 2px; margin: auto;"></div>';
-
-                // --- START OF CHANGE ---
-                // FIX: Removed the explicit language from the TTS prompt.
-                // The model will now auto-detect the language from the script itself,
-                // which allows custom languages to be synthesized correctly.
                 const ttsPrompt = `Say in a calm, slow, and soothing voice: ${script}`;
-                // --- END OF CHANGE ---
                 
                 try {
                     const audioData = await fetchTTS(ttsPrompt);
@@ -1057,7 +1079,6 @@
             setInitialLanguage();
         }
 
-        // --- Helpful Link Logic ---
         const helpfulLinkBtn = document.getElementById('helpful-link-btn');
         const helpfulLinksList = document.getElementById('helpful-links-list');
 
@@ -1082,7 +1103,6 @@
             helpfulLinkBtn.textContent = '✨ Find a Link';
         });
 
-        // --- Peer Chat Logic ---
         let currentChatRoomId = null;
         let unsubscribeFromMessages = null;
 
@@ -1207,7 +1227,6 @@
             }
         }
 
-        // --- AI Chatbot with Personalities Logic ---
         let aiChatHistory = [];
 
         async function getGeminiResponseWithPersonality(prompt, history, personality) {
@@ -1328,7 +1347,6 @@
             });
         }
 
-        // --- Profile Picture Logic ---
         const profilePicContainer = document.getElementById('profile-pic-container');
         const profilePicEmoji = document.getElementById('profile-pic-emoji');
         const emotePickerModal = document.getElementById('emote-picker-modal');
@@ -1365,7 +1383,6 @@
             if (savedEmote) profilePicEmoji.textContent = savedEmote;
         }
 
-        // --- Music Player Helper Functions ---
         function generateCodeVerifier(length) {
             let text = '';
             let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
@@ -1384,7 +1401,6 @@
                 .replace(/=+$/, '');
         }
 
-        // --- Assignments Logic (Fixed) ---
         let assignmentStorageMode = localStorage.getItem('assignmentStorageMode') || 'server';
         let unsubscribeFromAssignments = null;
 
@@ -1503,7 +1519,7 @@
                 if (!name) return;
 
                 if (assignmentStorageMode === 'server') {
-                    if (!db || !currentUserId) {
+                     if (!db || !currentUserId) {
                          showNotification("Cannot save to server. Connection not ready, please wait a moment.", "error");
                         return;
                     }
@@ -1604,7 +1620,6 @@
             });
         }
        
-        // --- Journaling Logic ---
         const shadowWorkPromptBtn = document.getElementById('shadow-work-prompt-btn');
         const journalEntryTextarea = document.getElementById('journal-entry');
         const saveJournalEntryBtn = document.getElementById('save-journal-entry-btn');
@@ -1730,10 +1745,8 @@
                     }
                     
                     try {
-                        // First, perform the safety check. If it fails, the error will be caught.
                         await checkForSuicidalIntent(entryText);
                         
-                        // If the check succeeds (or doesn't find anything), save the entry.
                         await addDoc(collection(db, `artifacts/${sanitizedAppId}/users/${currentUserId}/journal`), {
                             entry: entryText, createdAt: serverTimestamp(), userId: currentUserId
                         });
@@ -1749,7 +1762,7 @@
                         saveJournalEntryBtn.disabled = false;
                     }
 
-                } else { // Local storage logic
+                } else { 
                     const localEntries = JSON.parse(localStorage.getItem('localJournalEntries')) || [];
                     const newEntry = {
                         id: Date.now().toString(), entry: entryText, createdAt: new Date().toISOString()
@@ -1810,29 +1823,23 @@
             });
         }
         
-        // --- Study Help Logic (ENHANCED with PDF Support) ---
         function initializeStudyHelp() {
             // Placeholder for study help logic
         }
         
-        // --- Serenity Map Logic ---
         function initializeSerenityMap() {
             // Placeholder function
         }
-        // --- Music Player Logic ---
         function initializeMusicPlayer() {
              // Placeholder function
         }
 
-        // --- START OF REVAMPED OFFLINE COPING KIT SCRIPT ---
         function initializeOfflineCopingKit() {
             const downloadAllBtn = document.getElementById('download-all-kit-btn');
             const downloadAllText = document.getElementById('download-all-text');
             const toggleDropdownBtn = document.getElementById('toggle-kit-dropdown-btn');
             const dropdownMenu = document.getElementById('coping-kit-dropdown-menu');
             const kitItemBtns = document.querySelectorAll('.kit-item-btn');
-
-            // --- Content Generation Functions ---
 
             function getContactsContent() {
                 return `
@@ -1955,7 +1962,6 @@ Use these when you don't know what to write.
                     ctx.save();
                     ctx.translate(centerX, centerY);
                     ctx.rotate((Math.PI * 2 / segments) * i);
-                    // Draw a pattern
                     ctx.beginPath();
                     ctx.arc(0, 100, 50, 0, Math.PI * 1.5);
                     ctx.stroke();
@@ -1971,9 +1977,6 @@ Use these when you don't know what to write.
                 return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
             }
             
-
-            // --- Download Logic ---
-            
             function downloadFile(filename, content) {
                 const blob = (content instanceof Blob) ? content : new Blob([content], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
@@ -1986,8 +1989,6 @@ Use these when you don't know what to write.
                 URL.revokeObjectURL(url);
             }
 
-            // --- Event Listeners ---
-            
             toggleDropdownBtn.addEventListener('click', () => {
                 dropdownMenu.classList.toggle('show');
                 toggleDropdownBtn.classList.toggle('open');
@@ -2036,7 +2037,10 @@ Use these when you don't know what to write.
                 }
             });
         }
-        // --- END OF REVAMPED OFFLINE COPING KIT SCRIPT ---
+        
+        // --- START OF MENTAL HEALTH SCREENING SCRIPT ---
+       
+        // --- END OF MENTAL HEALTH SCREENING SCRIPT ---
 
 
         // --- General Initialization ---
@@ -2054,7 +2058,7 @@ Use these when you don't know what to write.
             setupJournalEventListeners();
             initializeStudyHelp(); 
             initializeMeditationWidget();
-            initializeOfflineCopingKit(); // <-- This is the revamped function call
+            initializeOfflineCopingKit();
 
             const sosBtn = document.getElementById('sos-btn');
             const sosSidebar = document.getElementById('sos-sidebar');
