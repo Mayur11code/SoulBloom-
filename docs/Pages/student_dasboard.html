@@ -547,27 +547,35 @@
 
                     <!-- Guided Meditation -->
                     <div class="widget">
-                        <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="brain-circuit" class="w-5 h-5"></i> Guided Meditation</h2>
-                        <p class="text-gray-400 mb-3 text-base">Enter a topic and select a language for your guided meditation.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                             <input type="text" id="meditation-topic-input" placeholder="e.g., Releasing anxiety" class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                            <select id="meditation-language-select" class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                                <option value="English (India)">English (India)</option>
-                                <option value="Hindi">Hindi</option>
-                                <option value="Bengali">Bengali</option>
-                                <option value="Tamil">Tamil</option>
-                                <option value="Telugu">Telugu</option>
-                                <option value="Marathi">Marathi</option>
-                                <option value="other">Other...</option>
-                            </select>
+                         <div class="flex justify-between items-center mb-3">
+                            <h2 class="text-xl flex items-center gap-2"><i data-lucide="brain-circuit" class="w-5 h-5"></i> Guided Meditation</h2>
+                            <div class="flex items-center gap-2">
+                                <button id="clear-meditation-btn" title="Clear Meditation" class="text-gray-400 hover:text-white"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <button id="toggle-meditation-btn" title="Minimize" class="text-gray-400 hover:text-white"><i data-lucide="chevron-up" class="w-5 h-5"></i></button>
+                            </div>
                         </div>
-                        <input type="text" id="meditation-language-search" placeholder="Enter language name (e.g., French)" class="hidden w-full bg-[#2E3338] p-2 mt-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                        <div class="flex gap-2 mt-2">
-                           <button id="generate-meditation-btn" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Generate Script</button>
-                           <button id="play-meditation-btn" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" disabled>Play Meditation</button>
+                        <div id="meditation-widget-body">
+                            <p class="text-gray-400 mb-3 text-base">Enter a topic and select a language for your guided meditation.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <input type="text" id="meditation-topic-input" placeholder="e.g., Releasing anxiety" class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                                <select id="meditation-language-select" class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                                    <option value="English (India)">English (India)</option>
+                                    <option value="Hindi">Hindi</option>
+                                    <option value="Bengali">Bengali</option>
+                                    <option value="Tamil">Tamil</option>
+                                    <option value="Telugu">Telugu</option>
+                                    <option value="Marathi">Marathi</option>
+                                    <option value="other">Other...</option>
+                                </select>
+                            </div>
+                            <input type="text" id="meditation-language-search" placeholder="Enter language name (e.g., French)" class="hidden w-full bg-[#2E3338] p-2 mt-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                            <div class="flex gap-2 mt-2">
+                            <button id="generate-meditation-btn" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Generate Script</button>
+                            <button id="play-meditation-btn" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" disabled>Play Meditation</button>
+                            </div>
+                            <div id="meditation-script-container" class="gemini-response hidden mt-3 max-h-48 overflow-y-auto"></div>
+                            <audio id="meditation-audio-player" class="w-full mt-3 hidden"></audio>
                         </div>
-                         <div id="meditation-script-container" class="gemini-response hidden mt-3 max-h-48 overflow-y-auto"></div>
-                         <audio id="meditation-audio-player" class="w-full mt-3 hidden"></audio>
                     </div>
 
                     <!-- Serenity Map -->
@@ -579,28 +587,7 @@
                          </div>
                          <div id="map" class="w-full h-64 bg-[#2E3338] rounded"></div>
                     </div>
-                    <!-- Music Player -->
-                    <div class="widget">
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="music-4" class="w-6 h-6 text-green-400"></i>
-                                <div>
-                                    <h3 class="text-lg">chill vibes</h3>
-                                    <p class="text-sm text-gray-400">lo-fi beats</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button id="spotify-btn"
-                                    class="text-sm bg-[#1DB954]/80 text-white px-3 py-1 rounded hover:bg-[#1DB954] transition-colors">Spotify</button>
-                                <button id="yt-music-btn"
-                                    class="text-sm bg-[#FF0000]/80 text-white px-3 py-1 rounded hover:bg-[#FF0000] transition-colors">YT
-                                    Music</button>
-                            </div>
-                        </div>
-                        <div id="music-player-container" class="w-full h-96 mt-2">
-                            <!-- Music player content is managed by JavaScript -->
-                        </div>
-                    </div>
+                    
                     <!-- Assignments -->
                     <div class="widget">
                         <div class="flex justify-between items-center mb-3">
@@ -653,6 +640,28 @@
                                 class="w-4 h-4"></i> New</button>
                     </div>
 
+                    <!-- Music Player -->
+                    <div class="widget">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="music-4" class="w-6 h-6 text-green-400"></i>
+                                <div>
+                                    <h3 class="text-lg">chill vibes</h3>
+                                    <p class="text-sm text-gray-400">lo-fi beats</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button id="spotify-btn"
+                                    class="text-sm bg-[#1DB954]/80 text-white px-3 py-1 rounded hover:bg-[#1DB954] transition-colors">Spotify</button>
+                                <button id="yt-music-btn"
+                                    class="text-sm bg-[#FF0000]/80 text-white px-3 py-1 rounded hover:bg-[#FF0000] transition-colors">YT
+                                    Music</button>
+                            </div>
+                        </div>
+                        <div id="music-player-container" class="w-full h-96 mt-2">
+                            <!-- Music player content is managed by JavaScript -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -916,7 +925,7 @@
 
         function showNotification(message, type = 'success') {
             notificationMessage.textContent = message;
-            notificationBanner.classList.remove('bg-green-500', 'bg-red-500', 'hidden');
+            notificationBanner.classList.remove('bg-green-500', 'bg-red-500', 'bg-orange-600', 'hidden');
             if (type === 'success') {
                 notificationBanner.classList.add('bg-green-500');
             } else { // error
@@ -1035,6 +1044,27 @@
                     timestamp: serverTimestamp()
                 });
                 console.warn(`User content flagged for user: ${currentUserId}`);
+
+                // --- FIX START ---
+                // Show a custom, persistent notification for sensitive content.
+                const banner = document.getElementById('notification-banner');
+                const messageEl = document.getElementById('notification-message');
+
+                messageEl.innerHTML = `It looks like you're going through a tough time. Help is available. <button id="notification-sos-btn" class="font-bold underline hover:text-yellow-200 ml-2">Open Support Panel</button>`;
+                
+                banner.classList.remove('hidden', 'bg-green-500', 'bg-red-500');
+                banner.classList.add('bg-orange-600'); // A distinct warning color
+
+                // Add event listener to the new button
+                // Use a one-time event listener to avoid stacking them if this is called multiple times
+                const sosBtn = document.getElementById('notification-sos-btn');
+                sosBtn.replaceWith(sosBtn.cloneNode(true)); // Simple way to remove previous listeners
+                document.getElementById('notification-sos-btn').addEventListener('click', () => {
+                    document.getElementById('sos-sidebar').classList.remove('translate-x-full');
+                });
+                // Note: The default close button will still work. We are not using the auto-hide timeout for this alert.
+                // --- FIX END ---
+                
             } catch (error) {
                 console.error("Could not flag user content:", error);
             }
@@ -1078,6 +1108,9 @@
             const audioPlayer = document.getElementById('meditation-audio-player');
             const quickMeditationBtn = document.getElementById('quick-meditation-sos-btn');
             const breathingExerciseBtn = document.getElementById('breathing-exercise-sos-btn');
+            const clearBtn = document.getElementById('clear-meditation-btn');
+            const toggleBtn = document.getElementById('toggle-meditation-btn');
+            const meditationBody = document.getElementById('meditation-widget-body');
 
             let lastUsedLanguage = localStorage.getItem('lastMeditationLanguage') || 'English (India)';
 
@@ -1242,6 +1275,26 @@
                 }
             }
 
+            toggleBtn.addEventListener('click', () => {
+                meditationBody.classList.toggle('hidden');
+                if (meditationBody.classList.contains('hidden')) {
+                    toggleBtn.innerHTML = '<i data-lucide="chevron-down" class="w-5 h-5"></i>';
+                    toggleBtn.title = "Expand";
+                } else {
+                    toggleBtn.innerHTML = '<i data-lucide="chevron-up" class="w-5 h-5"></i>';
+                    toggleBtn.title = "Minimize";
+                }
+                lucide.createIcons(); // Re-render the new icon
+            });
+
+            clearBtn.addEventListener('click', () => {
+                topicInput.value = '';
+                scriptContainer.textContent = '';
+                scriptContainer.classList.add('hidden');
+                audioPlayer.src = '';
+                audioPlayer.classList.add('hidden');
+                playBtn.disabled = true;
+            });
 
             quickMeditationBtn.addEventListener('click', () => {
                 topicInput.value = "5-minute calming meditation";
@@ -2727,5 +2780,3 @@
 </body>
 
 </html>
-
-
