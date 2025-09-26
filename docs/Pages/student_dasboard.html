@@ -1108,7 +1108,7 @@
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
 
         async function getGeminiResponse(prompt, customSystemInstruction = null) {
-            const defaultSystemInstruction = "You are a helpful assistant. Important: You must not provide any medical, clinical, or therapeutic advice. Your goal is to be supportive and provide general information or creative ideas. If the user seems to be in distress or asks for advice related to health or mental well-being, you must gently decline and suggest they consult a qualified professional.";
+            const defaultSystemInstruction = "You are a helpful assistant.";
             try {
                 if (!GEMINI_API_KEY || GEMINI_API_KEY.includes('YOUR_')) {
                     return "Sorry, the AI Assistant is not configured. Please add a Gemini API Key in the code.";
