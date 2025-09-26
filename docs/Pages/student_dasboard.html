@@ -1099,6 +1099,8 @@
 
 
     <script type="module">
+        import { getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -3455,7 +3457,12 @@ Use these when you don't know what to write.
                     renderQuestion();
                 } else {
                     showView(resultsView);
-                    generateAndSendReport();
+                    const { phqScore, gadScore } = calculateScores();
+                    const rawAnswers = {
+                        phq9: questions.filter(q => q.type === 'phq').map((q, i) => answers[i]),
+                        gad7: questions.filter(q => q.type === 'gad').map((q, i) => answers[i]),
+                    };
+                    generateAndSendReport(phqScore, gadScore, rawAnswers);
                 }
             });
             backBtn.addEventListener('click', () => {
