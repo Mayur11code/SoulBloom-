@@ -476,19 +476,6 @@
                         </div>
                     </div>
 
-                    <!-- AI Assistant Widget -->
-                    <div class="widget">
-                        <h2 class="text-xl mb-3 flex items-center gap-2">✨ AI Assistant</h2>
-                        <p class="text-gray-400 mb-3 text-base">What do you want to brainstorm or generate today?</p>
-                        <div class="flex gap-2">
-                            <input type="text" id="gemini-prompt-input" placeholder="e.g., Ideas for a weekend trip"
-                                class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                            <button id="gemini-generate-btn"
-                                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Generate</button>
-                        </div>
-                        <div id="gemini-response-container" class="gemini-response"></div>
-                    </div>
-
                     <!-- Weather -->
                     <div class="widget">
                         <h2 class="text-sm text-gray-400">DELHI WEATHER</h2>
@@ -536,6 +523,34 @@
 
                 <!-- Right Column -->
                 <div class="lg:col-span-2 flex flex-col gap-6">
+
+                    <!-- Guided Meditation -->
+                    <div class="widget">
+                        <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="brain-circuit" class="w-5 h-5"></i> Guided Meditation</h2>
+                        <p class="text-gray-400 mb-3 text-base">Enter a topic and select a language for your guided meditation.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                             <input type="text" id="meditation-topic-input" placeholder="e.g., Releasing anxiety" class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                            <select id="meditation-language-select" class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                                <option value="en-US">English (US)</option>
+                                <option value="es-US">Spanish (US)</option>
+                                <option value="fr-FR">French</option>
+                                <option value="de-DE">German</option>
+                                <option value="hi-IN">Hindi</option>
+                                <option value="it-IT">Italian</option>
+                                <option value="ja-JP">Japanese</option>
+                                <option value="ko-KR">Korean</option>
+                                <option value="pt-BR">Portuguese (Brazil)</option>
+                                <option value="ru-RU">Russian</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2 mt-2">
+                           <button id="generate-meditation-btn" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Generate Script</button>
+                           <button id="play-meditation-btn" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" disabled>Play Meditation</button>
+                        </div>
+                         <div id="meditation-script-container" class="gemini-response hidden mt-3 max-h-48 overflow-y-auto"></div>
+                         <audio id="meditation-audio-player" class="w-full mt-3 hidden"></audio>
+                    </div>
+
                     <!-- Serenity Map -->
                     <div class="widget">
                          <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="map" class="w-5 h-5"></i> Serenity Map</h2>
@@ -674,18 +689,18 @@
         </div>
     </div>
 
-    <!-- AI Chatbot Icon -->
+    <!-- blossom AI Chatbot Icon -->
     <button id="ai-chat-toggle-btn"
-        class="fixed bottom-8 right-8 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition-transform hover:scale-110 z-30">
-        <i data-lucide="bot" class="w-8 h-8"></i>
+        class="fixed bottom-8 right-8 bg-fuchsia-500 text-white p-4 rounded-full shadow-lg hover:bg-fuchsia-600 transition-transform hover:scale-110 z-30">
+        <i data-lucide="flower-2" class="w-8 h-8"></i>
     </button>
 
-    <!-- AI Chat Window -->
+    <!-- blossom AI Chat Window -->
     <div id="ai-chat-window"
         class="fixed bottom-24 right-8 w-full max-w-md bg-[#39414A] rounded-lg shadow-2xl border border-[#4A5568] hidden flex flex-col z-30"
         style="height: 500px;">
         <div class="flex justify-between items-center p-3 bg-[#2E3338] rounded-t-lg">
-            <h3 class="text-lg flex items-center gap-2"><i data-lucide="bot" class="w-5 h-5"></i> AI Assistant</h3>
+            <h3 class="text-lg flex items-center gap-2"><i data-lucide="flower-2" class="w-5 h-5 text-fuchsia-400"></i> blossom AI</h3>
             <div class="flex items-center gap-3">
                 <select id="ai-personality-selector"
                     class="bg-[#39414A] text-sm rounded p-1 border border-[#4A5568] focus:outline-none text-white">
@@ -705,9 +720,9 @@
         <div class="p-3 border-t border-[#4A5568]">
             <div class="flex gap-2">
                 <input type="text" id="ai-chat-input" placeholder="Ask me anything..."
-                    class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-blue-400 text-base">
+                    class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-fuchsia-400 text-base">
                 <button id="ai-chat-send-btn"
-                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center justify-center">
+                    class="bg-fuchsia-500 text-white px-4 py-2 rounded hover:bg-fuchsia-600 flex items-center justify-center">
                     <i data-lucide="send" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -837,7 +852,7 @@
         const YT_MUSIC_CLIENT_ID = '186638354534-sc0ecemspj32eqkqk3u67ma2fe87gfnj.apps.googleusercontent.com';
         const GOOGLE_FIT_CLIENT_ID = '691627541266-nup7p5ked390epqje1vbh4eova6d7lpc.apps.googleusercontent.com';
         const YOUTUBE_API_KEY = 'AIzaSyC4isDfYT5JO64BtH1lvBP0-etVBXhAThA';
-        const GEMINI_API_KEY = "AIzaSyDzX6NrBh-02my-Sll8stjoUYffBkgVB4Y";
+        const GEMINI_API_KEY = "AIzaSyBKIy8ScHv6JqVJAMuTibo7ikvBzMSfwXo";
 
         // --- END OF ACTION REQUIRED ---
 
@@ -999,20 +1014,153 @@
             }
         }
 
-        // --- Widget AI Assistant Logic ---
-        const geminiPromptInput = document.getElementById('gemini-prompt-input');
-        const geminiGenerateBtn = document.getElementById('gemini-generate-btn');
-        const geminiResponseContainer = document.getElementById('gemini-response-container');
+        // --- Guided Meditation Logic ---
+        const meditationTopicInput = document.getElementById('meditation-topic-input');
+        const meditationLanguageSelect = document.getElementById('meditation-language-select');
+        const generateMeditationBtn = document.getElementById('generate-meditation-btn');
+        const playMeditationBtn = document.getElementById('play-meditation-btn');
+        const meditationScriptContainer = document.getElementById('meditation-script-container');
+        const meditationAudioPlayer = document.getElementById('meditation-audio-player');
+        let currentMeditationScript = null;
 
-        geminiGenerateBtn.addEventListener('click', async () => {
-            const prompt = geminiPromptInput.value.trim();
-            if (prompt) {
-                geminiResponseContainer.innerHTML = '<div class="loader"></div>';
-                geminiGenerateBtn.disabled = true;
-                geminiResponseContainer.textContent = await getGeminiResponse(prompt);
-                geminiGenerateBtn.disabled = false;
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+        
+        function pcmToWav(pcmData, sampleRate) {
+            const numChannels = 1;
+            const bitsPerSample = 16;
+            const blockAlign = (numChannels * bitsPerSample) / 8;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = pcmData.length * (bitsPerSample / 8);
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            /* RIFF identifier */
+            writeString(view, 0, 'RIFF');
+            /* file length */
+            view.setUint32(4, 36 + dataSize, true);
+            /* RIFF type */
+            writeString(view, 8, 'WAVE');
+            /* format chunk identifier */
+            writeString(view, 12, 'fmt ');
+            /* format chunk length */
+            view.setUint32(16, 16, true);
+            /* sample format (raw) */
+            view.setUint16(20, 1, true);
+            /* channel count */
+            view.setUint16(22, numChannels, true);
+            /* sample rate */
+            view.setUint32(24, sampleRate, true);
+            /* byte rate (sample rate * block align) */
+            view.setUint32(28, byteRate, true);
+            /* block align (channel count * bytes per sample) */
+            view.setUint16(32, blockAlign, true);
+            /* bits per sample */
+            view.setUint16(34, bitsPerSample, true);
+            /* data chunk identifier */
+            writeString(view, 36, 'data');
+            /* data chunk length */
+            view.setUint32(40, dataSize, true);
+
+            // Write PCM data
+            const pcm16 = new Int16Array(pcmData.buffer);
+            for (let i = 0; i < pcm16.length; i++) {
+                view.setInt16(44 + i * 2, pcm16[i], true);
+            }
+
+            function writeString(view, offset, string) {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            }
+
+            return new Blob([view], { type: 'audio/wav' });
+        }
+
+
+        generateMeditationBtn.addEventListener('click', async () => {
+            const topic = meditationTopicInput.value.trim();
+            const language = meditationLanguageSelect.value;
+            if (!topic) return;
+
+            meditationScriptContainer.innerHTML = '<div class="loader"></div>';
+            meditationScriptContainer.classList.remove('hidden');
+            generateMeditationBtn.disabled = true;
+            playMeditationBtn.disabled = true;
+            
+            const prompt = `Create a short, calming guided meditation script about "${topic}". The script should be about 150-200 words. Use gentle language and include pauses.`;
+            const systemInstruction = `You are a meditation guide. Your tone is soothing and peaceful. You are generating a script in ${language}.`;
+            
+            currentMeditationScript = await getGeminiResponse(prompt, systemInstruction);
+            
+            meditationScriptContainer.textContent = currentMeditationScript;
+            generateMeditationBtn.disabled = false;
+            playMeditationBtn.disabled = false;
+        });
+        
+        playMeditationBtn.addEventListener('click', async () => {
+             if (!currentMeditationScript) return;
+
+             playMeditationBtn.disabled = true;
+             playMeditationBtn.innerHTML = '<div class="loader" style="width:20px; height:20px; margin: auto; border-top-color: white;"></div>';
+
+            try {
+                 const ttsApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${GEMINI_API_KEY}`;
+                 const payload = {
+                     model: "gemini-2.5-flash-preview-tts",
+                     contents: [{
+                         parts: [{ text: `Speak in a calm, slow, and soothing voice for a meditation: ${currentMeditationScript}` }]
+                     }],
+                     generationConfig: {
+                         responseModalities: ["AUDIO"],
+                     },
+                 };
+                const response = await fetch(ttsApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) throw new Error(`TTS API error: ${response.statusText}`);
+                const result = await response.json();
+                
+                const audioData = result?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+                const mimeType = result?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                    const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                    if (!sampleRateMatch) throw new Error("Sample rate not found in MIME type");
+                    
+                    const sampleRate = parseInt(sampleRateMatch[1], 10);
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    
+                    meditationAudioPlayer.src = audioUrl;
+                    meditationAudioPlayer.controls = true;
+                    meditationAudioPlayer.classList.remove('hidden');
+                    meditationAudioPlayer.play();
+                } else {
+                    throw new Error("Invalid audio data in response.");
+                }
+
+            } catch(error) {
+                console.error("Error generating meditation audio:", error);
+                meditationScriptContainer.textContent = "Sorry, could not generate audio. Please try again.";
+            } finally {
+                playMeditationBtn.disabled = false;
+                playMeditationBtn.innerHTML = 'Play Meditation';
             }
         });
+
 
         // --- Helpful Link Logic ---
         const helpfulLinkBtn = document.getElementById('helpful-link-btn');
@@ -1253,7 +1401,7 @@
                 aiChatHistory.forEach(msg => displayAiChatMessage(msg.text, msg.sender, false));
             } else {
                 aiChatHistory = [];
-                displayAiChatMessage("Hello! How can I help you today?", 'ai', false);
+                displayAiChatMessage("Hello! I'm blossom AI. How can I help you bloom today?", 'ai', false);
             }
         }
 
@@ -1272,7 +1420,7 @@
             aiChatHistory = [];
             localStorage.removeItem('aiChatHistory');
             aiChatMessages.innerHTML = '';
-            displayAiChatMessage("Hello! How can I help you today?", 'ai', false);
+            displayAiChatMessage("Hello! I'm blossom AI. How can I help you bloom today?", 'ai', false);
         });
 
 
