@@ -27,6 +27,38 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl text-red-400 flex items-center gap-3"><i data-lucide="shield-alert" class="w-8 h-8"></i> Admin Monitor</h1>
         </div>
+        
+        <!-- START OF EDIT: Added Error Display Section -->
+        <div id="error-section" class="hidden bg-red-900/50 border border-red-700 text-red-200 p-4 rounded-lg mb-6">
+            <div class="flex items-center gap-3 mb-2">
+                <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                <h3 class="text-xl font-bold">Firestore Security Alert</h3>
+            </div>
+            <p id="error-message" class="font-mono text-sm"></p>
+            <div class="mt-4 bg-gray-900 p-3 rounded">
+                <p class="text-gray-400 mb-2">This usually happens when your Firestore Security Rules don't allow this admin dashboard to access user data. Please ensure your rules in the Firebase Console allow authenticated users to read public data and write to user-specific notification paths. Here's a sample rule structure:</p>
+                <pre class="text-xs text-yellow-300 whitespace-pre-wrap"><code>
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Admins need to read public data like reports and flagged users
+    match /artifacts/{appId}/public/data/{document=**} {
+      allow read: if request.auth != null;
+      // Let students write their own public data
+      allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+
+    // Admins need to write reminders to specific user notification collections
+    match /artifacts/{appId}/users/{userId}/notifications/{docId} {
+        allow read, write: if request.auth != null;
+    }
+  }
+}
+                </code></pre>
+            </div>
+        </div>
+        <!-- END OF EDIT -->
+
 
         <!-- Flagged Users Section -->
         <div id="flagged-users-section">
@@ -34,14 +66,12 @@
             <p class="text-gray-400 mb-6">This list shows users with flagged content. For each user, you can view their health report if available, or send them a reminder to complete the screening.</p>
             
             <div class="bg-gray-800 rounded-lg border border-gray-700 shadow-lg">
-                <!-- START OF EDIT: Added "Actions" column -->
                 <div class="grid grid-cols-5 font-bold text-gray-400 p-4 border-b border-gray-700">
                     <div>Timestamp</div>
                     <div>User ID</div>
                     <div class="col-span-2">Flagged Message</div>
                     <div>Actions</div>
                 </div>
-                <!-- END OF EDIT -->
                 <div id="flagged-users-list" class="divide-y divide-gray-700">
                     <div id="loading-state" class="p-8 text-center text-gray-500">
                          <p>Connecting and authenticating...</p>
@@ -50,7 +80,6 @@
             </div>
         </div>
 
-        <!-- START OF EDIT: Repurposed this section to show a single report -->
         <div id="report-viewer-section" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
             <div class="bg-gray-800 rounded-lg border border-gray-700 shadow-2xl max-w-4xl w-full p-6">
                 <div class="flex justify-between items-center mb-4">
@@ -64,10 +93,8 @@
                 </div>
             </div>
         </div>
-        <!-- END OF EDIT -->
     </div>
 
-    <!-- Custom Notification Toast -->
     <div id="notification-toast" class="hidden fixed bottom-5 right-5 bg-green-600 text-white p-3 rounded-lg shadow-lg z-50 text-base">
         <span id="notification-message"></span>
     </div>
@@ -104,57 +131,72 @@
 
         const flaggedUsersList = document.getElementById('flagged-users-list');
         const loadingState = document.getElementById('loading-state');
-        
-        // --- START OF EDIT: New and repurposed DOM Elements ---
         const reportViewerSection = document.getElementById('report-viewer-section');
         const closeReportBtn = document.getElementById('close-report-btn');
         const singleReportContent = document.getElementById('single-report-content');
         const notificationToast = document.getElementById('notification-toast');
         const notificationMessage = document.getElementById('notification-message');
-        // --- END OF EDIT ---
-        
-        // --- START OF EDIT: Added Toast Notification function ---
+        // START OF EDIT: New Error DOM elements
+        const errorSection = document.getElementById('error-section');
+        const errorMessage = document.getElementById('error-message');
+        // END OF EDIT
+
+        // START OF EDIT: Added Error display function
+        function showPermissionError(message) {
+            errorMessage.textContent = message;
+            errorSection.classList.remove('hidden');
+        }
+        // END OF EDIT
+
         function showToast(message, type = 'success') {
             notificationMessage.textContent = message;
-            notificationToast.classList.remove('hidden', 'bg-green-600', 'bg-blue-600');
-            notificationToast.classList.add(type === 'success' ? 'bg-green-600' : 'bg-blue-600');
-            notificationToast.classList.remove('hidden');
+            notificationToast.classList.remove('hidden', 'bg-green-600', 'bg-blue-600', 'bg-red-600');
+            let colorClass = 'bg-green-600';
+            if (type === 'info') colorClass = 'bg-blue-600';
+            if (type === 'error') colorClass = 'bg-red-600';
+            notificationToast.classList.add(colorClass);
             setTimeout(() => {
                 notificationToast.classList.add('hidden');
             }, 3000);
         }
-        // --- END OF EDIT ---
 
-        // --- START OF EDIT: New functions for viewing reports and sending reminders ---
+        // START OF EDIT: Wrapped function logic in try/catch to handle permission errors
         async function checkReportStatus(userId, actionCell) {
-            actionCell.innerHTML = `<div class="h-5 w-5 border-2 border-t-transparent border-gray-400 rounded-full animate-spin"></div>`; // Loading spinner
+            actionCell.innerHTML = `<div class="h-5 w-5 border-2 border-t-transparent border-gray-400 rounded-full animate-spin"></div>`;
             
-            const reportsRef = collection(db, `artifacts/${sanitizedAppId}/public/data/mental_health_reports`);
-            const q = query(reportsRef, where("userId", "==", userId));
-            const querySnapshot = await getDocs(q);
+            try {
+                const reportsRef = collection(db, `artifacts/${sanitizedAppId}/public/data/mental_health_reports`);
+                const q = query(reportsRef, where("userId", "==", userId));
+                const querySnapshot = await getDocs(q);
 
-            actionCell.innerHTML = ''; // Clear spinner
+                actionCell.innerHTML = ''; 
 
-            if (!querySnapshot.empty) {
-                // Report exists
-                const reportDoc = querySnapshot.docs[0]; // Get the first report found
-                const viewBtn = document.createElement('button');
-                viewBtn.className = "bg-indigo-600 text-white px-3 py-1 text-sm rounded hover:bg-indigo-700 transition-colors flex items-center gap-1";
-                viewBtn.innerHTML = `<i data-lucide="file-text" class="w-4 h-4"></i> View Report`;
-                viewBtn.onclick = () => displaySingleReport(reportDoc.data());
-                actionCell.appendChild(viewBtn);
-            } else {
-                // No report exists
-                const remindBtn = document.createElement('button');
-                remindBtn.className = "bg-yellow-600 text-white px-3 py-1 text-sm rounded hover:bg-yellow-700 transition-colors flex items-center gap-1";
-                remindBtn.innerHTML = `<i data-lucide="bell-ring" class="w-4 h-4"></i> Send Reminder`;
-                remindBtn.onclick = async () => {
-                    await sendScreeningReminder(userId, remindBtn);
-                };
-                actionCell.appendChild(remindBtn);
+                if (!querySnapshot.empty) {
+                    const reportDoc = querySnapshot.docs[0]; 
+                    const viewBtn = document.createElement('button');
+                    viewBtn.className = "bg-indigo-600 text-white px-3 py-1 text-sm rounded hover:bg-indigo-700 transition-colors flex items-center gap-1";
+                    viewBtn.innerHTML = `<i data-lucide="file-text" class="w-4 h-4"></i> View Report`;
+                    viewBtn.onclick = () => displaySingleReport(reportDoc.data());
+                    actionCell.appendChild(viewBtn);
+                } else {
+                    const remindBtn = document.createElement('button');
+                    remindBtn.className = "bg-yellow-600 text-white px-3 py-1 text-sm rounded hover:bg-yellow-700 transition-colors flex items-center gap-1";
+                    remindBtn.innerHTML = `<i data-lucide="bell-ring" class="w-4 h-4"></i> Send Reminder`;
+                    remindBtn.onclick = async () => {
+                        await sendScreeningReminder(userId, remindBtn);
+                    };
+                    actionCell.appendChild(remindBtn);
+                }
+                lucide.createIcons();
+            } catch (error) {
+                console.error("Error checking report status:", error);
+                actionCell.innerHTML = `<span class="text-red-500 text-xs">Perm Error</span>`;
+                if (error.code === 'permission-denied') {
+                    showPermissionError('Could not check for health reports due to a permissions issue.');
+                }
             }
-            lucide.createIcons();
         }
+        // END OF EDIT
 
         function displaySingleReport(reportData) {
             const timestamp = reportData.createdAt?.toDate ? reportData.createdAt.toDate().toLocaleString() : 'N/A';
@@ -174,12 +216,12 @@
             `;
             reportViewerSection.classList.remove('hidden');
         }
-
+        
+        // START OF EDIT: Wrapped function logic in try/catch to handle permission errors
         async function sendScreeningReminder(userId, button) {
              button.disabled = true;
              button.textContent = 'Sending...';
             try {
-                // NOTE: This relies on the student dashboard listening to this private path.
                 const notificationsRef = collection(db, `artifacts/${sanitizedAppId}/users/${userId}/notifications`);
                 await addDoc(notificationsRef, {
                     title: "Wellness Check-in Recommended",
@@ -194,13 +236,15 @@
                 lucide.createIcons();
             } catch (error) {
                 console.error("Failed to send reminder:", error);
-                showToast("Error: Could not send reminder.", "error"); // Assuming error type exists for showToast
+                showToast("Error: Could not send reminder.", "error"); 
                 button.disabled = false;
                 button.textContent = 'Send Reminder';
+                if (error.code === 'permission-denied') {
+                    showPermissionError('Could not send a reminder due to a permissions issue.');
+                }
             }
         }
-        // --- END OF EDIT ---
-
+        // END OF EDIT
 
         function listenForFlaggedUsers() {
             if (!db) return;
@@ -226,13 +270,12 @@
                     if (change.type === "added") {
                         const userData = change.doc.data();
                         const newRow = document.createElement('div');
-                        // START OF EDIT: Changed grid layout to 5 columns
                         newRow.className = 'grid grid-cols-5 p-4 items-center bg-red-900/20 hover:bg-red-900/40 transition-colors duration-300';
                         
                         const timestamp = userData.timestamp?.toDate ? userData.timestamp.toDate().toLocaleString() : 'N/A';
                         
                         const actionCell = document.createElement('div');
-                        actionCell.className = "flex justify-start"; // Action cell
+                        actionCell.className = "flex justify-start";
                         
                         newRow.innerHTML = `
                             <div class="text-sm text-gray-400">${timestamp}</div>
@@ -243,15 +286,16 @@
                         newRow.appendChild(actionCell);
                         flaggedUsersList.prepend(newRow);
 
-                        // Asynchronously check for the user's report status and add the correct button
                         checkReportStatus(userData.userId, actionCell);
-                        // END OF EDIT
                     }
                 });
 
             }, (error) => {
                 console.error("Error listening for flagged users:", error);
-                loadingState.innerHTML = `<div class="p-4 text-center text-red-500">Error listening for updates. Check your browser console and Firestore security rules.</div>`;
+                loadingState.innerHTML = `<div class="p-4 text-center text-red-500">Error listening for updates. Check your browser console.</div>`;
+                 if (error.code === 'permission-denied') {
+                    showPermissionError('Could not listen for flagged users due to a permissions issue.');
+                }
             });
         }
         
@@ -261,11 +305,9 @@
                 return;
             };
 
-            // START OF EDIT: Added event listener for the close button
             closeReportBtn.addEventListener('click', () => {
                 reportViewerSection.classList.add('hidden');
             });
-            // END OF EDIT
 
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
@@ -293,4 +335,3 @@
     </script>
 </body>
 </html>
-
