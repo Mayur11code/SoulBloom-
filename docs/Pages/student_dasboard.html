@@ -3372,20 +3372,17 @@ Use these when you don't know what to write.
             async function generateAndSendReport(phqScore, gadScore, rawAnswers) {
                 const systemInstruction = `You are a mental health assistant. Your task is to analyze the results of a PHQ-9 and GAD-7 screening and generate a concise, neutral, and informative report for a wellness coordinator. DO NOT provide a diagnosis. Stick to observational language.`;
                 const prompt = `A student has completed a mental health screening. Analyze the following results and generate a report.
-                    **Scores:**
-                    - PHQ-9 Score: ${phqScore} out of 27
-                    - GAD-7 Score: ${gadScore} out of 21
-                    **Interpretation Guide:**
-                    - PHQ-9 (Depression): 5-9 (Mild), 10-14 (Moderate), 15-19 (Moderately Severe), 20-27 (Severe)
-                    - GAD-7 (Anxiety): 5-9 (Mild), 10-14 (Moderate), 15-21 (Severe)
-                    **Raw Answer Details (0=Not at all, 1=Several days, 2=More than half the days, 3=Nearly every day):**
-                    - PHQ-9 Answers: ${JSON.stringify(rawAnswers.phq9)}
-                    - GAD-7 Answers: ${JSON.stringify(rawAnswers.gad7)}
-                    **Task:**
-                    1. State scores and severity levels.
-                    2. Identify top 2-3 most frequent symptoms (scores of 2 or 3).
-                    3. Note the response to PHQ-9 Question 9 (self-harm), if > 0.
-                    4. Conclude with a neutral summary.`;
+        **Scores:**
+        - PHQ-9 Score: ${phqScore} out of 27
+        - GAD-7 Score: ${gadScore} out of 21
+        **Raw Answer Details:**
+        - PHQ-9 Answers: ${JSON.stringify(rawAnswers?.phq9 || [])}
+        - GAD-7 Answers: ${JSON.stringify(rawAnswers?.gad7 || [])}
+        **Task:**
+        1. State scores and severity levels.
+        2. Identify top 2-3 most frequent symptoms (scores of 2 or 3).
+        3. Note the response to PHQ-9 Question 9 (self-harm), if > 0.
+        4. Conclude with a neutral summary.`;
 
                 try {
                     const reportText = await getGeminiResponse(prompt, systemInstruction);
@@ -3398,29 +3395,46 @@ Use these when you don't know what to write.
                     await addDoc(reportRef, {
                         userId: currentUserId,
                         report: reportText,
-                        phqScore: phqScore,
-                        gadScore: gadScore,
+                        phqScore,
+                        gadScore,
                         createdAt: serverTimestamp()
                     });
 
-                    // On success, update UI and show success notification
+                    // persist local flag
                     localStorage.setItem(`screeningCompleted_${currentUserId}`, 'true');
-                    document.getElementById('screening-intro-text').classList.add('hidden');
-                    document.getElementById('screening-complete-text').classList.remove('hidden');
-                    document.getElementById('screening-btn-text').textContent = "Retake Screening";
-                    verifiedBadge.classList.remove('hidden');
-                    screeningModal.classList.add('hidden');
+
+                    // SAFELY toggle UI elements (guard each lookup)
+                    const introText = document.getElementById('screening-intro-text');
+                    if (introText) introText.classList.add('hidden');
+
+                    const completeText = document.getElementById('screening-complete-text');
+                    if (completeText) completeText.classList.remove('hidden');
+
+                    const btnText = document.getElementById('screening-btn-text');
+                    if (btnText) btnText.textContent = "Retake Screening";
+
+                    const verificationBadgeEl = document.getElementById('user-verification-badge');
+                    if (verificationBadgeEl) verificationBadgeEl.classList.remove('hidden');
+
+                    const screeningModalEl = document.getElementById('screening-modal');
+                    if (screeningModalEl) screeningModalEl.classList.add('hidden');
+
+                    // If you show the results view, ensure its element exists
+                    const resultsViewEl = document.getElementById('screening-results-view');
+                    if (resultsViewEl) {
+                        // keep the "completed" view visible, or turn off any loader inside it
+                        resultsViewEl.classList.remove('hidden');
+                    }
+
                     showNotification("Screening submitted successfully!", "success");
 
                 } catch (error) {
                     console.error("Error submitting screening report:", error);
-                    showNotification(`Failed to submit screening. This may be a permission issue with the database. Please check the console for errors.`, "error");
-                } finally {
-                    // Always re-enable the button, whether it succeeded or failed
-                    // submitScreeningBtn.disabled = false;
-                    // submitScreeningBtn.textContent = 'Submit';
+                    showNotification("Failed to submit screening. Check console for details.", "error");
                 }
+                // NOTE: intentionally no reference to submitScreeningBtn here
             }
+
 
 
             async function checkVerificationStatus() {
@@ -3456,15 +3470,27 @@ Use these when you don't know what to write.
                     currentQuestionIndex++;
                     renderQuestion();
                 } else {
-                    showView(resultsView);
+                    // build scores + raw answers then call the report generator
                     const { phqScore, gadScore } = calculateScores();
-                    const rawAnswers = {
-                        phq9: questions.filter(q => q.type === 'phq').map((q, i) => answers[i]),
-                        gad7: questions.filter(q => q.type === 'gad').map((q, i) => answers[i]),
-                    };
+
+                    // build raw answers mapped into phq9/gad7 arrays in the correct order
+                    const phqRaw = questions
+                        .map((q, i) => ({ type: q.type, val: answers[i] }))
+                        .filter(x => x.type === 'phq')
+                        .map(x => x.val ?? 0);
+
+                    const gadRaw = questions
+                        .map((q, i) => ({ type: q.type, val: answers[i] }))
+                        .filter(x => x.type === 'gad')
+                        .map(x => x.val ?? 0);
+
+                    const rawAnswers = { phq9: phqRaw, gad7: gadRaw };
+
+                    showView(resultsView);
                     generateAndSendReport(phqScore, gadScore, rawAnswers);
                 }
             });
+
             backBtn.addEventListener('click', () => {
                 if (currentQuestionIndex > 0) {
                     currentQuestionIndex--;
