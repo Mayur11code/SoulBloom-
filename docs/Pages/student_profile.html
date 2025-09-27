@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile - [Student Name] - Soul Bloom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #134e25;
+        }
+        .dark body {
+            background-color: #0c1a1e;
+        }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom card styling for a consistent look */
+        .dashboard-card {
+            background-color: rgba(17, 24, 39, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        /* Animated Background Styles */
+        #garden-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .leaf {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22L6.66 19.7C7.14 18.45 7.93 17.37 8.95 16.54C10 15.64 11.22 15 12.5 15H17V12H12.5C11.54 12 10.64 11.73 9.84 11.23C9.04 10.73 8.36 10.05 7.85 9.24C7.05 7.94 6.75 6.45 7 5C7.25 3.55 8.06 2.22 9.24 1.28L10.47 2.5L9.5 3.47C9.06 3.91 8.72 4.45 8.5 5C8.25 5.55 8.12 6.16 8.12 6.79C8.12 7.41 8.25 8.03 8.5 8.5C8.72 9.05 9.06 9.59 9.5 10.03L10.47 11L17 11V8Z" fill="%2322c55e"/></svg>');
+            background-size: contain;
+            animation: float 25s infinite linear;
+            opacity: 0;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="dark text-gray-200">
+    
+    <div id="garden-bg"></div>
+    
+    <header class="sticky top-0 z-50 w-full bg-gray-900/50 backdrop-blur-lg border-b border-white/10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="mentor_dashboard.html" class="text-3xl font-bold font-playfair text-green-400">
+                Soul Bloom <span class="text-xl text-gray-300 font-sans font-medium">| Student Profile</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-transform transform hover:scale-105 flex items-center gap-2" onclick="assignCounsellor()">
+                    <i data-lucide="user-plus" class="w-5 h-5"></i>
+                    <span>Assign Counselor</span>
+                </button>
+                <a href="mentor_dashboard.html" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-full transition-transform transform hover:scale-105">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6 lg:p-8 relative z-10">
+        <div class="flex items-center gap-4 mb-6">
+            <div class="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center text-5xl font-bold text-green-400">
+                <i data-lucide="user" class="w-16 h-16"></i>
+            </div>
+            <div>
+                <h1 class="text-4xl font-bold text-white">Anonymous <span class="text-xl text-gray-400">(#84021)</span></h1>
+                <p class="text-lg text-gray-400">Status: <span class="text-red-300 font-semibold">In Crisis</span></p>
+                <p class="text-md text-gray-500">Joined: August 1, 2023</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+           
+
+            <div class="lg:col-span-2 dashboard-card rounded-2xl p-6">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i data-lucide="activity" class="w-6 h-6 text-yellow-400"></i> Anxiety/Depression Symptom Trends (Last 6 Quizzes)
+                </h3>
+                <canvas id="symptomTrendChart"></canvas>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="dashboard-card rounded-2xl p-6">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i data-lucide="clipboard-list" class="w-6 h-6 text-purple-400"></i> Recent Check-ins
+                </h3>
+                <ul class="space-y-4">
+                    <li class="border-b border-gray-700 pb-4 last:border-b-0 last:pb-0">
+                        <p class="text-sm text-gray-400">August 28, 2024 - <span class="text-red-300">Mood: 3/10 (High Stress)</span></p>
+                        <p class="text-gray-300 italic">"Feeling overwhelmed with academic and personal pressures. Difficulty sleeping."</p>
+                    </li>
+                    <li class="border-b border-gray-700 pb-4 last:border-b-0 last:pb-0">
+                        <p class="text-sm text-gray-400">August 25, 2024 - <span class="text-yellow-300">Mood: 5/10 (Struggling)</span></p>
+                        <p class="text-gray-300 italic">"Had a tough week, but trying to stay positive. Met with Dr. Lee."</p>
+                    </li>
+                    <li class="border-b border-gray-700 pb-4 last:border-b-0 last:pb-0">
+                        <p class="text-sm text-gray-400">August 21, 2024 - <span class="text-blue-300">Mood: 7/10 (Stable)</span></p>
+                        <p class="text-gray-300 italic">"Feeling okay, managing coursework. Still a bit anxious about the future."</p>
+                    </li>
+                </ul>
+                <button class="mt-6 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-full transition-transform transform hover:scale-105 flex items-center justify-center gap-2">
+                    <i data-lucide="history" class="w-5 h-5"></i> View Full Check-in History
+                </button>
+            </div>
+
+            <div class="dashboard-card rounded-2xl p-6">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i data-lucide="notebook-text" class="w-6 h-6 text-cyan-400"></i> Mentor Notes
+                </h3>
+                <div class="space-y-4">
+                    <div class="border-b border-gray-700 pb-4 last:border-b-0 last:pb-0">
+                        <p class="text-sm text-gray-400">Note by Dr. Evans - August 28, 2024</p>
+                        <p class="text-gray-300 italic">"Olivia is showing increased signs of distress. Followed up with Dr. Lee. Recommend checking in daily for the next few days."</p>
+                    </div>
+                    <div class="border-b border-gray-700 pb-4 last:border-b-0 last:pb-0">
+                        <p class="text-sm text-gray-400">Note by Dr. Evans - August 25, 2024</p>
+                        <p class="text-gray-300 italic">"Spoke with Olivia, she's feeling pressure but is engaging with coping strategies. Monitor closely."</p>
+                    </div>
+                </div>
+                <button class="mt-6 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-full transition-transform transform hover:scale-105 flex items-center justify-center gap-2">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Add New Note
+                </button>
+            </div>
+        </div>
+
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            
+            const gardenBg = document.getElementById('garden-bg');
+            for (let i = 0; i < 20; i++) {
+                const leaf = document.createElement('div');
+                leaf.className = 'leaf';
+                leaf.style.left = `${Math.random() * 100}vw`;
+                leaf.style.animationDuration = `${15 + Math.random() * 20}s`;
+                leaf.style.animationDelay = `${Math.random() * 10}s`;
+                leaf.style.transform = `scale(${0.5 + Math.random() * 0.8})`;
+                leaf.style.opacity = '0';
+                gardenBg.appendChild(leaf);
+            }
+
+            const symptomCtx = document.getElementById('symptomTrendChart').getContext('2d');
+            const symptomTrendChart = new Chart(symptomCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Quiz 1 (Aug 1)', 'Quiz 2 (Aug 8)', 'Quiz 3 (Aug 15)', 'Quiz 4 (Aug 22)', 'Quiz 5 (Aug 26)', 'Quiz 6 (Aug 28)'],
+                    datasets: [
+                        {
+                            label: 'Anxiety Score (0-10)',
+                            data: [4, 5, 6, 7, 8, 9], // Example data, showing increasing anxiety
+                            borderColor: '#ef4444', // red-500
+                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#ef4444',
+                            pointBorderColor: '#fff',
+                            pointHoverRadius: 7,
+                            pointRadius: 5,
+                        },
+                        {
+                            label: 'Depression Score (0-10)',
+                            data: [3, 4, 5, 6, 7, 8], // Example data, showing increasing depression
+                            borderColor: '#f59e0b', // amber-500
+                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#f59e0b',
+                            pointBorderColor: '#fff',
+                            pointHoverRadius: 7,
+                            pointRadius: 5,
+                        }
+                    ]
+                },
+                options: {
+                    plugins: {
+                        legend: { labels: { color: '#d1d5db', font: { size: 14 } } }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: { 
+                                color: '#9ca3af',
+                                callback: function(value) {
+                                    if (value === 0) return 'Very Low';
+                                    if (value === 5) return 'Moderate';
+                                    if (value === 10) return 'Severe';
+                                    return null;
+                                }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    }
+                }
+            });
+
+            // Function for "Assign Counselor" button
+            window.assignCounsellor = () => {
+                alert('Assign Counselor functionality would go here! Perhaps open a modal or navigate to a selection page.');
+                // In a real application, this would open a modal or redirect to a page to select and assign a counselor.
+            };
+        });
+    </script>
+</body>
+</html>
