@@ -1203,14 +1203,48 @@
             console.error("Firebase initialization failed. Chat features will be disabled.", e);
         }
 
+
+        function listenForNotifications(userId) {
+            const notificationsRef = collection(db, `artifacts/${sanitizedAppId}/users/${userId}/notifications`);
+            const q = query(notificationsRef, orderBy("createdAt", "desc"));
+
+            onSnapshot(q, (snapshot) => {
+                const list = document.getElementById("notification-list");
+                const badge = document.getElementById("notification-badge");
+                list.innerHTML = "";
+
+                let unreadCount = 0;
+
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const item = document.createElement("div");
+                    item.className = "p-3 border-b border-white/10 text-sm";
+                    item.innerHTML = `<strong>${data.title}</strong><p>${data.message}</p>`;
+                    list.appendChild(item);
+
+                    if (!data.read) unreadCount++;
+                });
+
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.classList.remove("hidden");
+                } else {
+                    badge.classList.add("hidden");
+                }
+            });
+        }
+
+
+
         onAuthStateChanged(auth, user => {
 
-            
+
 
             if (user) {
                 currentUserId = user.uid;
                 console.log("Anonymous User ID:", currentUserId);
                 let storedName = localStorage.getItem('anonymousUserName');
+                listenForNotifications(user.uid);
                 if (!storedName) {
                     storedName = generateAnonymousName();
                     localStorage.setItem('anonymousUserName', storedName);
@@ -1228,6 +1262,7 @@
                 }
 
             } else {
+                 signInAnonymously(auth);
                 currentUserId = null;
                 currentUserAnonymousName = "Guest";
                 const userNameElement = document.getElementById('user-anonymous-name');
@@ -1241,134 +1276,134 @@
 
 
             // --------------- Admin notifications wiring ---------------
-// Requires: db, currentUserId, sanitizedAppId, document elements:
-// #notification-bell-btn, #notification-badge, #notification-panel, #notification-list, #clear-notifications-btn
+            // Requires: db, currentUserId, sanitizedAppId, document elements:
+            // #notification-bell-btn, #notification-badge, #notification-panel, #notification-list, #clear-notifications-btn
 
-let unsubscribeNotifications = null;
+            let unsubscribeNotifications = null;
 
-function initAdminNotifications() {
-  if (!db) {
-    console.warn("Firestore not initialized yet - notifications will wait.");
-    return;
-  }
+            function initAdminNotifications() {
+                if (!db) {
+                    console.warn("Firestore not initialized yet - notifications will wait.");
+                    return;
+                }
 
-  // Collection path for admin notifications (change if your backend uses another path)
-  const notificationsRef = collection(db, `artifacts/${sanitizedAppId}/public/data/notifications`);
+                // Collection path for admin notifications (change if your backend uses another path)
+                const notificationsRef = collection(db, `artifacts/${sanitizedAppId}/public/data/notifications`);
 
-  // Use orderBy if you've imported it; otherwise remove the orderBy bit and sort locally.
-  const q = query(notificationsRef, orderBy('createdAt', 'desc'));
+                // Use orderBy if you've imported it; otherwise remove the orderBy bit and sort locally.
+                const q = query(notificationsRef, orderBy('createdAt', 'desc'));
 
-  // Listen live
-  unsubscribeNotifications = onSnapshot(q, snapshot => {
-    const listEl = document.getElementById('notification-list');
-    const badgeEl = document.getElementById('notification-badge');
+                // Listen live
+                unsubscribeNotifications = onSnapshot(q, snapshot => {
+                    const listEl = document.getElementById('notification-list');
+                    const badgeEl = document.getElementById('notification-badge');
 
-    if (!listEl) return console.warn('No #notification-list element found.');
+                    if (!listEl) return console.warn('No #notification-list element found.');
 
-    // Render items (clear first)
-    listEl.innerHTML = '';
+                    // Render items (clear first)
+                    listEl.innerHTML = '';
 
-    const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    // Compute unread count (we mark read by storing currentUserId in readBy array)
-    const unreadCount = docs.filter(n => !(Array.isArray(n.readBy) && n.readBy.includes(currentUserId))).length;
+                    // Compute unread count (we mark read by storing currentUserId in readBy array)
+                    const unreadCount = docs.filter(n => !(Array.isArray(n.readBy) && n.readBy.includes(currentUserId))).length;
 
-    // Update badge
-    if (badgeEl) {
-      if (unreadCount > 0) {
-        badgeEl.classList.remove('hidden');
-        badgeEl.textContent = unreadCount > 9 ? '9+' : String(unreadCount);
-      } else {
-        badgeEl.classList.add('hidden');
-      }
-    }
+                    // Update badge
+                    if (badgeEl) {
+                        if (unreadCount > 0) {
+                            badgeEl.classList.remove('hidden');
+                            badgeEl.textContent = unreadCount > 9 ? '9+' : String(unreadCount);
+                        } else {
+                            badgeEl.classList.add('hidden');
+                        }
+                    }
 
-    // Render each notification
-    docs.forEach(n => {
-      const item = document.createElement('div');
-      item.className = 'p-2 border-b border-white/10 cursor-pointer hover:bg-white/5';
-      const title = n.title || (n.level ? n.level.toUpperCase() : 'Notification');
-      const body = n.body || n.message || '';
-      const ts = n.createdAt && typeof n.createdAt.toDate === 'function' ? n.createdAt.toDate().toLocaleString() : '';
+                    // Render each notification
+                    docs.forEach(n => {
+                        const item = document.createElement('div');
+                        item.className = 'p-2 border-b border-white/10 cursor-pointer hover:bg-white/5';
+                        const title = n.title || (n.level ? n.level.toUpperCase() : 'Notification');
+                        const body = n.body || n.message || '';
+                        const ts = n.createdAt && typeof n.createdAt.toDate === 'function' ? n.createdAt.toDate().toLocaleString() : '';
 
-      item.innerHTML = `
+                        item.innerHTML = `
         <div class="text-sm font-medium">${title}</div>
         <div class="text-xs text-gray-400">${body}</div>
         <div class="text-xs text-gray-500 mt-1">${ts}</div>
       `;
 
-      // click: open link (if any) and mark read for this user
-      item.addEventListener('click', async () => {
-        if (n.link) window.open(n.link, '_blank');
+                        // click: open link (if any) and mark read for this user
+                        item.addEventListener('click', async () => {
+                            if (n.link) window.open(n.link, '_blank');
 
-        try {
-          const notifDocRef = doc(db, `artifacts/${sanitizedAppId}/public/data/notifications`, n.id);
-          const newReadBy = Array.from(new Set([...(n.readBy || []), currentUserId]));
-          await updateDoc(notifDocRef, { readBy: newReadBy });
-        } catch (err) {
-          console.error('Failed to mark notification read:', err);
-        }
-      });
+                            try {
+                                const notifDocRef = doc(db, `artifacts/${sanitizedAppId}/public/data/notifications`, n.id);
+                                const newReadBy = Array.from(new Set([...(n.readBy || []), currentUserId]));
+                                await updateDoc(notifDocRef, { readBy: newReadBy });
+                            } catch (err) {
+                                console.error('Failed to mark notification read:', err);
+                            }
+                        });
 
-      listEl.appendChild(item);
-    });
+                        listEl.appendChild(item);
+                    });
 
-    // show "no notifications" message if empty
-    if (docs.length === 0) {
-      listEl.innerHTML = '<div class="text-center text-gray-400 p-4">No notifications.</div>';
-    }
-  }, err => {
-    console.error('Notification listener error:', err);
-  });
-}
+                    // show "no notifications" message if empty
+                    if (docs.length === 0) {
+                        listEl.innerHTML = '<div class="text-center text-gray-400 p-4">No notifications.</div>';
+                    }
+                }, err => {
+                    console.error('Notification listener error:', err);
+                });
+            }
 
-// Toggle panel on bell click
-const bellBtn = document.getElementById('notification-bell-btn');
-if (bellBtn) {
-  bellBtn.addEventListener('click', () => {
-    const panel = document.getElementById('notification-panel');
-    if (!panel) return;
-    panel.classList.toggle('hidden');
+            // Toggle panel on bell click
+            const bellBtn = document.getElementById('notification-bell-btn');
+            if (bellBtn) {
+                bellBtn.addEventListener('click', () => {
+                    const panel = document.getElementById('notification-panel');
+                    if (!panel) return;
+                    panel.classList.toggle('hidden');
 
-    // Optional: when panel opens, mark all visible notifications as read for this user
-    if (!panel.classList.contains('hidden')) {
-      // get all items currently displayed and mark them read
-      // (alternative: call a cloud function to mark read for admin role)
-      const listEl = document.getElementById('notification-list');
-      if (listEl && listEl.children.length > 0) {
-        Array.from(listEl.children).forEach(async (child, idx) => {
-          // We rely on snapshot listener to handle read state per-item when clicked.
-          // If you want 'mark all read' here, implement it with updateDoc on each doc.
-        });
-      }
-    }
-  });
-}
+                    // Optional: when panel opens, mark all visible notifications as read for this user
+                    if (!panel.classList.contains('hidden')) {
+                        // get all items currently displayed and mark them read
+                        // (alternative: call a cloud function to mark read for admin role)
+                        const listEl = document.getElementById('notification-list');
+                        if (listEl && listEl.children.length > 0) {
+                            Array.from(listEl.children).forEach(async (child, idx) => {
+                                // We rely on snapshot listener to handle read state per-item when clicked.
+                                // If you want 'mark all read' here, implement it with updateDoc on each doc.
+                            });
+                        }
+                    }
+                });
+            }
 
-// "Clear All / Mark all read" button (client-side - marks each notification's readBy to include current user)
-const clearBtn = document.getElementById('clear-notifications-btn');
-if (clearBtn) {
-  clearBtn.classList.remove('hidden'); // show it if permitted
-  clearBtn.addEventListener('click', async () => {
-    if (!confirm('Mark all notifications as read for you?')) return;
-    try {
-      const snapshot = await getDocs(collection(db, `artifacts/${sanitizedAppId}/public/data/notifications`));
-      const updates = snapshot.docs.map(d => {
-        const data = d.data();
-        const newReadBy = Array.from(new Set([...(data.readBy || []), currentUserId]));
-        return updateDoc(doc(db, `artifacts/${sanitizedAppId}/public/data/notifications`, d.id), { readBy: newReadBy });
-      });
-      await Promise.all(updates);
-      showNotification('Marked all notifications as read.');
-    } catch (err) {
-      console.error('Failed to mark all read:', err);
-      showNotification('Couldn\'t mark all read. Check console.', 'error');
-    }
-  });
-}
+            // "Clear All / Mark all read" button (client-side - marks each notification's readBy to include current user)
+            const clearBtn = document.getElementById('clear-notifications-btn');
+            if (clearBtn) {
+                clearBtn.classList.remove('hidden'); // show it if permitted
+                clearBtn.addEventListener('click', async () => {
+                    if (!confirm('Mark all notifications as read for you?')) return;
+                    try {
+                        const snapshot = await getDocs(collection(db, `artifacts/${sanitizedAppId}/public/data/notifications`));
+                        const updates = snapshot.docs.map(d => {
+                            const data = d.data();
+                            const newReadBy = Array.from(new Set([...(data.readBy || []), currentUserId]));
+                            return updateDoc(doc(db, `artifacts/${sanitizedAppId}/public/data/notifications`, d.id), { readBy: newReadBy });
+                        });
+                        await Promise.all(updates);
+                        showNotification('Marked all notifications as read.');
+                    } catch (err) {
+                        console.error('Failed to mark all read:', err);
+                        showNotification('Couldn\'t mark all read. Check console.', 'error');
+                    }
+                });
+            }
 
-// Call this once DB/auth is ready
-// Example: call initAdminNotifications() inside your onAuthStateChanged callback after currentUserId is set
+            // Call this once DB/auth is ready
+            // Example: call initAdminNotifications() inside your onAuthStateChanged callback after currentUserId is set
 
 
         });
