@@ -1262,7 +1262,7 @@
                 }
 
             } else {
-                 signInAnonymously(auth);
+                signInAnonymously(auth);
                 currentUserId = null;
                 currentUserAnonymousName = "Guest";
                 const userNameElement = document.getElementById('user-anonymous-name');
@@ -1385,22 +1385,28 @@
             if (clearBtn) {
                 clearBtn.classList.remove('hidden'); // show it if permitted
                 clearBtn.addEventListener('click', async () => {
-                    if (!confirm('Mark all notifications as read for you?')) return;
+                    if (!confirm('Delete all your notifications?')) return;
+
                     try {
-                        const snapshot = await getDocs(collection(db, `artifacts/${sanitizedAppId}/public/data/notifications`));
-                        const updates = snapshot.docs.map(d => {
-                            const data = d.data();
-                            const newReadBy = Array.from(new Set([...(data.readBy || []), currentUserId]));
-                            return updateDoc(doc(db, `artifacts/${sanitizedAppId}/public/data/notifications`, d.id), { readBy: newReadBy });
-                        });
-                        await Promise.all(updates);
-                        showNotification('Marked all notifications as read.');
+                        const user = auth.currentUser;
+                        if (!user) return;
+
+                        const notificationsRef = collection(db, `artifacts/${sanitizedAppId}/users/${user.uid}/notifications`);
+                        const snapshot = await getDocs(notificationsRef);
+
+                        const deletions = snapshot.docs.map(d =>
+                            deleteDoc(doc(db, `artifacts/${sanitizedAppId}/users/${user.uid}/notifications`, d.id))
+                        );
+
+                        await Promise.all(deletions);
+                        showNotification('All notifications cleared.');
                     } catch (err) {
-                        console.error('Failed to mark all read:', err);
-                        showNotification('Couldn\'t mark all read. Check console.', 'error');
+                        console.error('Failed to clear notifications:', err);
+                        showNotification('Couldn\'t clear notifications. Check console.', 'error');
                     }
                 });
             }
+
 
             // Call this once DB/auth is ready
             // Example: call initAdminNotifications() inside your onAuthStateChanged callback after currentUserId is set
