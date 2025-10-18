@@ -364,8 +364,45 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // ====================================================================
-            // SECTION: HELPER FUNCTIONS (e.g., for Text-to-Speech)
+            // SECTION: HELPER FUNCTIONS (API, TTS, etc.)
             // ====================================================================
+            
+            async function fetchWithBackoff(url, options, retries = 4) {
+                let delay = 1000; // Initial delay
+                for (let i = 0; i <= retries; i++) {
+                    try {
+                        const response = await fetch(url, options);
+                        // If response is ok, return it
+                        if (response.ok) return response;
+
+                        // Don't retry for client-side errors (4xx) other than rate limiting
+                        if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+                           console.error(`Client Error: ${response.status}. Aborting retries.`);
+                           // Throw an error to be caught by the calling function's catch block
+                           throw new Error(`API Client Error (${response.status}): ${await response.text()}`);
+                        }
+                        
+                        // For server errors (5xx) or rate limiting (429), we retry
+                        if (i === retries) break; // If it's the last retry, break and throw error below
+
+                        console.log(`API Error: Status ${response.status}. Retrying in ${delay}ms...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2; // Exponential backoff
+
+                    } catch (error) {
+                        // This catches network errors (e.g., fetch fails to send)
+                        if (i === retries) {
+                           console.error("Maximum retries reached for network error.");
+                           throw error; // Re-throw the final error
+                        }
+                        console.log(`Network error. Retrying in ${delay}ms...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2; // Exponential backoff
+                    }
+                }
+                throw new Error(`API request failed after ${retries} retries.`);
+            }
+
             function base64ToArrayBuffer(base64) {
                 const binaryString = window.atob(base64);
                 const len = binaryString.length;
@@ -375,11 +412,14 @@
                 }
                 return bytes.buffer;
             }
-
+            
+            /**
+             * BUG FIX: Correctly converts raw PCM audio data (as an ArrayBuffer) into a playable WAV Blob.
+             * The original function had a bug trying to access '.buffer' on an ArrayBuffer.
+             */
             function pcmToWav(pcmData, sampleRate) {
                 const numChannels = 1;
                 const bitsPerSample = 16;
-                const dataView = new DataView(pcmData instanceof ArrayBuffer ? pcmData : pcmData.buffer);
                 const dataSize = pcmData.byteLength;
                 const buffer = new ArrayBuffer(44 + dataSize);
                 const view = new DataView(buffer);
@@ -393,12 +433,13 @@
                 const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
                 const blockAlign = numChannels * (bitsPerSample / 8);
                 
+                // WAV Header
                 writeString(view, 0, 'RIFF');
                 view.setUint32(4, 36 + dataSize, true);
                 writeString(view, 8, 'WAVE');
                 writeString(view, 12, 'fmt ');
                 view.setUint32(16, 16, true);
-                view.setUint16(20, 1, true);
+                view.setUint16(20, 1, true); // PCM
                 view.setUint16(22, numChannels, true);
                 view.setUint32(24, sampleRate, true);
                 view.setUint32(28, byteRate, true);
@@ -407,8 +448,8 @@
                 writeString(view, 36, 'data');
                 view.setUint32(40, dataSize, true);
                 
-                // Copy PCM data
-                const pcm = new Int16Array(pcmData.buffer);
+                // Write PCM data
+                const pcm = new Int16Array(pcmData);
                 for (let i = 0; i < pcm.length; i++) {
                     view.setInt16(44 + i * 2, pcm[i], true);
                 }
@@ -526,11 +567,11 @@
                 }
             });
             
-            // --- Function to check for valid API key ---
             function isApiKeyMissing() {
-                if (!apiKey) {
-                    responseText.textContent = "API Key is missing. The app's functionality is limited. Please contact support.";
-                    meditationStatusText.textContent = "API Key is missing. The app's functionality is limited.";
+                // In a real environment, the key would be provided. This is for local testing.
+                if (apiKey === "YOUR_API_KEY" || !apiKey) { 
+                    responseText.textContent = "API Key is missing or invalid. The app's functionality is limited.";
+                    meditationStatusText.textContent = "API Key is missing or invalid. The app's functionality is limited.";
                     meditationLoadingIndicator.classList.add('hidden');
                     return true;
                 }
@@ -539,8 +580,6 @@
 
             // --- Text Chat API Call ---
             submitButton.addEventListener('click', async () => {
-                if (isApiKeyMissing()) return;
-
                 const userQuery = promptInput.value.trim();
                 if (!userQuery) {
                     responseText.textContent = "Please tell me how you're feeling first.";
@@ -567,8 +606,7 @@
                 };
                 
                 try {
-                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    if (!response.ok) throw new Error(`API error (${response.status}): ${response.statusText}`);
+                    const response = await fetchWithBackoff(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     const result = await response.json();
                     const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     responseText.textContent = generatedText || "I'm sorry, I couldn't think of a response. Please try again.";
@@ -585,8 +623,6 @@
 
             // --- Meditation Generation Logic ---
             generateMeditationButton.addEventListener('click', async () => {
-                if (isApiKeyMissing()) return;
-                
                 const userQuery = meditationPromptInput.value.trim();
                 if (!userQuery) {
                     meditationStatusText.textContent = "Please enter a topic for your meditation.";
@@ -607,8 +643,7 @@
                     const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
                     const textPayload = { contents: [{ parts: [{ text: scriptPrompt }] }] };
                     
-                    const textResponse = await fetch(textApiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(textPayload) });
-                    if (!textResponse.ok) throw new Error(`Script generation failed: ${textResponse.statusText}`);
+                    const textResponse = await fetchWithBackoff(textApiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(textPayload) });
                     const textResult = await textResponse.json();
                     const meditationScript = textResult.candidates?.[0]?.content?.parts?.[0]?.text;
 
@@ -628,8 +663,7 @@
                         model: "gemini-2.5-flash-preview-tts"
                     };
 
-                    const audioResponse = await fetch(ttsApiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ttsPayload) });
-                    if (!audioResponse.ok) throw new Error(`TTS generation failed: ${audioResponse.statusText}`);
+                    const audioResponse = await fetchWithBackoff(ttsApiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ttsPayload) });
                     const audioResult = await audioResponse.json();
                     
                     const audioData = audioResult?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
@@ -671,6 +705,36 @@
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
             let intersectedObject = null;
+            let clickedObject = null;
+
+            window.addEventListener('click', () => {
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(elementGroups, true);
+
+                if (intersects.length > 0) {
+                    let topGroup = intersects[0].object;
+                    while(topGroup.parent && topGroup.name !== "FloatingElement") {
+                        topGroup = topGroup.parent;
+                    }
+
+                    if (clickedObject && clickedObject !== topGroup) {
+                        clickedObject.elementInstance.isClicked = false;
+                    }
+
+                    clickedObject = topGroup;
+                    if (!clickedObject.elementInstance) {
+                         clickedObject.elementInstance = elements.find(c => c.group === clickedObject);
+                    }
+                    if (clickedObject.elementInstance) {
+                        clickedObject.elementInstance.isClicked = !clickedObject.elementInstance.isClicked; // Toggle click state
+                    }
+                } else {
+                    if (clickedObject) {
+                        clickedObject.elementInstance.isClicked = false;
+                        clickedObject = null;
+                    }
+                }
+            }, false);
 
             window.addEventListener('mousemove', (event) => {
                 mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -727,15 +791,22 @@
 
                     this.time = Math.random() * 100;
                     this.isHovered = false;
+                    this.isClicked = false;
                 }
 
-                update() {
-                    this.time += 0.03;
+                update(deltaTime) {
+                    this.time += deltaTime * 2;
                     this.group.position.add(this.velocity);
                     this.group.position.y += Math.sin(this.time) * 0.01;
                     
-                    // If not hovered, apply the gentle tumble rotation
-                    if (!this.isHovered) {
+                    if (this.isClicked) {
+                        // Smoothly rotate towards the camera
+                        const targetQuaternion = new THREE.Quaternion().setFromRotationMatrix(
+                            new THREE.Matrix4().lookAt(this.group.position, camera.position, this.group.up)
+                        );
+                        this.group.quaternion.slerp(targetQuaternion, 0.05);
+                    } else {
+                        // If not clicked, apply the gentle tumble rotation
                         this.group.rotation.x += this.rotationSpeed.x;
                         this.group.rotation.y += this.rotationSpeed.y;
                         this.group.rotation.z += this.rotationSpeed.z;
@@ -756,9 +827,12 @@
                 scene.add(el.group);
                 elementGroups.push(el.group);
             }
+            
+            const clock = new THREE.Clock();
 
             const animate = () => {
                 requestAnimationFrame(animate);
+                const deltaTime = clock.getDelta();
                 raycaster.setFromCamera(mouse, camera);
                 const intersects = raycaster.intersectObjects(elementGroups, true);
 
@@ -769,13 +843,15 @@
                     }
 
                     if (intersectedObject !== topGroup) {
-                        if (intersectedObject) {
+                        if (intersectedObject && intersectedObject.originalScale) {
                             intersectedObject.elementInstance.isHovered = false;
                             intersectedObject.scale.set(intersectedObject.originalScale.x, intersectedObject.originalScale.y, intersectedObject.originalScale.z);
                         }
                         
                         intersectedObject = topGroup;
-                        intersectedObject.elementInstance = elements.find(c => c.group === intersectedObject);
+                        if (!intersectedObject.elementInstance) {
+                           intersectedObject.elementInstance = elements.find(c => c.group === intersectedObject);
+                        }
                         
                         if (intersectedObject.elementInstance) {
                             intersectedObject.originalScale = intersectedObject.scale.clone();
@@ -784,14 +860,14 @@
                         }
                     }
                 } else {
-                    if (intersectedObject) {
+                    if (intersectedObject && intersectedObject.originalScale) {
                         intersectedObject.elementInstance.isHovered = false;
                         intersectedObject.scale.set(intersectedObject.originalScale.x, intersectedObject.originalScale.y, intersectedObject.originalScale.z);
                     }
                     intersectedObject = null;
                 }
 
-                elements.forEach(el => el.update());
+                elements.forEach(el => el.update(deltaTime));
                 renderer.render(scene, camera);
             };
 
@@ -808,4 +884,3 @@
 
 </body>
 </html>
-
