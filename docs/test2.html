@@ -137,7 +137,7 @@
             perspective: 1000px;
         }
 
-        .transition-3d, .transition-3d-left, .transition-3d-lift {
+        .transition-3d, .transition-3d-left, .transition-3d-right, .transition-3d-lift {
             transition: transform 0.5s ease, box-shadow 0.5s ease;
             transform-style: preserve-3d;
         }
@@ -156,6 +156,14 @@
         }
         .dark .transition-3d-left:hover {
              box-shadow: 15px 0 25px -10px rgba(34, 197, 94, 0.15);
+        }
+        
+        .transition-3d-right:hover {
+            transform: rotateY(12deg) scale(1.03);
+            box-shadow: -15px 0 25px -10px rgba(0, 0, 0, 0.1);
+        }
+        .dark .transition-3d-right:hover {
+             box-shadow: -15px 0 25px -10px rgba(34, 197, 94, 0.15);
         }
         
         .transition-3d-lift:hover {
@@ -199,6 +207,32 @@
 
         .flip-card-back {
             transform: rotateY(180deg);
+        }
+
+        /* Navigation Link Hover Effect */
+        header nav a {
+            position: relative;
+            padding-bottom: 5px;
+        }
+
+        header nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0%;
+            height: 2px;
+            background-color: #16a34a;
+            transition: width 0.4s ease;
+        }
+
+        header nav a:hover::after {
+            width: 100%;
+        }
+
+        .dark header nav a::after {
+            background-color: #4ade80;
         }
 
 
@@ -360,7 +394,7 @@
         <section id="mission" class="py-20">
             <div class="container mx-auto px-6">
                 <div class="flex flex-col md:flex-row items-center gap-12 perspective-parent">
-                    <div class="md:w-1/2 revealable transition-3d-left">
+                    <div class="md:w-1/2 revealable transition-3d-right">
                          <img src="https://placehold.co/600x400/a7f3d0/14532d?text=Soul+Bloom+Community" 
                               alt="Students collaborating and supporting each other" 
                               class="rounded-2xl shadow-lg w-full">
@@ -980,5 +1014,4 @@
 
 </body>
 </html>
-
 
