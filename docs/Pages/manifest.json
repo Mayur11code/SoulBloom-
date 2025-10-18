@@ -1,6 +1,6 @@
 {
-  "name": "Green Template Dashboard",
-  "short_name": "GreenDash",
+  "name": "SoulBloom",
+  "short_name": "SoulBloom",
   "description": "A student dashboard for wellness, assignments, and community chat.",
   "scope": "/",
   "start_url": "./student_dashboard.html",

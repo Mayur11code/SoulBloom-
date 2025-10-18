@@ -5,13 +5,13 @@
 // The cache name is versioned. When you update your app's shell files,
 // you MUST increment this version number. This will trigger the 'activate'
 // event and clear out the old, outdated cache, ensuring users get the latest version.
-const CACHE_NAME = 'green-dashboard-cache-v1';
+const CACHE_NAME = 'soulbloom-cache-v1';
 
 // This is the "App Shell" - the minimal set of files needed to get the UI on the screen.
 // We cache these aggressively during the installation phase.
 const APP_SHELL_URLS = [
   '/', // The root path
-  'student_dasboard.html', // Your main HTML file
+  'student_dashboard.html', // Your main HTML file
   'manifest.json', // The app manifest
 
   // Critical CSS & Fonts - without these, the app looks broken offline.
