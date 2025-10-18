@@ -959,8 +959,8 @@
 
     <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black bg-opacity-40 z-30"></div>
     <!-- Channel list toggle (mobile only) -->
-    
-    
+
+
 
 
 
@@ -1700,7 +1700,7 @@
                     <div class="p-4 border-b border-white/10 shadow-md flex justify-between items-center">
                         <h2 class="text-lg font-bold truncate">Institute Server</h2>
                         <button id="toggle-channels-btn" title="Toggle Channel List"
-                            class="text-gray-400 hover:text-white">
+                            class="text-gray-400 hover:text-white hidden md:block">
                             <i data-lucide="panel-left-close" class="w-5 h-5"></i>
                         </button>
                     </div>
@@ -1803,44 +1803,47 @@
     <input type="file" id="doc-upload-input" class="hidden">
 
 
-   <script>
+    <script>
         const sidebarToggleBtn = document.getElementById('sidebar-toggle');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const serverNavPanel = document.getElementById('server-nav');
         const channelListPanel = document.getElementById('channel-list-panel');
 
-        function openSidebars() {
+        // This function is for the HAMBURGER BUTTON
+        function openServerNavOnly() {
             if (serverNavPanel) serverNavPanel.classList.add('active');
-            if (channelListPanel) channelListPanel.classList.add('active');
-            if (sidebarOverlay) sidebarOverlay.classList.remove('hidden');
+            if (sidebarToggleBtn) sidebarToggleBtn.classList.add('hidden');
         }
+        window.openServerNavOnly = openServerNavOnly; // <-- ADD THIS
 
-        function closeSidebars() {
-            if (serverNavPanel) serverNavPanel.classList.remove('active');
-            if (channelListPanel) channelListPanel.classList.remove('active');
-            if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
+        // This function is for the SWIPE
+        function openServerNavWithOverlay() {
+            if (serverNavPanel) serverNavPanel.classList.add('active');
+            if (sidebarOverlay) sidebarOverlay.classList.remove('hidden');
+            if (sidebarToggleBtn) sidebarToggleBtn.classList.add('hidden');
         }
+        window.openServerNavWithOverlay = openServerNavWithOverlay; // <-- ADD THIS
+
+        // This function closes everything and resets the button
+        function closeAllSidebars() {
+            if (serverNavPanel) serverNavPanel.classList.remove('active');
+            if (channelListPanel) channelListPanel.classList.remove('active'); // Also close channel list
+            if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
+            if (sidebarToggleBtn) sidebarToggleBtn.classList.remove('hidden'); // Show hamburger
+        }
+        window.closeAllSidebars = closeAllSidebars; // <-- ADD THIS
 
         if (sidebarToggleBtn) {
-            // Make the hamburger button toggle the sidebars
             sidebarToggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                // Check if it's already active to decide whether to open or close
-                const isActive = serverNavPanel && serverNavPanel.classList.contains('active');
-                if (isActive) {
-                    closeSidebars();
-                } else {
-                    openSidebars();
-                }
+                openServerNavOnly(); // This will still work
             });
         }
-        
+
         if (sidebarOverlay) {
-            // Make the overlay close them
-            sidebarOverlay.addEventListener('click', closeSidebars);
+            sidebarOverlay.addEventListener('click', closeAllSidebars); // This will still work
         }
     </script>
-
     <script type="module">
         import { getDocs, getDoc, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -2616,7 +2619,7 @@
         const chatProfilePicEmoji = document.getElementById('chat-profile-pic-emoji');
         const userProfilePopup = document.getElementById('user-profile-popup');
         const userProfileContent = document.getElementById('user-profile-content');
-        const channelListPanel = document.getElementById('channel-list-panel');
+        const channelListPanel2 = document.getElementById('channel-list-panel-2');
         const membersPanel = document.getElementById('members-panel');
         const memberListContainer = document.getElementById('member-list-container');
         const contextMenu = document.getElementById('context-menu');
@@ -2718,10 +2721,13 @@
                         dashboardView.classList.add('hidden');
                         chatView.classList.remove('hidden');
                     }
+                    if (typeof window.closeAllSidebars === 'function') {
+                        window.closeAllSidebars();
+                    }
                 });
             });
             document.getElementById('toggle-channels-btn').addEventListener('click', () => {
-                channelListPanel.classList.toggle('hidden');
+                channelListPanel2.classList.toggle('hidden');
             });
         }
 
@@ -5404,57 +5410,46 @@ Use these when you don't know what to write.
         }
 
     </script>
-<script>
-      // Listen on the main content area, which is more reliable
-      const swipeTarget = document.getElementById('main-content');
-      
-      let touchStartX = 0;
-      let touchEndX = 0;
-      let swipeThreshold = 80; // Min pixels to trigger a swipe
+    <script>
+        const swipeTarget = document.getElementById('main-content');
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let swipeThreshold = 80; // Min pixels to trigger a swipe
 
-      if (swipeTarget) {
-        swipeTarget.addEventListener('touchstart', (e) => {
-          // Only start swipe if it's from the far left edge of the screen
-          if (e.changedTouches[0].screenX < 40) {
-              touchStartX = e.changedTouches[0].screenX;
-          } else {
-              // Reset start if not from the edge, preventing accidental swipes
-              touchStartX = 0; 
-          }
-        }, { passive: true });
+        if (swipeTarget) {
+            swipeTarget.addEventListener('touchstart', (e) => {
+                // Only start swipe if it's from the far left edge
+                if (e.changedTouches[0].screenX < 40) {
+                    touchStartX = e.changedTouches[0].screenX;
+                } else {
+                    touchStartX = 0;
+                }
+            }, { passive: true });
 
-        swipeTarget.addEventListener('touchend', (e) => {
-          // Only trigger if touchStartX was set (i.e., started from the edge)
-          if (touchStartX === 0) return;
-            
-          touchEndX = e.changedTouches[0].screenX;
-          handleSwipe();
-          touchStartX = 0; // Reset after swipe
-        }, { passive: true });
-      }
+            swipeTarget.addEventListener('touchend', (e) => {
+                if (touchStartX === 0) return;
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+                touchStartX = 0;
+            }, { passive: true });
+        }
 
-      function handleSwipe() {
+       function handleSwipe() {
         const diff = touchEndX - touchStartX;
 
         if (diff > swipeThreshold) {
-          // Swipe right → open sidebars
-          // We call the function defined in the previous script
-          if(typeof openSidebars === 'function') {
-            openSidebars();
+          // Swipe right → open server nav AND overlay
+          if(typeof window.openServerNavWithOverlay === 'function') {
+            window.openServerNavWithOverlay(); // <-- Use window.
           }
         } else if (diff < -swipeThreshold) {
-          // Swipe left → close sidebars
-          // We call the function defined in the previous script
-          if(typeof closeSidebars === 'function') {
-            closeSidebars();
+          // Swipe left → close everything
+          if(typeof window.closeAllSidebars === 'function') {
+            window.closeAllSidebars(); // <-- Use window.
           }
         }
       }
-
-      // The overlay click is already handled by the new script
-      // in Step 2, so we don't need it here.
     </script>
-
 </body>
 
 </html>
