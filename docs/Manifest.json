@@ -38,7 +38,7 @@
   ],
   "screenshots": [
     {
-      "src": "https://placehold.co/1080x1920/0F2923/FFFFFF?text=Replace+with+Screenshot+1",
+      "src": "./Sources/homepageSS.jpg",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
