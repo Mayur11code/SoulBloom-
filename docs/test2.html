@@ -137,7 +137,7 @@
             perspective: 1000px;
         }
 
-        .transition-3d, .transition-3d-flip, .transition-3d-left, .transition-3d-lift {
+        .transition-3d, .transition-3d-left, .transition-3d-lift {
             transition: transform 0.5s ease, box-shadow 0.5s ease;
             transform-style: preserve-3d;
         }
@@ -150,22 +150,14 @@
              box-shadow: 0 20px 25px -5px rgba(34, 197, 94, 0.15), 0 10px 10px -5px rgba(34, 197, 94, 0.1);
         }
 
-        .transition-3d-flip:hover {
-            transform: rotateX(8deg) scale(1.03);
-            box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.15), 0 10px 15px -5px rgba(0, 0, 0, 0.1);
-        }
-        .dark .transition-3d-flip:hover {
-            box-shadow: 0 25px 30px -10px rgba(34, 197, 94, 0.2), 0 10px 15px -5px rgba(34, 197, 94, 0.15);
-        }
-        
         .transition-3d-left:hover {
-            transform: rotateY(-7deg) scale(1.05);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: rotateY(-12deg) scale(1.03);
+            box-shadow: 15px 0 25px -10px rgba(0, 0, 0, 0.1);
         }
         .dark .transition-3d-left:hover {
-             box-shadow: 0 20px 25px -5px rgba(34, 197, 94, 0.15), 0 10px 10px -5px rgba(34, 197, 94, 0.1);
+             box-shadow: 15px 0 25px -10px rgba(34, 197, 94, 0.15);
         }
-
+        
         .transition-3d-lift:hover {
             transform: translateZ(20px) scale(1.05);
             box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.2), 0 10px 15px -5px rgba(0, 0, 0, 0.1);
@@ -173,6 +165,42 @@
         .dark .transition-3d-lift:hover {
             box-shadow: 0 25px 30px -10px rgba(34, 197, 94, 0.25), 0 10px 15px -5px rgba(34, 197, 94, 0.2);
         }
+
+        /* New Flip Card Styles */
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            min-height: 320px; /* Adjust height as needed */
+            perspective: 1000px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.7s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            border-radius: 1rem;
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+            border-radius: 1rem; /* from rounded-2xl */
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
 
     </style>
 </head>
@@ -236,37 +264,63 @@
                     <h2 class="text-4xl font-playfair font-bold text-gray-900 dark:text-white">A Garden of Support</h2>
                     <p class="mt-2 text-lg text-gray-700 dark:text-gray-400">Everything you need to tend to your mental wellbeing.</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 revealable perspective-parent">
-                    <div class="glass-card p-6 rounded-2xl flex flex-col justify-between transition-3d-flip">
-                        <div class="text-center">
-                            <div class="bg-green-200 dark:bg-green-900/50 h-20 w-20 rounded-full mx-auto flex items-center justify-center mb-4">
-                                <svg class="h-10 w-10 text-green-700 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 revealable">
+                    <!-- Card 1: AI-Guided First-Aid -->
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front glass-card p-6 flex flex-col items-center justify-center text-center">
+                                <div class="bg-green-200 dark:bg-green-900/50 h-20 w-20 rounded-full mx-auto flex items-center justify-center mb-4">
+                                    <svg class="h-10 w-10 text-green-700 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">AI-Guided First-Aid</h3>
+                                <button id="open-gemini-modal" class="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition">Talk to Blossom ✨</button>
                             </div>
-                            <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">AI-Guided First-Aid</h3>
-                            <p class="text-gray-700 dark:text-gray-400">Get instant, friendly support and coping strategies from our AI companion, Blossom, anytime you need it.</p>
+                            <div class="flip-card-back glass-card p-6 flex items-center justify-center text-center">
+                                <p class="text-lg font-semibold italic text-gray-800 dark:text-gray-200 leading-relaxed">Get instant, friendly support and coping strategies from our AI companion, Blossom, anytime you need it.</p>
+                            </div>
                         </div>
-                        <button id="open-gemini-modal" class="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition">Talk to Blossom ✨</button>
                     </div>
-                    <div class="glass-card p-6 rounded-2xl text-center transition-3d-flip">
-                         <div class="bg-green-200 dark:bg-green-900/50 h-20 w-20 rounded-full mx-auto flex items-center justify-center mb-4">
-                            <svg class="h-10 w-10 text-green-700 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                    <!-- Card 2: Confidential Booking -->
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front glass-card p-6 flex flex-col items-center justify-center text-center">
+                                <div class="bg-green-200 dark:bg-green-900/50 h-20 w-20 rounded-full mx-auto flex items-center justify-center mb-4">
+                                    <svg class="h-10 w-10 text-green-700 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Confidential Booking</h3>
+                            </div>
+                            <div class="flip-card-back glass-card p-6 flex items-center justify-center text-center">
+                                <p class="text-lg font-semibold italic text-gray-800 dark:text-gray-200 leading-relaxed">Securely and privately book appointments with your on-campus counsellor. Your privacy is our priority.</p>
+                            </div>
                         </div>
-                        <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Confidential Booking</h3>
-                        <p class="text-gray-700 dark:text-gray-400">Securely and privately book appointments with your on-campus counsellor. Your privacy is our priority.</p>
                     </div>
-                    <div class="glass-card p-6 rounded-2xl text-center transition-3d-flip">
-                         <div class="bg-green-200 dark:bg-green-900/50 h-20 w-20 rounded-full mx-auto flex items-center justify-center mb-4">
-                           <svg class="h-10 w-10 text-green-700 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                    <!-- Card 3: Psychoeducational Hub -->
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front glass-card p-6 flex flex-col items-center justify-center text-center">
+                                <div class="bg-green-200 dark:bg-green-900/50 h-20 w-20 rounded-full mx-auto flex items-center justify-center mb-4">
+                                    <svg class="h-10 w-10 text-green-700 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Psychoeducational Hub</h3>
+                            </div>
+                            <div class="flip-card-back glass-card p-6 flex items-center justify-center text-center">
+                                <p class="text-lg font-semibold italic text-gray-800 dark:text-gray-200 leading-relaxed">Access a library of videos, relaxation audio, and wellness guides in regional languages, tailored for you.</p>
+                            </div>
                         </div>
-                        <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Psychoeducational Hub</h3>
-                        <p class="text-gray-700 dark:text-gray-400">Access a library of videos, relaxation audio, and wellness guides in regional languages, tailored for you.</p>
                     </div>
-                    <div class="glass-card p-6 rounded-2xl text-center transition-3d-flip">
-                         <div class="bg-green-200 dark:bg-green-900/50 h-20 w-20 rounded-full mx-auto flex items-center justify-center mb-4">
-                            <svg class="h-10 w-10 text-green-700 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.952A3 3 0 006 11.25m-3 2.25c0-1.03.821-1.875 1.875-1.875M9 11.25v-1.5c0-1.03.821-1.875 1.875-1.875m-1.875 0c.502 0 .965.188 1.336.516m-1.336-.516c-.502 0-.965.188-1.336.516m6 0v-1.5c0-1.03-.821-1.875-1.875-1.875m1.875 0c-.502 0-.965-.188-1.336.516m-1.336-.516c.502 0 .965.188 1.336.516M12 6.75v-1.5c0-1.03.821-1.875 1.875-1.875m-1.875 0c.502 0 .965.188 1.336.516m-1.336-.516c-.502 0-.965.188-1.336.516" /></svg>
+                    <!-- Card 4: Peer Support Forum -->
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front glass-card p-6 flex flex-col items-center justify-center text-center">
+                                <div class="bg-green-200 dark:bg-green-900/50 h-20 w-20 rounded-full mx-auto flex items-center justify-center mb-4">
+                                    <svg class="h-10 w-10 text-green-700 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.952A3 3 0 006 11.25m-3 2.25c0-1.03.821-1.875 1.875-1.875M9 11.25v-1.5c0-1.03.821-1.875 1.875-1.875m-1.875 0c.502 0 .965.188 1.336.516m-1.336-.516c-.502 0-.965.188-1.336.516m6 0v-1.5c0-1.03-.821-1.875-1.875-1.875m1.875 0c-.502 0-.965-.188-1.336.516m-1.336-.516c.502 0 .965.188 1.336.516M12 6.75v-1.5c0-1.03.821-1.875 1.875-1.875m-1.875 0c.502 0 .965.188 1.336.516m-1.336-.516c-.502 0-.965.188-1.336.516" /></svg>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Peer Support Forum</h3>
+                            </div>
+                            <div class="flip-card-back glass-card p-6 flex items-center justify-center text-center">
+                                <p class="text-lg font-semibold italic text-gray-800 dark:text-gray-200 leading-relaxed">Connect with trained student volunteers in a moderated, safe forum. You are not alone in this journey.</p>
+                            </div>
                         </div>
-                        <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Peer Support Forum</h3>
-                        <p class="text-gray-700 dark:text-gray-400">Connect with trained student volunteers in a moderated, safe forum. You are not alone in this journey.</p>
                     </div>
                 </div>
             </div>
@@ -311,7 +365,7 @@
                               alt="Students collaborating and supporting each other" 
                               class="rounded-2xl shadow-lg w-full">
                     </div>
-                    <div class="md:w-1/2 revealable transition-3d glass-card p-6 rounded-2xl">
+                    <div class="md:w-1/2 revealable transition-3d-left glass-card p-6 rounded-2xl">
                         <h2 class="text-4xl font-playfair font-bold text-gray-900 dark:text-white mb-4">Our Mission: Bridging the Gap</h2>
                         <p class="text-gray-700 dark:text-gray-300 mb-4 text-lg leading-relaxed">
                             We recognize the silent struggles of students. High stress, anxiety, and the fear of judgment often prevent them from seeking help. Generic, one-size-fits-all solutions don't address the unique cultural and institutional challenges students face.
