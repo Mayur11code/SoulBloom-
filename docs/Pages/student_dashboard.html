@@ -18,7 +18,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0F2923"/>
+    <meta name="theme-color" content="#0F2923" />
     <link rel="apple-touch-icon" href="https://placehold.co/192x192/48BB78/FFFFFF?text=G">
     <!-- 
       The Google Sign-In script is loaded asynchronously. 
@@ -889,11 +889,81 @@
         .sticker-btn {
             font-size: 3rem;
         }
+
+        /* Hide sidebars on mobile by default */
+        @media (max-width: 767px) {
+
+            #server-nav,
+            #channel-list-panel {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 40;
+            }
+
+            /* When visible */
+            #server-nav.active,
+            #channel-list-panel.active {
+                transform: translateX(0);
+            }
+        }
+
+
+        /* Channel list hidden by default on mobile */
+        @media (max-width: 767px) {
+            #channel-list-panel {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: 260px;
+                z-index: 40;
+                background-color: #2B2D31;
+            }
+
+            /* When open */
+            #channel-list-panel.active {
+                transform: translateX(0);
+            }
+
+            /* Optional dark overlay behind panel */
+            #channel-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.4);
+                z-index: 30;
+            }
+
+            #channel-overlay.active {
+                display: block;
+            }
+        }
     </style>
 
 </head>
 
 <body class="p-4 md:p-8">
+
+
+    <!-- Hamburger toggle for small screens -->
+    <button id="sidebar-toggle"
+        class="md:hidden fixed top-4 left-4 z-50 bg-[#5865F2] text-white p-2 rounded-lg shadow-lg focus:outline-none">
+        ☰
+    </button>
+
+    <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black bg-opacity-40 z-30"></div>
+    <!-- Channel list toggle (mobile only) -->
+    
+    
+
+
+
 
 
     <div class="floating-elements">
@@ -916,7 +986,7 @@
     </div>
 
     <div class="flex h-full">
-        <div id="server-nav" class="w-20 p-3 flex flex-col items-center gap-3 flex-shrink-0">
+        <div id="server-nav" class="w-14 md:w-20 p-2 md:p-3 flex flex-col items-center gap-3 flex-shrink-0">
             <button class="server-btn w-14 h-14 rounded-full flex items-center justify-center text-2xl active"
                 data-view="dashboard" title="Dashboard">
                 <i data-lucide="layout-dashboard" class="w-8 h-8"></i>
@@ -996,10 +1066,10 @@
                     </div>
 
                     <!-- Main Dashboard Grid -->
-                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 pt-6 mt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 mt-6">
 
                         <!-- Sidebar -->
-                        <div class="lg:col-span-1 flex flex-col gap-6">
+                        <div class="lg:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
                             <div class="widget">
                                 <button id="study-help-btn" class="gradient-button-container w-full">
                                     <div
@@ -1049,7 +1119,7 @@
                         </div>
 
                         <!-- Main Content Area -->
-                        <div class="lg:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
                             <!-- Left Column -->
                             <div class="lg:col-span-1 flex flex-col gap-6">
                                 <!-- Helpful Links -->
@@ -1731,6 +1801,45 @@
     </div>
     <input type="file" id="image-upload-input" class="hidden" accept="image/*">
     <input type="file" id="doc-upload-input" class="hidden">
+
+
+   <script>
+        const sidebarToggleBtn = document.getElementById('sidebar-toggle');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const serverNavPanel = document.getElementById('server-nav');
+        const channelListPanel = document.getElementById('channel-list-panel');
+
+        function openSidebars() {
+            if (serverNavPanel) serverNavPanel.classList.add('active');
+            if (channelListPanel) channelListPanel.classList.add('active');
+            if (sidebarOverlay) sidebarOverlay.classList.remove('hidden');
+        }
+
+        function closeSidebars() {
+            if (serverNavPanel) serverNavPanel.classList.remove('active');
+            if (channelListPanel) channelListPanel.classList.remove('active');
+            if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
+        }
+
+        if (sidebarToggleBtn) {
+            // Make the hamburger button toggle the sidebars
+            sidebarToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Check if it's already active to decide whether to open or close
+                const isActive = serverNavPanel && serverNavPanel.classList.contains('active');
+                if (isActive) {
+                    closeSidebars();
+                } else {
+                    openSidebars();
+                }
+            });
+        }
+        
+        if (sidebarOverlay) {
+            // Make the overlay close them
+            sidebarOverlay.addEventListener('click', closeSidebars);
+        }
+    </script>
 
     <script type="module">
         import { getDocs, getDoc, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -5283,18 +5392,69 @@ Use these when you don't know what to write.
         });
 
         if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('service-worker.js')
-                .then(registration => {
-                    console.log('Service Worker registered with scope:', registration.scope);
-                })
-                .catch(error => {
-                    console.error('Service Worker registration failed:', error);
-                });
-        });
-    }
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
 
     </script>
+<script>
+      // Listen on the main content area, which is more reliable
+      const swipeTarget = document.getElementById('main-content');
+      
+      let touchStartX = 0;
+      let touchEndX = 0;
+      let swipeThreshold = 80; // Min pixels to trigger a swipe
+
+      if (swipeTarget) {
+        swipeTarget.addEventListener('touchstart', (e) => {
+          // Only start swipe if it's from the far left edge of the screen
+          if (e.changedTouches[0].screenX < 40) {
+              touchStartX = e.changedTouches[0].screenX;
+          } else {
+              // Reset start if not from the edge, preventing accidental swipes
+              touchStartX = 0; 
+          }
+        }, { passive: true });
+
+        swipeTarget.addEventListener('touchend', (e) => {
+          // Only trigger if touchStartX was set (i.e., started from the edge)
+          if (touchStartX === 0) return;
+            
+          touchEndX = e.changedTouches[0].screenX;
+          handleSwipe();
+          touchStartX = 0; // Reset after swipe
+        }, { passive: true });
+      }
+
+      function handleSwipe() {
+        const diff = touchEndX - touchStartX;
+
+        if (diff > swipeThreshold) {
+          // Swipe right → open sidebars
+          // We call the function defined in the previous script
+          if(typeof openSidebars === 'function') {
+            openSidebars();
+          }
+        } else if (diff < -swipeThreshold) {
+          // Swipe left → close sidebars
+          // We call the function defined in the previous script
+          if(typeof closeSidebars === 'function') {
+            closeSidebars();
+          }
+        }
+      }
+
+      // The overlay click is already handled by the new script
+      // in Step 2, so we don't need it here.
+    </script>
+
 </body>
 
 </html>
