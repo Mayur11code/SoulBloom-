@@ -1,0 +1,23 @@
+{
+    "name": "Soul Bloom - Your Virtual Garden for Mental Wellness",
+    "short_name": "Soul Bloom",
+    "description": "A virtual garden for mental wellness, offering support and resources for students.",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#f0fdf4",
+    "theme_color": "#22c55e",
+    "icons": [
+    {
+      "src": "./Pages/imageicon.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "./Pages/imageicon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}
