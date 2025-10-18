@@ -17,7 +17,6 @@
         .font-playfair {
             font-family: 'Playfair Display', serif;
         }
-        /* Optional: Add custom scrollbar styles like in index.html if desired */
          ::-webkit-scrollbar { width: 8px; }
          ::-webkit-scrollbar-track { background: #f1f1f1; }
          .dark ::-webkit-scrollbar-track { background: #1f2937; }
@@ -25,19 +24,32 @@
          .dark ::-webkit-scrollbar-thumb { background: #22c55e; }
          ::-webkit-scrollbar-thumb:hover { background: #4ade80; }
          .dark ::-webkit-scrollbar-thumb:hover { background: #16a34a; }
+
+         /* Style for the error message */
+         #login-error {
+             color: #dc2626; /* Red color */
+             font-size: 0.875rem; /* Small text */
+             margin-top: -1rem; /* Adjust spacing */
+             margin-bottom: 1.5rem; /* Add space below */
+             text-align: center;
+             display: none; /* Hidden by default */
+         }
+         .dark #login-error {
+             color: #f87171; /* Lighter red for dark mode */
+         }
     </style>
 </head>
 <body class="bg-green-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen flex flex-col items-center justify-center p-4">
 
     <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8 sm:p-10">
         <div class="text-center mb-8">
-            <a href="index.html" class="inline-block text-3xl font-bold font-playfair text-green-700 dark:text-white mb-2">
+            <a href="/docs/index.html" class="inline-block text-3xl font-bold font-playfair text-green-700 dark:text-white mb-2">
                 Soul Bloom
             </a>
             <h2 class="text-xl text-gray-700 dark:text-gray-300">Student Login</h2>
         </div>
 
-        <form action="./student_dasboard.html" method="POST"> <div class="mb-4">
+        <form id="login-form"> <div class="mb-4">
                 <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
                 <input type="email" id="email" name="email"
                        placeholder="you@example.com" required
@@ -54,8 +66,10 @@
                        class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
             </div>
 
+            <div id="login-error">Please enter both email and password.</div>
+
             <div class="mb-6">
-                <button type="submit"
+                <button type="button" id="login-button"
                         class="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
                     Login
                 </button>
@@ -64,7 +78,7 @@
             <p class="text-center text-sm text-gray-600 dark:text-gray-400">
                 Don't have an account?
                 <a href="#" class="font-medium text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300 transition">Sign up</a>
-                </p>
+            </p>
         </form>
         </div>
 
@@ -80,16 +94,15 @@
      </div>
 
     <script>
-        // Basic Theme Toggle Logic (copied from index.html for convenience)
+        // --- Theme Toggle Logic (unchanged) ---
         document.addEventListener('DOMContentLoaded', function () {
             const themeToggle = document.getElementById('theme-toggle');
             const themeIconLight = document.getElementById('theme-icon-light');
             const themeIconDark = document.getElementById('theme-icon-dark');
             const htmlElement = document.documentElement;
 
-            // Function to apply theme
-            function applyTheme(theme) {
-                if (theme === 'light') {
+            function applyTheme(theme) { /* ... same as before ... */
+                 if (theme === 'light') {
                     htmlElement.classList.remove('dark');
                     themeIconLight.classList.remove('hidden');
                     themeIconDark.classList.add('hidden');
@@ -99,18 +112,43 @@
                     themeIconDark.classList.remove('hidden');
                 }
             }
-
-            // Check local storage on load
-            const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light
+            const savedTheme = localStorage.getItem('theme') || 'light';
             applyTheme(savedTheme);
 
-
-            // Add click listener
-            themeToggle.addEventListener('click', () => {
-                const isDark = htmlElement.classList.contains('dark');
+            themeToggle.addEventListener('click', () => { /* ... same as before ... */
+                 const isDark = htmlElement.classList.contains('dark');
                 const newTheme = isDark ? 'light' : 'dark';
                 applyTheme(newTheme);
                 localStorage.setItem('theme', newTheme);
+            });
+
+            // --- NEW: Login Validation Logic ---
+            const loginButton = document.getElementById('login-button');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const loginError = document.getElementById('login-error');
+            const loginForm = document.getElementById('login-form'); // Get the form element
+
+            // Prevent default form submission (important if type="submit" was used)
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+            });
+
+            loginButton.addEventListener('click', function() {
+                const emailValue = emailInput.value.trim(); // .trim() removes leading/trailing spaces
+                const passwordValue = passwordInput.value.trim();
+
+                // Hide error message initially
+                loginError.style.display = 'none';
+
+                if (emailValue === '' || passwordValue === '') {
+                    // If either field is empty, show the error message
+                    loginError.style.display = 'block';
+                } else {
+                    // If both fields have values, navigate to the dashboard
+                    // *** Replace with your actual dashboard page URL ***
+                    window.location.href = 'Pages/student_dasboard.html';
+                }
             });
         });
     </script>
