@@ -3185,31 +3185,50 @@
 
             function startRecordingUI() {
                 let seconds = 0;
-                const interval = setInterval(() => {
-                    seconds++;
-                    const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
-                    const secs = (seconds % 60).toString().padStart(2, '0');
-                    if (document.getElementById('recorder-timer')) {
-                        document.getElementById('recorder-timer').textContent = `${minutes}:${secs}`;
-                    } else {
-                        clearInterval(interval);
-                    }
-                }, 1000);
+                // Declare interval here so it's accessible in all scopes
+                let interval;
 
                 voiceRecorderContainer.innerHTML = `
-                    <div id="voice-recorder" class="glass p-2 rounded-lg flex items-center justify-between mb-2">
-                         <div class="flex items-center gap-2">
-                            <i data-lucide="mic" class="w-5 h-5 text-red-500 animate-pulse"></i>
-                            <span class="font-mono" id="recorder-timer">00:00</span>
-                         </div>
-                         <button id="stop-recording-btn" class="bg-red-500 text-white rounded-full p-2"><i data-lucide="stop-circle" class="w-5 h-5"></i></button>
-                    </div>
-                `;
+                <div id="voice-recorder" class="glass p-2 rounded-lg flex items-center justify-between mb-2">
+                     <div class="flex items-center gap-2">
+                        <i data-lucide="mic" class="w-5 h-5 text-red-500 animate-pulse"></i>
+                        <span class="font-mono" id="recorder-timer">00:00</span>
+                     </div>
+                     <button id="stop-recording-btn" class="bg-red-500 text-white rounded-full p-2"><i data-lucide="stop-circle" class="w-5 h-5"></i></button>
+                </div>
+            `;
                 lucide.createIcons({ nodes: [voiceRecorderContainer] });
-                document.getElementById('stop-recording-btn').addEventListener('click', () => {
-                    if (mediaRecorder) mediaRecorder.stop();
-                    clearInterval(interval);
-                });
+
+                // --- THIS IS THE FIX ---
+                // Wrap the element-dependent code in a setTimeout(..., 0).
+                // This waits for the DOM to update from the innerHTML change above.
+                setTimeout(() => {
+                    const timerElement = document.getElementById('recorder-timer');
+                    const stopButton = document.getElementById('stop-recording-btn');
+
+                    // Check if the elements were created successfully
+                    if (!timerElement || !stopButton) {
+                        console.error("Failed to initialize recorder UI. Elements not found.");
+                        return;
+                    }
+
+                    // Now it's safe to start the interval
+                    interval = setInterval(() => {
+                        seconds++;
+                        const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+                        const secs = (seconds % 60).toString().padStart(2, '0');
+
+                        // We already know timerElement exists, so we don't need the 'else' block
+                        timerElement.textContent = `${minutes}:${secs}`;
+                    }, 1000);
+
+                    // And now it's safe to add the click listener
+                    stopButton.addEventListener('click', () => {
+                        if (mediaRecorder) mediaRecorder.stop();
+                        clearInterval(interval);
+                    });
+
+                }, 0); // A 0ms delay is all that's needed
             }
         }
 
