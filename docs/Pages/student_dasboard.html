@@ -412,714 +412,1323 @@
         #toggle-kit-dropdown-btn.open .lucide-chevron-down {
             transform: rotate(180deg);
         }
+
+
+        /* newww */
+
+        .glass {
+            background: rgba(15, 41, 35, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .font-vt323 {
+            font-family: 'VT323', monospace;
+        }
+
+        .widget {
+            background-color: transparent;
+            border: none;
+        }
+
+        .pixelated-bg {
+            background-color: #5B6F55;
+            background-size: cover;
+            background-position: center;
+            height: 200px;
+            image-rendering: pixelated;
+        }
+
+        .server-btn {
+            background-color: transparent;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+        }
+
+        .server-btn::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 0;
+            background-color: #E0E0E0;
+            border-radius: 0 4px 4px 0;
+            transition: height 0.2s ease-in-out;
+        }
+
+        .server-btn:hover::before {
+            height: 20px;
+        }
+
+        .server-btn.active::before {
+            height: 40px;
+        }
+
+        .server-btn.active {
+            border-radius: 1rem;
+            background-color: #48BB78;
+        }
+
+        #channel-list-panel {
+            width: 320px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            border-radius: 1rem;
+            margin: 1rem 0 1rem 1rem;
+            height: calc(100vh - 2rem);
+            overflow: hidden;
+            transition: width 0.3s ease-in-out, margin-left 0.3s ease-in-out;
+        }
+
+        #channel-list-panel.hidden {
+            width: 0;
+            margin-left: 0;
+        }
+
+        .channel-btn {
+            color: #949ba4;
+            transition: background-color 0.2s, color 0.2s;
+            border-radius: 8px;
+        }
+
+        .channel-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+        }
+
+        .channel-btn.active {
+            background-color: #48BB78;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        #user-panel {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        #chat-area {
+            border-radius: 1rem;
+            margin: 1rem;
+            height: calc(100vh - 2rem);
+            overflow: hidden;
+        }
+
+        .chat-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.75rem 1.5rem;
+            position: relative;
+            animation: fade-in 0.3s ease-out;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-message.is-consecutive {
+            padding-top: 0.1rem;
+            padding-bottom: 0.1rem;
+            margin-left: 4.0rem;
+        }
+
+        .chat-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-sender-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.1rem;
+        }
+
+        .chat-text {
+            line-height: 1.5;
+            word-break: break-word;
+            color: #dcdee1;
+            font-size: 0.95rem;
+        }
+
+        #main-chat-input-wrapper {
+            padding: 1rem 1.5rem;
+        }
+
+        #main-chat-input-container {
+            background-color: transparent;
+            border-radius: 0.75rem;
+            padding: 0.25rem 0.5rem 0.25rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #main-chat-input {
+            background-color: transparent;
+            border: none;
+            outline: none;
+            color: #E0E0E0;
+            width: 100%;
+        }
+
+        #main-chat-send-btn {
+            background-color: #48BB78;
+            color: white;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            transition: background-color 0.2s;
+        }
+
+        #main-chat-send-btn:hover {
+            background-color: #3da168;
+        }
+
+        #user-profile-popup {
+            position: fixed;
+            z-index: 50;
+            width: 300px;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.24);
+            transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+            pointer-events: none;
+        }
+
+        #user-profile-popup.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        #context-menu {
+            position: fixed;
+            z-index: 100;
+            width: 220px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            padding: 0.5rem;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.1s ease-out, transform 0.1s ease-out;
+            pointer-events: none;
+        }
+
+        #context-menu.show {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .context-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+
+        .context-menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .context-menu-item.danger:hover {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .context-menu-separator {
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 0.5rem 0;
+        }
+
+        #members-panel {
+            width: 240px;
+            background-color: rgba(15, 41, 35, 0.3);
+            flex-shrink: 0;
+            transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
+            overflow: hidden;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #members-panel.hidden {
+            width: 0;
+            padding: 0;
+        }
+
+        .chat-avatar.is-placeholder {
+            visibility: hidden;
+        }
+
+        .chat-sender-name {
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .chat-sender-name:hover {
+            text-decoration: underline;
+        }
+
+        .chat-sender-name.user {
+            color: #48BB78;
+        }
+
+        .chat-timestamp {
+            font-size: 0.7rem;
+            color: #949ba4;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .message-actions {
+            position: absolute;
+            top: 0;
+            right: 1rem;
+            background: rgba(15, 41, 35, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.25rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .message-actions:hover {
+            opacity: 1;
+        }
+
+        .chat-message:hover .message-actions {
+            opacity: 1;
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floaty {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid rgba(72, 187, 120, 0.15);
+            animation: floatUp 25s infinite ease-in-out;
+            opacity: 0;
+            bottom: -150px;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-120vh) rotate(720deg) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        #attachment-menu {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transform-origin: bottom left;
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+        }
+
+        #attachment-btn {
+            transition: transform 0.2s ease-out;
+        }
+
+        #image-preview-modal img {
+            max-height: 60vh;
+        }
+
+        .chat-image {
+            max-width: 320px;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            cursor: pointer;
+        }
+
+        .document-bubble {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            margin-top: 0.5rem;
+        }
+
+        #voice-recorder {
+            animation: slide-up 0.3s ease-out;
+        }
+
+        @keyframes slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #emoji-panel {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            margin-bottom: 0.5rem;
+            width: 320px;
+            height: 350px;
+            border-radius: 0.5rem;
+            transform-origin: bottom right;
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .emoji-tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            color: #949ba4;
+            border-bottom: 2px solid transparent;
+        }
+
+        .emoji-tab.active {
+            color: #ffffff;
+            border-bottom-color: #48BB78;
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+            gap: 0.5rem;
+            padding: 0.5rem;
+            overflow-y: auto;
+        }
+
+        .emoji-btn,
+        .sticker-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.15s;
+        }
+
+        .emoji-btn:hover,
+        .sticker-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sticker-btn {
+            font-size: 3rem;
+        }
     </style>
 
 </head>
 
 <body class="p-4 md:p-8">
 
-    <!-- Custom Notification Banner -->
-    <div id="notification-banner"
-        class="hidden fixed top-5 right-5 bg-green-500 text-white p-3 rounded-lg shadow-lg z-50 text-base">
-        <span id="notification-message"></span>
-        <button id="notification-close-btn" class="ml-4 font-bold">X</button>
-    </div>
 
-    <!-- Floating Elements Background -->
     <div class="floating-elements">
-        <div class="floaty" style="width: 10px; height: 10px; left: 5%; animation-duration: 20s; animation-delay: 0s;">
-        </div>
-        <div class="floaty" style="width: 20px; height: 20px; left: 15%; animation-duration: 30s; animation-delay: 5s;">
-        </div>
-        <div class="floaty" style="width: 12px; height: 12px; left: 25%; animation-duration: 18s; animation-delay: 2s;">
-        </div>
-        <div class="floaty" style="width: 15px; height: 15px; left: 40%; animation-duration: 28s; animation-delay: 8s;">
+        <div class="floaty" style="left: 5%; animation-duration: 20s; animation-delay: 0s;"></div>
+        <div class="floaty"
+            style="left: 15%; animation-duration: 30s; animation-delay: 5s; border-bottom-width: 30px; border-left-width: 15px; border-right-width: 15px;">
         </div>
         <div class="floaty"
-            style="width: 18px; height: 18px; left: 55%; animation-duration: 22s; animation-delay: 12s;"></div>
-        <div class="floaty" style="width: 8px; height: 8px; left: 70%; animation-duration: 35s; animation-delay: 1s;">
+            style="left: 25%; animation-duration: 18s; animation-delay: 2s; border-bottom-width: 15px; border-left-width: 7px; border-right-width: 7px;">
         </div>
-        <div class="floaty" style="width: 16px; height: 16px; left: 85%; animation-duration: 24s; animation-delay: 6s;">
-        </div>
+        <div class="floaty" style="left: 40%; animation-duration: 28s; animation-delay: 8s;"></div>
         <div class="floaty"
-            style="width: 13px; height: 13px; left: 95%; animation-duration: 26s; animation-delay: 10s;"></div>
+            style="left: 55%; animation-duration: 22s; animation-delay: 12s; border-bottom-width: 25px; border-left-width: 12px; border-right-width: 12px;">
+        </div>
+        <div class="floaty" style="left: 70%; animation-duration: 35s; animation-delay: 1s;"></div>
+        <div class="floaty"
+            style="left: 85%; animation-duration: 24s; animation-delay: 6s; border-bottom-width: 18px; border-left-width: 9px; border-right-width: 9px;">
+        </div>
+        <div class="floaty" style="left: 95%; animation-duration: 26s; animation-delay: 10s;"></div>
     </div>
 
-
-    <div class="max-w-7xl mx-auto relative z-10">
-        <button id="notification-bell-btn"
-            class="fixed top-8 right-24 bg-gray-700 text-white p-3 rounded-full shadow-lg hover:bg-gray-600 transition-colors z-40">
-            <i data-lucide="bell" class="w-6 h-6"></i>
-            <span id="notification-badge"
-                class="hidden absolute -top-1 -right-1 flex justify-center items-center w-5 h-5 text-xs bg-red-500 rounded-full"></span>
-        </button>
-        <!-- SOS Button -->
-        <button id="sos-btn"
-            class="fixed top-8 right-8 bg-orange-400 text-white p-3 rounded-full shadow-lg hover:bg-orange-500 transition-transform hover:scale-110 z-40">
-            <i data-lucide="siren" class="w-6 h-6"></i>
-        </button>
-
-        <!-- Header Image -->
-        <div class="pixelated-bg rounded-lg relative">
-            <div class="absolute inset-0 bg-black/40 rounded-lg"></div> <!-- Brightness Overlay -->
-            <div class="absolute -bottom-8 left-8">
-                <button id="profile-pic-container"
-                    class="bg-[#39414A]/50 backdrop-blur-[10px] p-3 rounded-lg border border-white/10 shadow-[0_0_20px_rgba(160,130,255,0.5)] transition-transform hover:scale-105">
-                    <span id="profile-pic-emoji" class="text-5xl">☘️</span>
-                </button>
-            </div>
-            <div class="absolute bottom-4 left-32 text-2xl">
-                <span id="user-anonymous-name" class="font-bold"></span>
-                <span id="user-verification-badge" class="hidden" title="Mental Health Screening Completed">
-                    <i data-lucide="shield-check" class="w-6 h-6 text-green-400"></i>
-                </span>
-            </div>
+    <div class="flex h-full">
+        <div id="server-nav" class="w-20 p-3 flex flex-col items-center gap-3 flex-shrink-0">
+            <button class="server-btn w-14 h-14 rounded-full flex items-center justify-center text-2xl active"
+                data-view="dashboard" title="Dashboard">
+                <i data-lucide="layout-dashboard" class="w-8 h-8"></i>
+            </button>
+            <button class="server-btn w-14 h-14 rounded-full flex items-center justify-center text-2xl" data-view="chat"
+                title="Institute Server">
+                <i data-lucide="sprout" class="w-8 h-8"></i>
+            </button>
         </div>
 
-        <!-- Main Dashboard Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 pt-6 mt-6">
+        <div id="main-content" class="flex-1 flex flex-col min-w-0 relative">
+            <div id="dashboard-view" class="w-full h-full overflow-y-auto">
+                <!-- Custom Notification Banner -->
+                <div id="notification-banner"
+                    class="hidden fixed top-5 right-5 bg-green-500 text-white p-3 rounded-lg shadow-lg z-50 text-base">
+                    <span id="notification-message"></span>
+                    <button id="notification-close-btn" class="ml-4 font-bold">X</button>
+                </div>
 
-            <!-- Sidebar -->
-            <div class="lg:col-span-1 flex flex-col gap-6">
-                <div class="widget">
-                    <button id="study-help-btn" class="gradient-button-container w-full">
-                        <div
-                            class="bg-black rounded-lg p-3 text-center hover:bg-gray-900 transition-colors flex items-center justify-center gap-2 text-lg">
-                            <i data-lucide="graduation-cap" class="w-5 h-5 text-yellow-400"></i>
-                            <span>Study Help !!</span>
-                        </div>
+                <!-- Floating Elements Background -->
+                <div class="floating-elements">
+                    <div class="floaty"
+                        style="width: 10px; height: 10px; left: 5%; animation-duration: 20s; animation-delay: 0s;">
+                    </div>
+                    <div class="floaty"
+                        style="width: 20px; height: 20px; left: 15%; animation-duration: 30s; animation-delay: 5s;">
+                    </div>
+                    <div class="floaty"
+                        style="width: 12px; height: 12px; left: 25%; animation-duration: 18s; animation-delay: 2s;">
+                    </div>
+                    <div class="floaty"
+                        style="width: 15px; height: 15px; left: 40%; animation-duration: 28s; animation-delay: 8s;">
+                    </div>
+                    <div class="floaty"
+                        style="width: 18px; height: 18px; left: 55%; animation-duration: 22s; animation-delay: 12s;">
+                    </div>
+                    <div class="floaty"
+                        style="width: 8px; height: 8px; left: 70%; animation-duration: 35s; animation-delay: 1s;">
+                    </div>
+                    <div class="floaty"
+                        style="width: 16px; height: 16px; left: 85%; animation-duration: 24s; animation-delay: 6s;">
+                    </div>
+                    <div class="floaty"
+                        style="width: 13px; height: 13px; left: 95%; animation-duration: 26s; animation-delay: 10s;">
+                    </div>
+                </div>
+
+
+                <div class="max-w-7xl mx-auto relative z-10">
+                    <button id="notification-bell-btn"
+                        class="fixed top-8 right-24 bg-gray-700 text-white p-3 rounded-full shadow-lg hover:bg-gray-600 transition-colors z-40">
+                        <i data-lucide="bell" class="w-6 h-6"></i>
+                        <span id="notification-badge"
+                            class="hidden absolute -top-1 -right-1 flex justify-center items-center w-5 h-5 text-xs bg-red-500 rounded-full"></span>
                     </button>
-                </div>
-                <!-- START OF EDIT: Added Screening Button -->
-                <div class="widget">
-                    <button id="open-screening-btn" class="w-full">
-                        <div
-                            class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg p-3 text-center hover:from-purple-600 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:shadow-xl">
-                            <i data-lucide="clipboard-check" class="w-5 h-5"></i>
-                            <span>Mental Health Screening</span>
-                        </div>
+                    <!-- SOS Button -->
+                    <button id="sos-btn"
+                        class="fixed top-8 right-8 bg-orange-400 text-white p-3 rounded-full shadow-lg hover:bg-orange-500 transition-transform hover:scale-110 z-40">
+                        <i data-lucide="siren" class="w-6 h-6"></i>
                     </button>
-                </div>
-                <!-- END OF EDIT -->
-                <div class="widget h-full">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl">Chat Rooms</h2>
-                        <div class="flex items-center gap-2">
-                            <button class="text-gray-400 hover:text-white"><i data-lucide="search"
-                                    class="w-5 h-5"></i></button>
+
+                    <!-- Header Image -->
+                    <div class="pixelated-bg rounded-lg relative">
+                        <div class="absolute inset-0 bg-black/40 rounded-lg"></div> <!-- Brightness Overlay -->
+                        <div class="absolute -bottom-8 left-8">
+                            <button id="profile-pic-container"
+                                class="bg-[#39414A]/50 backdrop-blur-[10px] p-3 rounded-lg border border-white/10 shadow-[0_0_20px_rgba(160,130,255,0.5)] transition-transform hover:scale-105">
+                                <span id="profile-pic-emoji" class="text-5xl">☘️</span>
+                            </button>
+                        </div>
+                        <div class="absolute bottom-4 left-32 text-2xl">
+                            <span id="user-anonymous-name" class="font-bold"></span>
+                            <span id="user-verification-badge" class="hidden" title="Mental Health Screening Completed">
+                                <i data-lucide="shield-check" class="w-6 h-6 text-green-400"></i>
+                            </span>
                         </div>
                     </div>
-                    <div class="space-y-2">
-                        <button
-                            class="chatroom-btn w-full text-left p-2 rounded hover:bg-white/10 transition-colors flex items-center gap-2"
-                            data-room-name="General Chat">
-                            <i data-lucide="message-square" class="w-4 h-4"></i> General Chat
-                        </button>
-                        <button
-                            class="chatroom-btn w-full text-left p-2 rounded hover:bg-white/10 transition-colors flex items-center gap-2"
-                            data-room-name="Study Group">
-                            <i data-lucide="book-open" class="w-4 h-4"></i> Study Group
-                        </button>
-                        <button
-                            class="chatroom-btn w-full text-left p-2 rounded hover:bg-white/10 transition-colors flex items-center gap-2"
-                            data-room-name="Gaming Corner">
-                            <i data-lucide="gamepad-2" class="w-4 h-4"></i> Gaming Corner
-                        </button>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Main Content Area -->
-            <div class="lg:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Left Column -->
-                <div class="lg:col-span-1 flex flex-col gap-6">
-                    <!-- Helpful Links -->
-                    <div class="widget">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="link-2"
-                                    class="w-5 h-5"></i> Helpful Links</h2>
-                            <button id="helpful-link-btn"
-                                class="text-sm bg-green-500/80 text-white px-3 py-1 rounded hover:bg-green-600">✨ Find a
-                                Link</button>
-                        </div>
-                        <ul id="helpful-links-list" class="space-y-2 mt-2">
-                            <li><a href="https://telemanas.mohfw.gov.in/" target="_blank" class="hover:text-green-400">✧
-                                    Tele MANAS</a></li>
-                        </ul>
-                    </div>
+                    <!-- Main Dashboard Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 pt-6 mt-6">
 
-                    <!-- Journaling -->
-                    <div class="widget">
-                        <div class="flex justify-between items-center mb-3">
-                            <h2 class="text-xl flex items-center gap-2"><i data-lucide="book-heart" class="w-5 h-5"></i>
-                                Journaling</h2>
-                            <div class="flex items-center gap-2 text-sm text-gray-400">
-                                <span>Local</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="journal-storage-toggle" class="sr-only peer">
+                        <!-- Sidebar -->
+                        <div class="lg:col-span-1 flex flex-col gap-6">
+                            <div class="widget">
+                                <button id="study-help-btn" class="gradient-button-container w-full">
                                     <div
-                                        class="w-11 h-6 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500">
+                                        class="bg-black rounded-lg p-3 text-center hover:bg-gray-900 transition-colors flex items-center justify-center gap-2 text-lg">
+                                        <i data-lucide="graduation-cap" class="w-5 h-5 text-yellow-400"></i>
+                                        <span>Study Help !!</span>
                                     </div>
-                                </label>
-                                <span>Server</span>
-                                <button id="sync-journal-btn"
-                                    class="ml-2 text-sm text-cyan-400 hover:text-cyan-300 hidden">Sync to
-                                    Server</button>
+                                </button>
                             </div>
-                        </div>
-                        <button id="shadow-work-prompt-btn"
-                            class="w-full text-sm bg-purple-500/80 text-white px-3 py-2 rounded hover:bg-purple-600 mb-3">🔮
-                            New Shadow Work Prompt</button>
-                        <textarea id="journal-entry"
-                            class="w-full h-32 bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-purple-400 text-base"
-                            placeholder="What's on your mind?"></textarea>
-                        <button id="save-journal-entry-btn"
-                            class="w-full mt-2 text-sm bg-green-500/80 text-white px-3 py-2 rounded hover:bg-green-600">Save
-                            Entry</button>
-
-                        <div id="journal-history-container" class="mt-4">
-                            <h3 class="text-lg mb-2">Past Entries</h3>
-                            <div id="journal-history-list" class="space-y-2 max-h-40 overflow-y-auto pr-2">
-                                <!-- Journal history will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- User Health -->
-                    <div class="widget">
-                        <h2 class="text-xl mb-4 flex items-center gap-2"><i data-lucide="heart-pulse"
-                                class="w-5 h-5"></i> User Health</h2>
-                        <div id="health-stats-container" class="flex flex-col gap-6 items-center"
-                            style="min-height: 150px;">
-                            <!-- Health gauges will be injected here by JS -->
-                        </div>
-                        <div id="google-fit-auth-container" class="mt-4 text-center">
-                            <!-- This will show a login button or a sync message -->
-                        </div>
-                    </div>
-
-                    <!-- Weather -->
-                    <div class="widget">
-                        <h2 class="text-sm text-gray-400">DELHI WEATHER</h2>
-                        <div class="flex items-center justify-between mt-2">
-                            <p class="text-5xl">28°C</p>
-                            <div class="text-right">
-                                <i data-lucide="cloud-sun" class="w-12 h-12 ml-auto"></i>
-                                <p>broken clouds</p>
-                            </div>
-                        </div>
-                        <div class="mt-4 pt-4 border-t border-gray-600 flex justify-between text-center">
-                            <div class="flex flex-col items-center">
-                                <p>SAT</p>
-                                <i data-lucide="sun" class="w-6 h-6 my-1"></i>
-                                <p>38°C</p>
-                                <p class="text-gray-400">24°C</p>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <p>SUN</p>
-                                <i data-lucide="cloud-sun" class="w-6 h-6 my-1"></i>
-                                <p>35°C</p>
-                                <p class="text-gray-400">24°C</p>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <p>MON</p>
-                                <i data-lucide="cloud-drizzle" class="w-6 h-6 my-1"></i>
-                                <p>34°C</p>
-                                <p class="text-gray-400">21°C</p>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <p>TUE</p>
-                                <i data-lucide="cloud-lightning" class="w-6 h-6 my-1"></i>
-                                <p>31°C</p>
-                                <p class="text-gray-400">18°C</p>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <p>WED</p>
-                                <i data-lucide="cloud" class="w-6 h-6 my-1"></i>
-                                <p>29°C</p>
-                                <p class="text-gray-400">18°C</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column -->
-                <div class="lg:col-span-2 flex flex-col gap-6">
-
-                    <!-- Guided Meditation -->
-                    <div class="widget">
-                        <div class="flex justify-between items-center mb-3">
-                            <h2 class="text-xl flex items-center gap-2"><i data-lucide="brain-circuit"
-                                    class="w-5 h-5"></i> Guided Meditation</h2>
-                            <div class="flex items-center gap-2">
-                                <button id="clear-meditation-btn" title="Clear Meditation"
-                                    class="text-gray-400 hover:text-white"><i data-lucide="trash-2"
-                                        class="w-4 h-4"></i></button>
-                                <button id="toggle-meditation-btn" title="Minimize"
-                                    class="text-gray-400 hover:text-white"><i data-lucide="chevron-up"
-                                        class="w-5 h-5"></i></button>
-                            </div>
-                        </div>
-                        <div id="meditation-widget-body">
-                            <p class="text-gray-400 mb-3 text-base">Enter a topic and select a language for your guided
-                                meditation.</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                <input type="text" id="meditation-topic-input" placeholder="e.g., Releasing anxiety"
-                                    class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                                <select id="meditation-language-select"
-                                    class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                                    <option value="English (India)">English (India)</option>
-                                    <option value="Hindi">Hindi</option>
-                                    <option value="Bengali">Bengali</option>
-                                    <option value="Tamil">Tamil</option>
-                                    <option value="Telugu">Telugu</option>
-                                    <option value="Marathi">Marathi</option>
-                                    <option value="other">Other...</option>
-                                </select>
-                            </div>
-                            <input type="text" id="meditation-language-search"
-                                placeholder="Enter language name (e.g., French)"
-                                class="hidden w-full bg-[#2E3338] p-2 mt-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                            <div class="flex gap-2 mt-2">
-                                <button id="generate-meditation-btn"
-                                    class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Generate
-                                    Script</button>
-                                <button id="play-meditation-btn"
-                                    class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                                    disabled>Play Meditation</button>
-                            </div>
-                            <div id="meditation-script-container"
-                                class="gemini-response hidden mt-3 max-h-48 overflow-y-auto"></div>
-                            <audio id="meditation-audio-player" class="w-full mt-3 hidden"></audio>
-                        </div>
-                    </div>
-
-                    <!-- Serenity Map -->
-                    <div class="widget">
-                        <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="map" class="w-5 h-5"></i>
-                            Serenity Map</h2>
-                        <div class="flex gap-2 mb-3">
-                            <input type="text" id="location-search-input" placeholder="Search any location in India..."
-                                class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                            <button id="location-search-btn"
-                                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Search</button>
-                        </div>
-                        <div id="map" class="w-full h-64 bg-[#2E3338] rounded"></div>
-                    </div>
-
-                    <!-- Assignments -->
-                    <div class="widget">
-                        <div class="flex justify-between items-center mb-3">
-                            <h2 class="text-xl flex items-center gap-2"><i data-lucide="clipboard-check"
-                                    class="w-5 h-5"></i> assignments</h2>
-                            <div class="flex items-center gap-2 text-sm text-gray-400">
-                                <span>Local</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="storage-toggle" class="sr-only peer">
+                            <!-- START OF EDIT: Added Screening Button -->
+                            <div class="widget">
+                                <button id="open-screening-btn" class="w-full">
                                     <div
-                                        class="w-11 h-6 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500">
+                                        class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg p-3 text-center hover:from-purple-600 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:shadow-xl">
+                                        <i data-lucide="clipboard-check" class="w-5 h-5"></i>
+                                        <span>Mental Health Screening</span>
                                     </div>
-                                </label>
-                                <span>Server</span>
-                                <button id="sync-assignments-btn"
-                                    class="ml-2 text-sm text-cyan-400 hover:text-cyan-300 hidden">Sync to
-                                    Server</button>
+                                </button>
                             </div>
+                            <!-- END OF EDIT -->
+                            <!-- <div class="widget h-full">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-xl">Chat Rooms</h2>
+                                    <div class="flex items-center gap-2">
+                                        <button class="text-gray-400 hover:text-white"><i data-lucide="search"
+                                                class="w-5 h-5"></i></button>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <button
+                                        class="chatroom-btn w-full text-left p-2 rounded hover:bg-white/10 transition-colors flex items-center gap-2"
+                                        data-room-name="General Chat">
+                                        <i data-lucide="message-square" class="w-4 h-4"></i> General Chat
+                                    </button>
+                                    <button
+                                        class="chatroom-btn w-full text-left p-2 rounded hover:bg-white/10 transition-colors flex items-center gap-2"
+                                        data-room-name="Study Group">
+                                        <i data-lucide="book-open" class="w-4 h-4"></i> Study Group
+                                    </button>
+                                    <button
+                                        class="chatroom-btn w-full text-left p-2 rounded hover:bg-white/10 transition-colors flex items-center gap-2"
+                                        data-room-name="Gaming Corner">
+                                        <i data-lucide="gamepad-2" class="w-4 h-4"></i> Gaming Corner
+                                    </button>
+                                </div>
+                            </div> -->
                         </div>
 
-                        <div id="assignments-list" class="space-y-2">
-                            <div
-                                class="grid grid-cols-[auto,1fr,auto,auto,auto] gap-x-4 items-center text-sm text-gray-400 pb-1 border-b border-gray-600">
-                                <span></span>
-                                <span>Name</span>
-                                <span>Course</span>
-                                <span>Due Date</span>
-                                <span></span>
-                            </div>
-                            <!-- Dynamic tasks will be inserted here -->
-                        </div>
-                        <form id="new-assignment-form" class="mt-4 hidden">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-base">
-                                <input type="text" id="new-assignment-name" placeholder="Task Name"
-                                    class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400"
-                                    required>
-                                <input type="text" id="new-assignment-course" placeholder="Course"
-                                    class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400">
-                                <input type="date" id="new-assignment-due-date"
-                                    class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400">
-                            </div>
-                            <div class="flex justify-end gap-2 mt-2">
-                                <button type="button" id="cancel-assignment-btn"
-                                    class="text-sm text-gray-400 hover:text-white px-3 py-1 rounded">Cancel</button>
-                                <button type="submit"
-                                    class="text-sm bg-green-500/80 text-white px-3 py-1 rounded hover:bg-green-600">Add
-                                    Task</button>
-                            </div>
-                        </form>
-                        <button id="new-assignment-btn"
-                            class="mt-4 text-gray-400 hover:text-white flex items-center gap-2"><i data-lucide="plus"
-                                class="w-4 h-4"></i> New</button>
-                    </div>
+                        <!-- Main Content Area -->
+                        <div class="lg:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Left Column -->
+                            <div class="lg:col-span-1 flex flex-col gap-6">
+                                <!-- Helpful Links -->
+                                <div class="widget">
+                                    <div class="flex justify-between items-center">
+                                        <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="link-2"
+                                                class="w-5 h-5"></i> Helpful Links</h2>
+                                        <button id="helpful-link-btn"
+                                            class="text-sm bg-green-500/80 text-white px-3 py-1 rounded hover:bg-green-600">✨
+                                            Find a
+                                            Link</button>
+                                    </div>
+                                    <ul id="helpful-links-list" class="space-y-2 mt-2">
+                                        <li><a href="https://telemanas.mohfw.gov.in/" target="_blank"
+                                                class="hover:text-green-400">✧
+                                                Tele MANAS</a></li>
+                                    </ul>
+                                </div>
 
-                    <!-- Music Player -->
-                    <div class="widget">
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="music-4" class="w-6 h-6 text-green-400"></i>
-                                <div>
-                                    <h3 class="text-lg">chill vibes</h3>
-                                    <p class="text-sm text-gray-400">lo-fi beats</p>
+                                <!-- Journaling -->
+                                <div class="widget">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <h2 class="text-xl flex items-center gap-2"><i data-lucide="book-heart"
+                                                class="w-5 h-5"></i>
+                                            Journaling</h2>
+                                        <div class="flex items-center gap-2 text-sm text-gray-400">
+                                            <span>Local</span>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" id="journal-storage-toggle" class="sr-only peer">
+                                                <div
+                                                    class="w-11 h-6 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500">
+                                                </div>
+                                            </label>
+                                            <span>Server</span>
+                                            <button id="sync-journal-btn"
+                                                class="ml-2 text-sm text-cyan-400 hover:text-cyan-300 hidden">Sync to
+                                                Server</button>
+                                        </div>
+                                    </div>
+                                    <button id="shadow-work-prompt-btn"
+                                        class="w-full text-sm bg-purple-500/80 text-white px-3 py-2 rounded hover:bg-purple-600 mb-3">🔮
+                                        New Shadow Work Prompt</button>
+                                    <textarea id="journal-entry"
+                                        class="w-full h-32 bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-purple-400 text-base"
+                                        placeholder="What's on your mind?"></textarea>
+                                    <button id="save-journal-entry-btn"
+                                        class="w-full mt-2 text-sm bg-green-500/80 text-white px-3 py-2 rounded hover:bg-green-600">Save
+                                        Entry</button>
+
+                                    <div id="journal-history-container" class="mt-4">
+                                        <h3 class="text-lg mb-2">Past Entries</h3>
+                                        <div id="journal-history-list" class="space-y-2 max-h-40 overflow-y-auto pr-2">
+                                            <!-- Journal history will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- User Health -->
+                                <div class="widget">
+                                    <h2 class="text-xl mb-4 flex items-center gap-2"><i data-lucide="heart-pulse"
+                                            class="w-5 h-5"></i> User Health</h2>
+                                    <div id="health-stats-container" class="flex flex-col gap-6 items-center"
+                                        style="min-height: 150px;">
+                                        <!-- Health gauges will be injected here by JS -->
+                                    </div>
+                                    <div id="google-fit-auth-container" class="mt-4 text-center">
+                                        <!-- This will show a login button or a sync message -->
+                                    </div>
+                                </div>
+
+                                <!-- Weather -->
+                                <div class="widget">
+                                    <h2 class="text-sm text-gray-400">DELHI WEATHER</h2>
+                                    <div class="flex items-center justify-between mt-2">
+                                        <p class="text-5xl">28°C</p>
+                                        <div class="text-right">
+                                            <i data-lucide="cloud-sun" class="w-12 h-12 ml-auto"></i>
+                                            <p>broken clouds</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 pt-4 border-t border-gray-600 flex justify-between text-center">
+                                        <div class="flex flex-col items-center">
+                                            <p>SAT</p>
+                                            <i data-lucide="sun" class="w-6 h-6 my-1"></i>
+                                            <p>38°C</p>
+                                            <p class="text-gray-400">24°C</p>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <p>SUN</p>
+                                            <i data-lucide="cloud-sun" class="w-6 h-6 my-1"></i>
+                                            <p>35°C</p>
+                                            <p class="text-gray-400">24°C</p>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <p>MON</p>
+                                            <i data-lucide="cloud-drizzle" class="w-6 h-6 my-1"></i>
+                                            <p>34°C</p>
+                                            <p class="text-gray-400">21°C</p>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <p>TUE</p>
+                                            <i data-lucide="cloud-lightning" class="w-6 h-6 my-1"></i>
+                                            <p>31°C</p>
+                                            <p class="text-gray-400">18°C</p>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <p>WED</p>
+                                            <i data-lucide="cloud" class="w-6 h-6 my-1"></i>
+                                            <p>29°C</p>
+                                            <p class="text-gray-400">18°C</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="flex gap-2">
-                                <button id="spotify-btn"
-                                    class="text-sm bg-[#1DB954]/80 text-white px-3 py-1 rounded hover:bg-[#1DB954] transition-colors">Spotify</button>
-                                <button id="yt-music-btn"
-                                    class="text-sm bg-[#FF0000]/80 text-white px-3 py-1 rounded hover:bg-[#FF0000] transition-colors">YT
-                                    Music</button>
+
+                            <!-- Right Column -->
+                            <div class="lg:col-span-2 flex flex-col gap-6">
+
+                                <!-- Guided Meditation -->
+                                <div class="widget">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <h2 class="text-xl flex items-center gap-2"><i data-lucide="brain-circuit"
+                                                class="w-5 h-5"></i> Guided Meditation</h2>
+                                        <div class="flex items-center gap-2">
+                                            <button id="clear-meditation-btn" title="Clear Meditation"
+                                                class="text-gray-400 hover:text-white"><i data-lucide="trash-2"
+                                                    class="w-4 h-4"></i></button>
+                                            <button id="toggle-meditation-btn" title="Minimize"
+                                                class="text-gray-400 hover:text-white"><i data-lucide="chevron-up"
+                                                    class="w-5 h-5"></i></button>
+                                        </div>
+                                    </div>
+                                    <div id="meditation-widget-body">
+                                        <p class="text-gray-400 mb-3 text-base">Enter a topic and select a language for
+                                            your guided
+                                            meditation.</p>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                            <input type="text" id="meditation-topic-input"
+                                                placeholder="e.g., Releasing anxiety"
+                                                class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                                            <select id="meditation-language-select"
+                                                class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                                                <option value="English (India)">English (India)</option>
+                                                <option value="Hindi">Hindi</option>
+                                                <option value="Bengali">Bengali</option>
+                                                <option value="Tamil">Tamil</option>
+                                                <option value="Telugu">Telugu</option>
+                                                <option value="Marathi">Marathi</option>
+                                                <option value="other">Other...</option>
+                                            </select>
+                                        </div>
+                                        <input type="text" id="meditation-language-search"
+                                            placeholder="Enter language name (e.g., French)"
+                                            class="hidden w-full bg-[#2E3338] p-2 mt-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                                        <div class="flex gap-2 mt-2">
+                                            <button id="generate-meditation-btn"
+                                                class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Generate
+                                                Script</button>
+                                            <button id="play-meditation-btn"
+                                                class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                                disabled>Play Meditation</button>
+                                        </div>
+                                        <div id="meditation-script-container"
+                                            class="gemini-response hidden mt-3 max-h-48 overflow-y-auto"></div>
+                                        <audio id="meditation-audio-player" class="w-full mt-3 hidden"></audio>
+                                    </div>
+                                </div>
+
+                                <!-- Serenity Map -->
+                                <div class="widget">
+                                    <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="map"
+                                            class="w-5 h-5"></i>
+                                        Serenity Map</h2>
+                                    <div class="flex gap-2 mb-3">
+                                        <input type="text" id="location-search-input"
+                                            placeholder="Search any location in India..."
+                                            class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
+                                        <button id="location-search-btn"
+                                            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Search</button>
+                                    </div>
+                                    <div id="map" class="w-full h-64 bg-[#2E3338] rounded"></div>
+                                </div>
+
+                                <!-- Assignments -->
+                                <div class="widget">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <h2 class="text-xl flex items-center gap-2"><i data-lucide="clipboard-check"
+                                                class="w-5 h-5"></i> assignments</h2>
+                                        <div class="flex items-center gap-2 text-sm text-gray-400">
+                                            <span>Local</span>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" id="storage-toggle" class="sr-only peer">
+                                                <div
+                                                    class="w-11 h-6 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500">
+                                                </div>
+                                            </label>
+                                            <span>Server</span>
+                                            <button id="sync-assignments-btn"
+                                                class="ml-2 text-sm text-cyan-400 hover:text-cyan-300 hidden">Sync to
+                                                Server</button>
+                                        </div>
+                                    </div>
+
+                                    <div id="assignments-list" class="space-y-2">
+                                        <div
+                                            class="grid grid-cols-[auto,1fr,auto,auto,auto] gap-x-4 items-center text-sm text-gray-400 pb-1 border-b border-gray-600">
+                                            <span></span>
+                                            <span>Name</span>
+                                            <span>Course</span>
+                                            <span>Due Date</span>
+                                            <span></span>
+                                        </div>
+                                        <!-- Dynamic tasks will be inserted here -->
+                                    </div>
+                                    <form id="new-assignment-form" class="mt-4 hidden">
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-base">
+                                            <input type="text" id="new-assignment-name" placeholder="Task Name"
+                                                class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400"
+                                                required>
+                                            <input type="text" id="new-assignment-course" placeholder="Course"
+                                                class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400">
+                                            <input type="date" id="new-assignment-due-date"
+                                                class="bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400">
+                                        </div>
+                                        <div class="flex justify-end gap-2 mt-2">
+                                            <button type="button" id="cancel-assignment-btn"
+                                                class="text-sm text-gray-400 hover:text-white px-3 py-1 rounded">Cancel</button>
+                                            <button type="submit"
+                                                class="text-sm bg-green-500/80 text-white px-3 py-1 rounded hover:bg-green-600">Add
+                                                Task</button>
+                                        </div>
+                                    </form>
+                                    <button id="new-assignment-btn"
+                                        class="mt-4 text-gray-400 hover:text-white flex items-center gap-2"><i
+                                            data-lucide="plus" class="w-4 h-4"></i> New</button>
+                                </div>
+
+                                <!-- Music Player -->
+                                <div class="widget">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <div class="flex items-center gap-3">
+                                            <i data-lucide="music-4" class="w-6 h-6 text-green-400"></i>
+                                            <div>
+                                                <h3 class="text-lg">chill vibes</h3>
+                                                <p class="text-sm text-gray-400">lo-fi beats</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button id="spotify-btn"
+                                                class="text-sm bg-[#1DB954]/80 text-white px-3 py-1 rounded hover:bg-[#1DB954] transition-colors">Spotify</button>
+                                            <button id="yt-music-btn"
+                                                class="text-sm bg-[#FF0000]/80 text-white px-3 py-1 rounded hover:bg-[#FF0000] transition-colors">YT
+                                                Music</button>
+                                        </div>
+                                    </div>
+                                    <div id="music-player-container" class="w-full h-96 mt-2">
+                                        <!-- Music player content is managed by JavaScript -->
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div id="music-player-container" class="w-full h-96 mt-2">
-                            <!-- Music player content is managed by JavaScript -->
+                    </div>
+                </div>
+
+
+
+                <!-- blossom AI Chatbot Icon -->
+                <button id="ai-chat-toggle-btn"
+                    class="fixed bottom-8 right-8 bg-fuchsia-500 text-white p-4 rounded-full shadow-lg hover:bg-fuchsia-600 transition-transform hover:scale-110 z-30">
+                    <i data-lucide="flower-2" class="w-8 h-8"></i>
+                </button>
+
+                <!-- blossom AI Chat Window -->
+                <div id="ai-chat-window"
+                    class="fixed bottom-24 right-8 w-full max-w-md bg-[#39414A] rounded-lg shadow-2xl border border-[#4A5568] hidden flex flex-col z-30"
+                    style="height: 500px;">
+                    <div class="flex justify-between items-center p-3 bg-[#2E3338] rounded-t-lg">
+                        <h3 class="text-lg flex items-center gap-2"><i data-lucide="flower-2"
+                                class="w-5 h-5 text-fuchsia-400"></i>
+                            blossom AI</h3>
+                        <div class="flex items-center gap-3">
+                            <select id="ai-personality-selector"
+                                class="bg-[#39414A] text-sm rounded p-1 border border-[#4A5568] focus:outline-none text-white">
+                                <option value="helpful">Helpful</option>
+                                <option value="creative">Creative</option>
+                                <option value="sarcastic">Sarcastic</option>
+                            </select>
+                            <button id="ai-chat-clear-btn" title="Clear chat history"
+                                class="text-gray-400 hover:text-white">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                            <button id="ai-chat-close-btn" class="text-gray-400 hover:text-white">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="ai-chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
+                    <div class="p-3 border-t border-[#4A5568]">
+                        <div class="flex gap-2">
+                            <input type="text" id="ai-chat-input" placeholder="Ask me anything..."
+                                class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-fuchsia-400 text-base">
+                            <button id="ai-chat-send-btn"
+                                class="bg-fuchsia-500 text-white px-4 py-2 rounded hover:bg-fuchsia-600 flex items-center justify-center">
+                                <i data-lucide="send" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Emote Picker Modal -->
+                <div id="emote-picker-modal"
+                    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+                    <div class="widget p-6 rounded-lg max-w-sm w-full">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl">Choose a new picture</h3>
+                            <button id="close-emote-modal" class="text-gray-400 hover:text-white">
+                                <i data-lucide="x" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+                        <div id="emote-grid" class="grid grid-cols-4 gap-4 text-4xl text-center">
+                            <!-- Emotes will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SOS Sidebar -->
+                <div id="sos-sidebar"
+                    class="fixed top-0 right-0 w-80 h-full bg-[#39414A]/80 backdrop-blur-lg border-l border-white/10 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl flex items-center gap-2"><i data-lucide="life-buoy" class="w-5 h-5"></i>
+                                Emergency
+                                Support</h2>
+                            <button id="close-sos-sidebar" class="text-gray-400 hover:text-white"><i data-lucide="x"
+                                    class="w-6 h-6"></i></button>
+                        </div>
+                        <div class="space-y-3 text-lg">
+                            <a href="tel:14416"
+                                class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                                <i data-lucide="phone" class="w-5 h-5"></i>
+                                <span>Tele MANAS: 14416</span>
+                            </a>
+                            <a href="tel:18005990019"
+                                class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                                <i data-lucide="shield-half" class="w-5 h-5"></i>
+                                <span>Vandrevala Fdn: 1800-599-0019</span>
+                            </a>
+                            <button id="quick-meditation-sos-btn"
+                                class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                                <i data-lucide="sparkles" class="w-5 h-5"></i>
+                                <span>Quick Meditation</span>
+                            </button>
+                            <button id="breathing-exercise-sos-btn"
+                                class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                                <i data-lucide="wind" class="w-5 h-5"></i>
+                                <span>Breathing Exercise</span>
+                            </button>
+                        </div>
+                        <div class="mt-8 pt-6 border-t border-white/20">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-lg font-semibold flex items-center gap-2">
+                                    <i data-lucide="package-check" class="w-5 h-5"></i>
+                                    Offline Coping Kit
+                                </h3>
+                                <div class="flex items-center rounded-full coping-kit-button text-white">
+                                    <button id="download-all-kit-btn" title="Download All Resources as .zip"
+                                        class="flex items-center gap-2 px-3 py-1 text-sm">
+                                        <i data-lucide="download-cloud" class="w-4 h-4"></i>
+                                        <span id="download-all-text">All</span>
+                                    </button>
+                                    <div class="border-l border-white/30 h-4"></div>
+                                    <button id="toggle-kit-dropdown-btn" title="Show Individual Files"
+                                        class="px-2 py-1">
+                                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="coping-kit-dropdown-menu" class="coping-kit-dropdown">
+                                <div class="space-y-2 text-base p-3">
+                                    <button data-kit-item="contacts"
+                                        class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                                        <i data-lucide="contact" class="w-5 h-5 text-cyan-400"></i>
+                                        <span>Emergency Contacts (.txt)</span>
+                                    </button>
+                                    <button data-kit-item="exercises"
+                                        class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                                        <i data-lucide="feather" class="w-5 h-5 text-green-400"></i>
+                                        <span>Calming Exercises (.txt)</span>
+                                    </button>
+                                    <button data-kit-item="affirmations"
+                                        class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                                        <i data-lucide="sparkles" class="w-5 h-5 text-yellow-400"></i>
+                                        <span>Positive Affirmations (.txt)</span>
+                                    </button>
+                                    <button data-kit-item="prompts"
+                                        class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                                        <i data-lucide="book-open-text" class="w-5 h-5 text-orange-400"></i>
+                                        <span>5-Min Journal Prompts (.txt)</span>
+                                    </button>
+                                    <button data-kit-item="hope-card"
+                                        class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                                        <i data-lucide="image" class="w-5 h-5 text-purple-400"></i>
+                                        <span>Digital Hope Card (.png)</span>
+                                    </button>
+                                    <button data-kit-item="mandala"
+                                        class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
+                                        <i data-lucide="circle-dot" class="w-5 h-5 text-fuchsia-400"></i>
+                                        <span>Mindfulness Mandala (.png)</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-gray-400 mt-4">Download a complete kit or select individual resources
+                                to use them
+                                anytime, even without an internet connection.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- START OF ADDED NOTIFICATION PANEL -->
+                <div id="notification-panel"
+                    class="hidden fixed top-24 right-8 w-80 bg-[#39414A]/90 backdrop-blur-lg border border-white/10 shadow-2xl z-50 rounded-lg">
+                    <div class="p-4 border-b border-white/10 flex justify-between items-center">
+                        <h3 class="text-lg">Notifications</h3>
+                        <button id="clear-notifications-btn" class="text-sm text-gray-400 hover:text-white hidden">Clear
+                            All</button>
+                    </div>
+                    <div id="notification-list" class="p-2 max-h-80 overflow-y-auto">
+                        <!-- Notifications will be loaded here -->
+                    </div>
+                </div>
+                <!-- END OF ADDED NOTIFICATION PANEL -->
+
+                <!-- Journal Analysis Modal -->
+                <div id="journal-analysis-modal"
+                    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+                    <div class="widget p-6 rounded-lg max-w-xl w-full">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl flex items-center gap-2"><i data-lucide="brain-circuit"
+                                    class="w-5 h-5"></i> AI
+                                Journal Analysis</h3>
+                            <button id="close-journal-analysis-modal" class="text-gray-400 hover:text-white">
+                                <i data-lucide="x" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+                        <div id="journal-analysis-content" class="gemini-response max-h-[60vh] overflow-y-auto">
+                            <!-- AI analysis will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Study Help Modal -->
+                <div id="study-help-modal"
+                    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+                    <div class="widget p-6 rounded-lg max-w-lg w-full flex flex-col" style="height: 70vh;">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl flex items-center gap-2"><i data-lucide="graduation-cap"
+                                    class="w-5 h-5 text-yellow-400"></i> Study Help !!</h3>
+                            <button id="close-study-help-modal" class="text-gray-400 hover:text-white">
+                                <i data-lucide="x" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+                        <div id="study-upload-view" class="space-y-3 text-base">
+                            <p class="text-sm text-gray-400">Upload a document (PDF, TXT) to start a chat session.</p>
+                            <label for="study-file-upload"
+                                class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-[#2E3338] border-gray-600 hover:border-gray-500 hover:bg-[#39414A]">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <i data-lucide="upload-cloud" class="w-10 h-10 mb-2 text-gray-400"></i>
+                                    <p class="mb-1 text-sm text-gray-400"><span class="font-semibold">Click to
+                                            upload</span></p>
+                                    <p id="study-file-name" class="text-xs text-gray-400">PDF, TXT, MD, etc. (MAX. 5MB)
+                                    </p>
+                                </div>
+                                <input id="study-file-upload" type="file" class="hidden"
+                                    accept=".pdf, .txt, .md, .csv, text/plain, application/pdf" />
+                            </label>
+                        </div>
+                        <div id="study-chat-view" class="hidden flex-1 flex flex-col min-h-0">
+                            <div class="flex justify-between items-center p-2 bg-black/20 rounded mb-2">
+                                <p id="study-chat-file-name" class="text-sm truncate text-gray-300"></p>
+                                <button id="study-end-chat-btn" class="text-xs text-red-400 hover:text-white">End
+                                    Session</button>
+                            </div>
+                            <div id="study-chat-messages"
+                                class="flex-1 p-4 overflow-y-auto space-y-4 bg-black/10 rounded">
+                                <!-- Study chat messages will appear here -->
+                            </div>
+                            <div class="p-3 border-t border-[#4A5568] mt-2">
+                                <div class="flex gap-2">
+                                    <input type="text" id="study-chat-input"
+                                        placeholder="Ask a question about the document..."
+                                        class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-yellow-400 text-base">
+                                    <button id="study-chat-send-btn"
+                                        class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 flex items-center justify-center">
+                                        <i data-lucide="send" class="w-5 h-5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="screening-modal"
+                    class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+                    <div class="widget p-6 rounded-lg max-w-2xl w-full flex flex-col" style="height: 80vh;">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5"></i>
+                                Mental
+                                Health Screening</h3>
+                            <button id="close-screening-modal" class="text-gray-400 hover:text-white"><i data-lucide="x"
+                                    class="w-6 h-6"></i></button>
+                        </div>
+
+                        <div id="screening-intro-view">
+                            <h4 class="text-lg font-semibold mb-2">About this Screening</h4>
+                            <p class="text-gray-300 text-base mb-4">This is a confidential screening tool based on the
+                                Patient
+                                Health Questionnaire (PHQ-9) and the Generalized Anxiety Disorder (GAD-7) assessment. It
+                                is intended
+                                to help you understand your emotional well-being and is not a substitute for a
+                                professional
+                                diagnosis.</p>
+                            <p class="text-gray-400 text-sm mb-6">Your aggregated, anonymous data may be used to help us
+                                understand
+                                the well-being of our user community. Your individual responses will not be shared.</p>
+                            <button id="start-screening-btn"
+                                class="w-full bg-indigo-600 text-white py-3 rounded-lg text-lg hover:bg-indigo-700 transition-colors">Start
+                                Screening</button>
+                        </div>
+
+                        <div id="screening-questions-view" class="hidden flex-1 flex flex-col min-h-0">
+                            <div class="w-full bg-gray-700 rounded-full h-2.5 mb-4">
+                                <div id="screening-progress-bar"
+                                    class="bg-gradient-to-r from-purple-500 to-indigo-500 h-2.5 rounded-full screening-progress-bar"
+                                    style="width: 0%"></div>
+                            </div>
+                            <div id="screening-question-container" class="flex-1 overflow-y-auto pr-2">
+                                <p class="text-lg text-gray-300 mb-2">Over the last <strong>2 weeks</strong>, how often
+                                    have you
+                                    been bothered by the following problems?</p>
+                                <h3 id="screening-question-text" class="text-2xl font-semibold mb-4"></h3>
+                                <div id="screening-options" class="space-y-2 text-lg"></div>
+                            </div>
+                            <div class="mt-4 flex justify-between items-center">
+                                <button id="screening-back-btn"
+                                    class="text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                                </button>
+                                <span id="screening-question-counter" class="text-sm text-gray-400"></span>
+                                <button id="screening-next-btn"
+                                    class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="screening-results-view"
+                            class="hidden flex-1 flex-col min-h-0 items-center justify-center text-center">
+                            <i data-lucide="check-circle-2" class="w-16 h-16 text-green-400 mb-4"></i>
+                            <h3 class="text-2xl font-bold mb-2">Screening Complete</h3>
+                            <p class="text-gray-300 mb-4">Thank you for completing the screening. Your results are being
+                                processed.
+                            </p>
+                            <p class="text-sm text-gray-400">Generating your personalized report...</p>
+                            <div class="loader mt-4"></div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- END OF ADDED SCREENING MODAL -->
+            </div>
+
+            <div id="chat-view" class="w-full h-full hidden flex">
+                <div id="channel-list-panel" class="glass">
+                    <div class="p-4 border-b border-white/10 shadow-md flex justify-between items-center">
+                        <h2 class="text-lg font-bold truncate">Institute Server</h2>
+                        <button id="toggle-channels-btn" title="Toggle Channel List"
+                            class="text-gray-400 hover:text-white">
+                            <i data-lucide="panel-left-close" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div id="channel-buttons-container" class="flex-1 p-3 space-y-2 overflow-y-auto"></div>
+                    <div id="user-panel" class="p-3 flex items-center gap-3">
+                        <div id="chat-profile-pic-container" class="relative">
+                            <div id="chat-profile-pic-emoji"
+                                class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-2xl">☘️
+                            </div>
+                        </div>
+                        <span id="chat-user-anonymous-name" class="font-semibold text-sm truncate">Connecting...</span>
+                    </div>
+                </div>
+
+                <div id="chat-area" class="glass flex-1 flex flex-col min-w-0">
+                    <div id="main-chat-header"
+                        class="flex items-center justify-between p-4 border-b border-white/10 shadow-sm h-16 flex-shrink-0">
+                    </div>
+                    <div class="flex flex-1 min-h-0">
+                        <div class="flex-1 flex flex-col min-h-0">
+                            <div id="main-chat-welcome"
+                                class="flex flex-col items-center justify-center h-full text-center p-8">
+                                <i data-lucide="message-square" class="w-24 h-24 text-gray-400 opacity-50 mb-4"></i>
+                                <h2 class="text-2xl font-bold">Select a channel to begin</h2>
+                                <p class="text-gray-300 mt-2">Your conversations will appear here.</p>
+                            </div>
+                            <div id="main-chat-messages" class="flex-1 overflow-y-auto hidden"></div>
+                            <div id="main-chat-input-wrapper" class="hidden p-4 pt-0">
+                                <div id="voice-recorder-container"></div>
+                                <div id="main-chat-input-container" class="glass relative">
+                                    <div id="attachment-menu" class="glass hidden scale-90 opacity-0">
+                                        <div class="flex flex-col gap-2">
+                                            <button id="attach-image-btn" class="context-menu-item"><i
+                                                    data-lucide="image" class="w-4 h-4"></i> Image</button>
+                                            <button id="attach-doc-btn" class="context-menu-item"><i
+                                                    data-lucide="file-text" class="w-4 h-4"></i> Document</button>
+                                            <button id="record-voice-btn" class="context-menu-item"><i data-lucide="mic"
+                                                    class="w-4 h-4"></i> Record Voice</button>
+                                        </div>
+                                    </div>
+                                    <button id="attachment-btn" class="p-2 text-gray-400 hover:text-white">
+                                        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                                    </button>
+                                    <input type="text" id="main-chat-input" placeholder="Type a message..."
+                                        class="flex-1">
+                                    <button id="emoji-btn" class="p-2 text-gray-400 hover:text-white">
+                                        <i data-lucide="smile" class="w-5 h-5"></i>
+                                    </button>
+                                    <button id="main-chat-send-btn"><i data-lucide="send" class="w-5 h-5"></i></button>
+                                    <div id="emoji-panel" class="glass hidden scale-90 opacity-0">
+                                        <div class="flex border-b border-white/10">
+                                            <button class="emoji-tab active" data-tab="emojis">Emojis</button>
+                                            <button class="emoji-tab" data-tab="stickers">Stickers</button>
+                                        </div>
+                                        <div id="emojis-grid" class="emoji-grid flex-1"></div>
+                                        <div id="stickers-grid" class="emoji-grid flex-1 hidden"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="members-panel" class="hidden p-2">
+                            <div id="member-list-container" class="flex-1 space-y-1 overflow-y-auto"></div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <!-- Peer Chat Window -->
-    <div id="chat-window"
-        class="fixed bottom-8 right-16 w-full max-w-md bg-[#39414A] rounded-lg shadow-2xl border border-[#4A5568] hidden flex flex-col z-20"
-        style="height: 500px;">
-        <!-- Header -->
-        <div class="flex justify-between items-center p-3 bg-[#2E3338] rounded-t-lg">
-            <div class="flex items-center gap-2">
-                <h3 id="chat-header-title" class="text-lg flex items-center gap-2"><i data-lucide="users"
-                        class="w-5 h-5"></i> Chat Room</h3>
-            </div>
-            <div class="flex items-center gap-3">
-                <button id="peer-chat-clear-btn" title="Clear chat locally" class="text-gray-400 hover:text-white">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-                <button id="chat-close-btn" class="text-gray-400 hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-        <!-- Messages -->
-        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4">
-            <!-- Messages from Firestore will be dynamically inserted here -->
-        </div>
-        <!-- Input -->
-        <div class="p-3 border-t border-[#4A5568]">
-            <div class="flex gap-2">
-                <input type="text" id="chat-input" placeholder="Type your message..."
-                    class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-green-400 text-base">
-                <button id="chat-send-btn"
-                    class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 flex items-center justify-center">
-                    <i data-lucide="send" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- blossom AI Chatbot Icon -->
-    <button id="ai-chat-toggle-btn"
-        class="fixed bottom-8 right-8 bg-fuchsia-500 text-white p-4 rounded-full shadow-lg hover:bg-fuchsia-600 transition-transform hover:scale-110 z-30">
-        <i data-lucide="flower-2" class="w-8 h-8"></i>
-    </button>
-
-    <!-- blossom AI Chat Window -->
-    <div id="ai-chat-window"
-        class="fixed bottom-24 right-8 w-full max-w-md bg-[#39414A] rounded-lg shadow-2xl border border-[#4A5568] hidden flex flex-col z-30"
-        style="height: 500px;">
-        <div class="flex justify-between items-center p-3 bg-[#2E3338] rounded-t-lg">
-            <h3 class="text-lg flex items-center gap-2"><i data-lucide="flower-2" class="w-5 h-5 text-fuchsia-400"></i>
-                blossom AI</h3>
-            <div class="flex items-center gap-3">
-                <select id="ai-personality-selector"
-                    class="bg-[#39414A] text-sm rounded p-1 border border-[#4A5568] focus:outline-none text-white">
-                    <option value="helpful">Helpful</option>
-                    <option value="creative">Creative</option>
-                    <option value="sarcastic">Sarcastic</option>
-                </select>
-                <button id="ai-chat-clear-btn" title="Clear chat history" class="text-gray-400 hover:text-white">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-                <button id="ai-chat-close-btn" class="text-gray-400 hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-        <div id="ai-chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
-        <div class="p-3 border-t border-[#4A5568]">
-            <div class="flex gap-2">
-                <input type="text" id="ai-chat-input" placeholder="Ask me anything..."
-                    class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-fuchsia-400 text-base">
-                <button id="ai-chat-send-btn"
-                    class="bg-fuchsia-500 text-white px-4 py-2 rounded hover:bg-fuchsia-600 flex items-center justify-center">
-                    <i data-lucide="send" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Emote Picker Modal -->
-    <div id="emote-picker-modal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
-        <div class="widget p-6 rounded-lg max-w-sm w-full">
+    <div id="emote-picker-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+        <div class="widget glass p-6 rounded-lg max-w-sm w-full">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl">Choose a new picture</h3>
+                <h3 class="text-xl font-vt323">Choose a new picture</h3>
                 <button id="close-emote-modal" class="text-gray-400 hover:text-white">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
-            <div id="emote-grid" class="grid grid-cols-4 gap-4 text-4xl text-center">
-                <!-- Emotes will be populated by JS -->
-            </div>
+            <div id="emote-grid" class="grid grid-cols-4 gap-4 text-4xl text-center"></div>
         </div>
     </div>
 
-    <!-- SOS Sidebar -->
-    <div id="sos-sidebar"
-        class="fixed top-0 right-0 w-80 h-full bg-[#39414A]/80 backdrop-blur-lg border-l border-white/10 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
-        <div class="p-4">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl flex items-center gap-2"><i data-lucide="life-buoy" class="w-5 h-5"></i> Emergency
-                    Support</h2>
-                <button id="close-sos-sidebar" class="text-gray-400 hover:text-white"><i data-lucide="x"
-                        class="w-6 h-6"></i></button>
-            </div>
-            <div class="space-y-3 text-lg">
-                <a href="tel:14416" class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="phone" class="w-5 h-5"></i>
-                    <span>Tele MANAS: 14416</span>
-                </a>
-                <a href="tel:18005990019"
-                    class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="shield-half" class="w-5 h-5"></i>
-                    <span>Vandrevala Fdn: 1800-599-0019</span>
-                </a>
-                <button id="quick-meditation-sos-btn"
-                    class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="sparkles" class="w-5 h-5"></i>
-                    <span>Quick Meditation</span>
-                </button>
-                <button id="breathing-exercise-sos-btn"
-                    class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
-                    <i data-lucide="wind" class="w-5 h-5"></i>
-                    <span>Breathing Exercise</span>
-                </button>
-            </div>
-            <div class="mt-8 pt-6 border-t border-white/20">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-semibold flex items-center gap-2">
-                        <i data-lucide="package-check" class="w-5 h-5"></i>
-                        Offline Coping Kit
-                    </h3>
-                    <div class="flex items-center rounded-full coping-kit-button text-white">
-                        <button id="download-all-kit-btn" title="Download All Resources as .zip"
-                            class="flex items-center gap-2 px-3 py-1 text-sm">
-                            <i data-lucide="download-cloud" class="w-4 h-4"></i>
-                            <span id="download-all-text">All</span>
-                        </button>
-                        <div class="border-l border-white/30 h-4"></div>
-                        <button id="toggle-kit-dropdown-btn" title="Show Individual Files" class="px-2 py-1">
-                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div id="coping-kit-dropdown-menu" class="coping-kit-dropdown">
-                    <div class="space-y-2 text-base p-3">
-                        <button data-kit-item="contacts"
-                            class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
-                            <i data-lucide="contact" class="w-5 h-5 text-cyan-400"></i>
-                            <span>Emergency Contacts (.txt)</span>
-                        </button>
-                        <button data-kit-item="exercises"
-                            class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
-                            <i data-lucide="feather" class="w-5 h-5 text-green-400"></i>
-                            <span>Calming Exercises (.txt)</span>
-                        </button>
-                        <button data-kit-item="affirmations"
-                            class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
-                            <i data-lucide="sparkles" class="w-5 h-5 text-yellow-400"></i>
-                            <span>Positive Affirmations (.txt)</span>
-                        </button>
-                        <button data-kit-item="prompts"
-                            class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
-                            <i data-lucide="book-open-text" class="w-5 h-5 text-orange-400"></i>
-                            <span>5-Min Journal Prompts (.txt)</span>
-                        </button>
-                        <button data-kit-item="hope-card"
-                            class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
-                            <i data-lucide="image" class="w-5 h-5 text-purple-400"></i>
-                            <span>Digital Hope Card (.png)</span>
-                        </button>
-                        <button data-kit-item="mandala"
-                            class="kit-item-btn w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors">
-                            <i data-lucide="circle-dot" class="w-5 h-5 text-fuchsia-400"></i>
-                            <span>Mindfulness Mandala (.png)</span>
-                        </button>
-                    </div>
-                </div>
-
-                <p class="text-xs text-gray-400 mt-4">Download a complete kit or select individual resources to use them
-                    anytime, even without an internet connection.</p>
-            </div>
-        </div>
-
+    <div id="user-profile-popup" class="glass">
+        <div id="user-profile-content" class="p-4"></div>
     </div>
 
-    <!-- START OF ADDED NOTIFICATION PANEL -->
-    <div id="notification-panel"
-        class="hidden fixed top-24 right-8 w-80 bg-[#39414A]/90 backdrop-blur-lg border border-white/10 shadow-2xl z-50 rounded-lg">
-        <div class="p-4 border-b border-white/10 flex justify-between items-center">
-            <h3 class="text-lg">Notifications</h3>
-            <button id="clear-notifications-btn" class="text-sm text-gray-400 hover:text-white hidden">Clear
-                All</button>
-        </div>
-        <div id="notification-list" class="p-2 max-h-80 overflow-y-auto">
-            <!-- Notifications will be loaded here -->
-        </div>
-    </div>
-    <!-- END OF ADDED NOTIFICATION PANEL -->
+    <div id="context-menu" class="glass"></div>
 
-    <!-- Journal Analysis Modal -->
-    <div id="journal-analysis-modal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
-        <div class="widget p-6 rounded-lg max-w-xl w-full">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl flex items-center gap-2"><i data-lucide="brain-circuit" class="w-5 h-5"></i> AI
-                    Journal Analysis</h3>
-                <button id="close-journal-analysis-modal" class="text-gray-400 hover:text-white">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            <div id="journal-analysis-content" class="gemini-response max-h-[60vh] overflow-y-auto">
-                <!-- AI analysis will be loaded here -->
-            </div>
+    <div id="image-preview-modal"
+        class="fixed inset-0 bg-black/70 flex-col items-center justify-center hidden z-50 p-4">
+        <img id="preview-image" src="" alt="Image preview" class="max-w-full max-h-full object-contain rounded-lg">
+        <div class="flex gap-2 mt-4 w-full max-w-lg">
+            <input type="text" id="image-caption-input" placeholder="Add a caption..."
+                class="flex-1 bg-gray-800 text-white p-2 rounded border border-gray-600">
+            <button id="send-image-btn" class="bg-green-500 text-white px-4 py-2 rounded">Send</button>
+            <button id="cancel-image-btn" class="bg-gray-600 text-white px-4 py-2 rounded">Cancel</button>
         </div>
     </div>
-
-    <!-- Study Help Modal -->
-    <div id="study-help-modal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
-        <div class="widget p-6 rounded-lg max-w-lg w-full flex flex-col" style="height: 70vh;">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl flex items-center gap-2"><i data-lucide="graduation-cap"
-                        class="w-5 h-5 text-yellow-400"></i> Study Help !!</h3>
-                <button id="close-study-help-modal" class="text-gray-400 hover:text-white">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            <div id="study-upload-view" class="space-y-3 text-base">
-                <p class="text-sm text-gray-400">Upload a document (PDF, TXT) to start a chat session.</p>
-                <label for="study-file-upload"
-                    class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-[#2E3338] border-gray-600 hover:border-gray-500 hover:bg-[#39414A]">
-                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                        <i data-lucide="upload-cloud" class="w-10 h-10 mb-2 text-gray-400"></i>
-                        <p class="mb-1 text-sm text-gray-400"><span class="font-semibold">Click to upload</span></p>
-                        <p id="study-file-name" class="text-xs text-gray-400">PDF, TXT, MD, etc. (MAX. 5MB)</p>
-                    </div>
-                    <input id="study-file-upload" type="file" class="hidden"
-                        accept=".pdf, .txt, .md, .csv, text/plain, application/pdf" />
-                </label>
-            </div>
-            <div id="study-chat-view" class="hidden flex-1 flex flex-col min-h-0">
-                <div class="flex justify-between items-center p-2 bg-black/20 rounded mb-2">
-                    <p id="study-chat-file-name" class="text-sm truncate text-gray-300"></p>
-                    <button id="study-end-chat-btn" class="text-xs text-red-400 hover:text-white">End Session</button>
-                </div>
-                <div id="study-chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-black/10 rounded">
-                    <!-- Study chat messages will appear here -->
-                </div>
-                <div class="p-3 border-t border-[#4A5568] mt-2">
-                    <div class="flex gap-2">
-                        <input type="text" id="study-chat-input" placeholder="Ask a question about the document..."
-                            class="w-full bg-[#2E3338] p-2 rounded border border-[#4A5568] focus:outline-none focus:ring-2 focus:ring-yellow-400 text-base">
-                        <button id="study-chat-send-btn"
-                            class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 flex items-center justify-center">
-                            <i data-lucide="send" class="w-5 h-5"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="screening-modal"
-        class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50">
-        <div class="widget p-6 rounded-lg max-w-2xl w-full flex flex-col" style="height: 80vh;">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5"></i> Mental
-                    Health Screening</h3>
-                <button id="close-screening-modal" class="text-gray-400 hover:text-white"><i data-lucide="x"
-                        class="w-6 h-6"></i></button>
-            </div>
-
-            <div id="screening-intro-view">
-                <h4 class="text-lg font-semibold mb-2">About this Screening</h4>
-                <p class="text-gray-300 text-base mb-4">This is a confidential screening tool based on the Patient
-                    Health Questionnaire (PHQ-9) and the Generalized Anxiety Disorder (GAD-7) assessment. It is intended
-                    to help you understand your emotional well-being and is not a substitute for a professional
-                    diagnosis.</p>
-                <p class="text-gray-400 text-sm mb-6">Your aggregated, anonymous data may be used to help us understand
-                    the well-being of our user community. Your individual responses will not be shared.</p>
-                <button id="start-screening-btn"
-                    class="w-full bg-indigo-600 text-white py-3 rounded-lg text-lg hover:bg-indigo-700 transition-colors">Start
-                    Screening</button>
-            </div>
-
-            <div id="screening-questions-view" class="hidden flex-1 flex flex-col min-h-0">
-                <div class="w-full bg-gray-700 rounded-full h-2.5 mb-4">
-                    <div id="screening-progress-bar"
-                        class="bg-gradient-to-r from-purple-500 to-indigo-500 h-2.5 rounded-full screening-progress-bar"
-                        style="width: 0%"></div>
-                </div>
-                <div id="screening-question-container" class="flex-1 overflow-y-auto pr-2">
-                    <p class="text-lg text-gray-300 mb-2">Over the last <strong>2 weeks</strong>, how often have you
-                        been bothered by the following problems?</p>
-                    <h3 id="screening-question-text" class="text-2xl font-semibold mb-4"></h3>
-                    <div id="screening-options" class="space-y-2 text-lg"></div>
-                </div>
-                <div class="mt-4 flex justify-between items-center">
-                    <button id="screening-back-btn"
-                        class="text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i data-lucide="arrow-left" class="w-6 h-6"></i>
-                    </button>
-                    <span id="screening-question-counter" class="text-sm text-gray-400"></span>
-                    <button id="screening-next-btn"
-                        class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
-                        Next
-                    </button>
-                </div>
-            </div>
-
-            <div id="screening-results-view"
-                class="hidden flex-1 flex-col min-h-0 items-center justify-center text-center">
-                <i data-lucide="check-circle-2" class="w-16 h-16 text-green-400 mb-4"></i>
-                <h3 class="text-2xl font-bold mb-2">Screening Complete</h3>
-                <p class="text-gray-300 mb-4">Thank you for completing the screening. Your results are being processed.
-                </p>
-                <p class="text-sm text-gray-400">Generating your personalized report...</p>
-                <div class="loader mt-4"></div>
-            </div>
-
-        </div>
-    </div>
-    <!-- END OF ADDED SCREENING MODAL -->
-
+    <input type="file" id="image-upload-input" class="hidden" accept="image/*">
+    <input type="file" id="doc-upload-input" class="hidden">
 
     <script type="module">
         import { getDocs, getDoc, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc, setDoc }
+            from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- PDF.js Import ---
         // This library allows the browser to read and extract text from PDF files.
@@ -1147,26 +1756,26 @@
             appId: "1:250478137189:web:224352f8e017b4194edb8c",
             measurementId: "G-K159S6DZNP"
         };
+
+
+        let userProfilesCache = {};
+        let unsubscribeFromProfiles = null;
+        let unsubscribeFromChannels = null;
+        let timeoutInterval = null;
+
         const finalFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const sanitizedAppId = appId.replace(/\//g, '_');
 
-        let db, auth, currentUserId, currentUserAnonymousName;
-
+        let db, auth, currentUserId, currentUserAnonymousName, currentUserProfile;
+        let unsubscribeNotifications = null;
         // --- DOM Element Declarations ---
         const notificationBanner = document.getElementById('notification-banner');
         const notificationMessage = document.getElementById('notification-message');
         const coverElement = document.querySelector('.pixelated-bg');
 
-        // Peer Chat
-        const chatWindow = document.getElementById('chat-window');
-        const chatCloseBtn = document.getElementById('chat-close-btn');
-        const peerChatClearBtn = document.getElementById('peer-chat-clear-btn');
-        const chatMessages = document.getElementById('chat-messages');
-        const chatInput = document.getElementById('chat-input');
-        const chatSendBtn = document.getElementById('chat-send-btn');
-        const chatHeaderTitle = document.getElementById('chat-header-title');
+
 
         // AI Chatbot
         const aiChatToggleBtn = document.getElementById('ai-chat-toggle-btn');
@@ -1252,182 +1861,52 @@
 
 
 
-        onAuthStateChanged(auth, user => {
-
-
-
+        onAuthStateChanged(auth, async (user) => { // <-- Make it async
             if (user) {
                 currentUserId = user.uid;
                 console.log("Anonymous User ID:", currentUserId);
-                let storedName = localStorage.getItem('anonymousUserName');
+
+                // This is the CRITICAL part:
+                // We now wait for the profile to exist before doing anything else.
+                await ensureUserProfile(user.uid);
+                // ensureUserProfile() will handle setting the anonymous name and UI
+
+                // Now that we are sure the user profile exists, we can safely
+                // initialize all Firestore listeners and data-dependent widgets.
                 listenForNotifications(user.uid);
-                if (!storedName) {
-                    storedName = generateAnonymousName();
-                    localStorage.setItem('anonymousUserName', storedName);
-                }
+                listenToAllProfiles();
+                listenToChannels();
 
-                if (user.isAnonymous) {
-                    currentUserAnonymousName = storedName;
-                } else {
-                    currentUserAnonymousName = user.displayName || storedName;
-                }
-
-                const userNameElement = document.getElementById('user-anonymous-name');
-                if (userNameElement) {
-                    userNameElement.textContent = currentUserAnonymousName;
-                }
+                initializeAssignments();
+                initializeJournaling();
+                initializeScreening();
+                initializeHealthWidget();
+                initAdminNotifications(); // <-- We CALL the function here
 
             } else {
-                signInAnonymously(auth);
+                // This 'else' block now handles the initial sign-in
                 currentUserId = null;
                 currentUserAnonymousName = "Guest";
                 const userNameElement = document.getElementById('user-anonymous-name');
                 if (userNameElement) userNameElement.textContent = currentUserAnonymousName;
-            }
 
-            initializeAssignments();
-            initializeJournaling();
-            initializeScreening();
-            initializeHealthWidget(); // This function was causing issues, disabling for now.
-
-
-            // --------------- Admin notifications wiring ---------------
-            // Requires: db, currentUserId, sanitizedAppId, document elements:
-            // #notification-bell-btn, #notification-badge, #notification-panel, #notification-list, #clear-notifications-btn
-
-            let unsubscribeNotifications = null;
-
-            function initAdminNotifications() {
-                if (!db) {
-                    console.warn("Firestore not initialized yet - notifications will wait.");
-                    return;
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("Initial authentication failed:", error);
+                    if (!auth.currentUser) {
+                        try {
+                            await signInAnonymously(auth);
+                        } catch (anonError) {
+                            console.error("Fallback anonymous sign-in also failed.", anonError);
+                        }
+                    }
                 }
-
-                // Collection path for admin notifications (change if your backend uses another path)
-                const notificationsRef = collection(db, `artifacts/${sanitizedAppId}/public/data/notifications`);
-
-                // Use orderBy if you've imported it; otherwise remove the orderBy bit and sort locally.
-                const q = query(notificationsRef, orderBy('createdAt', 'desc'));
-
-                // Listen live
-                unsubscribeNotifications = onSnapshot(q, snapshot => {
-                    const listEl = document.getElementById('notification-list');
-                    const badgeEl = document.getElementById('notification-badge');
-
-                    if (!listEl) return console.warn('No #notification-list element found.');
-
-                    // Render items (clear first)
-                    listEl.innerHTML = '';
-
-                    const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-
-                    // Compute unread count (we mark read by storing currentUserId in readBy array)
-                    const unreadCount = docs.filter(n => !(Array.isArray(n.readBy) && n.readBy.includes(currentUserId))).length;
-
-                    // Update badge
-                    if (badgeEl) {
-                        if (unreadCount > 0) {
-                            badgeEl.classList.remove('hidden');
-                            badgeEl.textContent = unreadCount > 9 ? '9+' : String(unreadCount);
-                        } else {
-                            badgeEl.classList.add('hidden');
-                        }
-                    }
-
-                    // Render each notification
-                    docs.forEach(n => {
-                        const item = document.createElement('div');
-                        item.className = 'p-2 border-b border-white/10 cursor-pointer hover:bg-white/5';
-                        const title = n.title || (n.level ? n.level.toUpperCase() : 'Notification');
-                        const body = n.body || n.message || '';
-                        const ts = n.createdAt && typeof n.createdAt.toDate === 'function' ? n.createdAt.toDate().toLocaleString() : '';
-
-                        item.innerHTML = `
-        <div class="text-sm font-medium">${title}</div>
-        <div class="text-xs text-gray-400">${body}</div>
-        <div class="text-xs text-gray-500 mt-1">${ts}</div>
-      `;
-
-                        // click: open link (if any) and mark read for this user
-                        item.addEventListener('click', async () => {
-                            if (n.link) window.open(n.link, '_blank');
-
-                            try {
-                                const notifDocRef = doc(db, `artifacts/${sanitizedAppId}/public/data/notifications`, n.id);
-                                const newReadBy = Array.from(new Set([...(n.readBy || []), currentUserId]));
-                                await updateDoc(notifDocRef, { readBy: newReadBy });
-                            } catch (err) {
-                                console.error('Failed to mark notification read:', err);
-                            }
-                        });
-
-                        listEl.appendChild(item);
-                    });
-
-                    // show "no notifications" message if empty
-                    if (docs.length === 0) {
-                        listEl.innerHTML = '<div class="text-center text-gray-400 p-4">No notifications.</div>';
-                    }
-                }, err => {
-                    console.error('Notification listener error:', err);
-                });
             }
-
-            // Toggle panel on bell click
-            const bellBtn = document.getElementById('notification-bell-btn');
-            if (bellBtn) {
-                bellBtn.addEventListener('click', () => {
-                    const panel = document.getElementById('notification-panel');
-                    if (!panel) return;
-                    panel.classList.toggle('hidden');
-
-                    // Optional: when panel opens, mark all visible notifications as read for this user
-                    if (!panel.classList.contains('hidden')) {
-                        // get all items currently displayed and mark them read
-                        // (alternative: call a cloud function to mark read for admin role)
-                        const listEl = document.getElementById('notification-list');
-                        if (listEl && listEl.children.length > 0) {
-                            Array.from(listEl.children).forEach(async (child, idx) => {
-                                // We rely on snapshot listener to handle read state per-item when clicked.
-                                // If you want 'mark all read' here, implement it with updateDoc on each doc.
-                            });
-                        }
-                    }
-                });
-            }
-
-            // "Clear All / Mark all read" button (client-side - marks each notification's readBy to include current user)
-            const clearBtn = document.getElementById('clear-notifications-btn');
-            if (clearBtn) {
-                clearBtn.classList.remove('hidden'); // show it if permitted
-                clearBtn.addEventListener('click', async () => {
-                    if (!confirm('Delete all your notifications?')) return;
-
-                    try {
-                        const user = auth.currentUser;
-                        if (!user) return;
-
-                        const notificationsRef = collection(db, `artifacts/${sanitizedAppId}/users/${user.uid}/notifications`);
-                        const snapshot = await getDocs(notificationsRef);
-
-                        const deletions = snapshot.docs.map(d =>
-                            deleteDoc(doc(db, `artifacts/${sanitizedAppId}/users/${user.uid}/notifications`, d.id))
-                        );
-
-                        await Promise.all(deletions);
-                        showNotification('All notifications cleared.');
-                    } catch (err) {
-                        console.error('Failed to clear notifications:', err);
-                        showNotification('Couldn\'t clear notifications. Check console.', 'error');
-                    }
-                });
-            }
-
-
-            // Call this once DB/auth is ready
-            // Example: call initAdminNotifications() inside your onAuthStateChanged callback after currentUserId is set
-
-
         });
 
 
@@ -1478,6 +1957,83 @@
                 await flagUserContent(text);
             }
         }
+
+        function initAdminNotifications() {
+            if (!db) {
+                console.warn("Firestore not initialized yet - notifications will wait.");
+                return;
+            }
+
+            // Collection path for admin notifications (change if your backend uses another path)
+            const notificationsRef = collection(db, `artifacts/${sanitizedAppId}/public/data/notifications`);
+
+            // Use orderBy if you've imported it; otherwise remove the orderBy bit and sort locally.
+            const q = query(notificationsRef, orderBy('createdAt', 'desc'));
+
+            // Listen live
+            unsubscribeNotifications = onSnapshot(q, snapshot => {
+                const listEl = document.getElementById('notification-list');
+                const badgeEl = document.getElementById('notification-badge');
+
+                if (!listEl) return console.warn('No #notification-list element found.');
+
+                // Render items (clear first)
+                listEl.innerHTML = '';
+
+                const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                // Compute unread count (we mark read by storing currentUserId in readBy array)
+                const unreadCount = docs.filter(n => !(Array.isArray(n.readBy) && n.readBy.includes(currentUserId))).length;
+
+                // Update badge
+                if (badgeEl) {
+                    if (unreadCount > 0) {
+                        badgeEl.classList.remove('hidden');
+                        badgeEl.textContent = unreadCount > 9 ? '9+' : String(unreadCount);
+                    } else {
+                        badgeEl.classList.add('hidden');
+                    }
+                }
+
+                // Render each notification
+                docs.forEach(n => {
+                    const item = document.createElement('div');
+                    item.className = 'p-2 border-b border-white/10 cursor-pointer hover:bg-white/5';
+                    const title = n.title || (n.level ? n.level.toUpperCase() : 'Notification');
+                    const body = n.body || n.message || '';
+                    const ts = n.createdAt && typeof n.createdAt.toDate === 'function' ? n.createdAt.toDate().toLocaleString() : '';
+
+                    item.innerHTML = `
+                                        <div class="text-sm font-medium">${title}</div>
+                                        <div class="text-xs text-gray-400">${body}</div>
+                                        <div class="text-xs text-gray-500 mt-1">${ts}</div>
+                                    `;
+
+                    // click: open link (if any) and mark read for this user
+                    item.addEventListener('click', async () => {
+                        if (n.link) window.open(n.link, '_blank');
+
+                        try {
+                            const notifDocRef = doc(db, `artifacts/${sanitizedAppId}/public/data/notifications`, n.id);
+                            const newReadBy = Array.from(new Set([...(n.readBy || []), currentUserId]));
+                            await updateDoc(notifDocRef, { readBy: newReadBy });
+                        } catch (err) {
+                            console.error('Failed to mark notification read:', err);
+                        }
+                    });
+
+                    listEl.appendChild(item);
+                });
+
+                // show "no notifications" message if empty
+                if (docs.length === 0) {
+                    listEl.innerHTML = '<div class="text-center text-gray-400 p-4">No notifications.</div>';
+                }
+            }, err => {
+                console.error('Notification listener error:', err);
+            });
+        }
+
 
         async function flagUserContent(message) {
             if (!db || !currentUserId) {
@@ -1791,129 +2347,997 @@
         });
 
         // --- Peer Chat Logic ---
+
+        const USE_MOCK_FIRESTORE = false;
+
+        let mockDbInstance;
+        const mockListeners = {};
+
+        function getMockDb() {
+            if (!mockDbInstance) {
+                try {
+                    const savedDb = localStorage.getItem('mockFirestoreDb');
+                    mockDbInstance = savedDb ? JSON.parse(savedDb) : {};
+                } catch (e) { mockDbInstance = {}; }
+            }
+            if (!mockDbInstance.channels) {
+                mockDbInstance.channels = {
+                    'general-chat': { name: 'General Chat', id: 'general-chat', icon: 'hash' },
+                    'study-group': { name: 'Study Group', id: 'study-group', icon: 'book-open' },
+                    'gaming-corner': { name: 'Gaming Corner', id: 'gaming-corner', icon: 'gamepad-2' }
+                };
+                saveMockDb();
+            }
+            return mockDbInstance;
+        }
+
+        function saveMockDb() {
+            localStorage.setItem('mockFirestoreDb', JSON.stringify(mockDbInstance));
+        }
+
+        function notifyListeners(path) {
+            Object.keys(mockListeners).forEach(listenerPath => {
+                if (path.startsWith(listenerPath)) {
+                    mockListeners[listenerPath].forEach(callback => {
+                        callback({ docs: getCollectionDocs(listenerPath) });
+                    });
+                }
+            });
+        }
+
+        function getCollectionDocs(path) {
+            const db = getMockDb();
+            const parts = path.split('/');
+            let current = db;
+            for (const part of parts) {
+                if (!current[part]) return [];
+                current = current[part];
+            }
+            return Object.keys(current).map(id => ({ id, data: () => ({ ...current[id] }) }));
+        }
+
+        const mockFirestore = {
+            getDoc: async (path) => {
+                const db = getMockDb();
+                const parts = path.split('/');
+                let current = db;
+                for (let i = 0; i < parts.length; i++) {
+                    if (!current[parts[i]]) return { exists: () => false, data: () => null };
+                    current = current[parts[i]];
+                }
+                return { exists: () => true, data: () => current };
+            },
+            setDoc: async (path, data, options = {}) => {
+                const db = getMockDb();
+                const parts = path.split('/');
+                let current = db;
+                for (let i = 0; i < parts.length - 1; i++) {
+                    if (!current[parts[i]]) current[parts[i]] = {};
+                    current = current[parts[i]];
+                }
+                const docId = parts[parts.length - 1];
+                if (options.merge) {
+                    current[docId] = { ...(current[docId] || {}), ...data };
+                } else {
+                    current[docId] = data;
+                }
+                saveMockDb();
+                notifyListeners(path.substring(0, path.lastIndexOf('/')));
+            },
+            addDoc: async (path, data) => {
+                const docId = `mock_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                const newPath = `${path}/${docId}`;
+                await mockFirestore.setDoc(newPath, data);
+                return newPath;
+            },
+            deleteDoc: async (path) => {
+                const db = getMockDb();
+                const parts = path.split('/');
+                let current = db;
+                for (let i = 0; i < parts.length - 1; i++) {
+                    if (!current[parts[i]]) return;
+                    current = current[parts[i]];
+                }
+                const docId = parts[parts.length - 1];
+                delete current[docId];
+                saveMockDb();
+                notifyListeners(path.substring(0, path.lastIndexOf('/')));
+            },
+            onSnapshot: (path, callback) => {
+                if (!mockListeners[path]) mockListeners[path] = [];
+                mockListeners[path].push(callback);
+                callback({ docs: getCollectionDocs(path) });
+                return () => {
+                    mockListeners[path] = mockListeners[path].filter(cb => cb !== callback);
+                };
+            },
+            serverTimestamp: () => new Date().toISOString()
+        };
+
+        const mockAuth = {
+            onAuthStateChanged: (callback) => {
+                let userId = localStorage.getItem('mockUserId');
+                if (!userId) {
+                    userId = `mock_user_${Date.now()}`;
+                    localStorage.setItem('mockUserId', userId);
+                }
+                callback({ uid: userId });
+            }
+        };
+
+        // import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, doc, orderBy, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // const firebaseConfig = { apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID", storageBucket: "YOUR_STORAGE_BUCKET", messagingSenderId: "YOUR_MESSAGING_SENDER_ID", appId: "YOUR_APP_ID" };
+        // const sanitizedAppId = 'default-app-id'.replace(/\//g, '_');
+
+        // let db, auth, currentUserId, currentUserAnonymousName, currentUserProfile;
+
+        if (!USE_MOCK_FIRESTORE) {
+            try {
+                const finalFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
+                const app = initializeApp(finalFirebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+            } catch (e) { console.error("Firebase initialization failed.", e); }
+        }
+
+        const dashboardView = document.getElementById('dashboard-view');
+        const chatView = document.getElementById('chat-view');
+        const mainChatHeader = document.getElementById('main-chat-header');
+        const mainChatWelcome = document.getElementById('main-chat-welcome');
+        const mainChatMessages = document.getElementById('main-chat-messages');
+        const mainChatInputWrapper = document.getElementById('main-chat-input-wrapper');
+        const mainChatInput = document.getElementById('main-chat-input');
+        const mainChatSendBtn = document.getElementById('main-chat-send-btn');
+
+        const dashboardProfilePicContainer = document.getElementById('profile-pic-container');
+        const dashboardProfilePicEmoji = document.getElementById('profile-pic-emoji');
+        const chatProfilePicEmoji = document.getElementById('chat-profile-pic-emoji');
+        const userProfilePopup = document.getElementById('user-profile-popup');
+        const userProfileContent = document.getElementById('user-profile-content');
+        const channelListPanel = document.getElementById('channel-list-panel');
+        const membersPanel = document.getElementById('members-panel');
+        const memberListContainer = document.getElementById('member-list-container');
+        const contextMenu = document.getElementById('context-menu');
+        const channelButtonsContainer = document.getElementById('channel-buttons-container');
+
+        // let userProfilesCache = {};
+        // let unsubscribeFromProfiles = null;
+        // let unsubscribeFromChannels = null;
+        // let timeoutInterval = null;
+
+        // async function handleAuthentication() {
+        //     if (USE_MOCK_FIRESTORE) {
+        //         mockAuth.onAuthStateChanged(async (user) => {
+        //             currentUserId = user.uid;
+        //             await ensureUserProfile(user.uid);
+        //             listenToAllProfiles();
+        //             listenToChannels();
+        //         });
+        //     } else {
+        //         onAuthStateChanged(auth, async (user) => {
+        //             if (user) {
+        //                 currentUserId = user.uid;
+        //                 await ensureUserProfile(user.uid);
+        //                 listenToAllProfiles();
+        //                 listenToChannels();
+        //             } else {
+        //                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+        //                     await signInWithCustomToken(auth, __initial_auth_token);
+        //                 } else {
+        //                     await signInAnonymously(auth);
+        //                 }
+        //             }
+        //         });
+        //     }
+        // }
+
+        async function ensureUserProfile(userId) {
+            const profilePath = `artifacts/${sanitizedAppId}/public/data/profiles/${userId}`;
+            try {
+                const profileRef = doc(db, profilePath);
+                const profileSnap = await getDoc(profileRef);
+
+                if (!profileSnap.exists()) {
+                    const name = generateAnonymousName();
+                    const profilesCollectionRef = collection(db, `artifacts/${sanitizedAppId}/public/data/profiles`);
+                    const isFirstUser = (await getDocs(profilesCollectionRef)).empty;
+                    const profileData = { userId, name, profilePic: '☘️', role: isFirstUser ? 'owner' : 'member', joinedAt: serverTimestamp() };
+                    await setDoc(profileRef, profileData);
+                    currentUserProfile = profileData;
+                } else {
+                    currentUserProfile = profileSnap.data();
+                }
+
+                // --- NEW ROLE-BASED ACCESS LOGIC ---
+                if (currentUserProfile.role === 'admin') {
+                    // If the user is an admin, hide the student UI and show a message.
+                    document.body.innerHTML = `
+                <div class="w-screen h-screen flex flex-col items-center justify-center text-center p-8 bg-[#1a202c] text-white">
+                    <i data-lucide="shield-alert" class="w-16 h-16 text-red-400 mb-4"></i>
+                    <h1 class="text-3xl font-bold">Access Denied</h1>
+                    <p class="text-lg text-gray-300 mt-2">Your 'admin' role is intended for the Admin Dashboard only.</p>
+                    <p class="text-gray-400 mt-1">Please use the separate Admin Dashboard link to access flagged user reports.</p>
+                </div>
+            `;
+                    lucide.createIcons();
+                    return; // Stop further execution for admins
+                }
+                // --- END OF NEW LOGIC ---
+
+                currentUserAnonymousName = currentUserProfile.name;
+                updateUserUI(currentUserAnonymousName, currentUserProfile.profilePic);
+                checkAndUpdateTimeoutState(); // This will now only run for non-admins
+
+            } catch (error) {
+                console.error("Fatal Error: Could not read or create user profile.", error);
+                document.body.innerHTML = `<div class="w-screen h-screen flex items-center justify-center bg-red-900 text-white p-8 text-center"><h1 class="text-2xl">Fatal Connection Error</h1><p>Could not load user profile. Check Firestore rules and database connection.</p></div>`;
+            }
+        }
+        function updateUserUI(name, pic) {
+            document.getElementById('user-anonymous-name').textContent = name;
+            document.getElementById('chat-user-anonymous-name').textContent = name;
+            dashboardProfilePicEmoji.textContent = pic;
+            chatProfilePicEmoji.textContent = pic;
+        }
+
+
+        function initializeViewSwitcher() {
+            const serverBtns = document.querySelectorAll('.server-btn');
+            serverBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    serverBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const view = btn.dataset.view;
+                    userProfilePopup.classList.remove('show');
+                    if (view === 'dashboard') {
+                        dashboardView.classList.remove('hidden');
+                        chatView.classList.add('hidden');
+                    } else {
+                        dashboardView.classList.add('hidden');
+                        chatView.classList.remove('hidden');
+                    }
+                });
+            });
+            document.getElementById('toggle-channels-btn').addEventListener('click', () => {
+                channelListPanel.classList.toggle('hidden');
+            });
+        }
+
         let currentChatRoomId = null;
         let unsubscribeFromMessages = null;
 
         function initializePeerChat() {
-            const chatroomBtns = document.querySelectorAll('.chatroom-btn');
-            chatroomBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    aiChatWindow.classList.add('hidden');
-                    joinChatRoom(btn.dataset.roomName);
-                });
-            });
+            mainChatSendBtn.addEventListener('click', handlePeerSendMessage);
+            mainChatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handlePeerSendMessage(); });
 
-            chatCloseBtn.addEventListener('click', () => {
-                chatWindow.classList.add('hidden');
-                if (unsubscribeFromMessages) {
-                    unsubscribeFromMessages();
-                    unsubscribeFromMessages = null;
+            mainChatMessages.addEventListener('click', (e) => {
+                const userTarget = e.target.closest('[data-userid]');
+                const deleteTarget = e.target.closest('.delete-message-btn');
+                if (userTarget) {
+                    showUserProfile(userTarget.dataset.userid, userTarget);
                 }
-                currentChatRoomId = null;
-            });
-
-            peerChatClearBtn.addEventListener('click', () => {
-                if (currentChatRoomId) {
-                    localStorage.setItem(`chatClearTimestamp_${currentChatRoomId}`, new Date().toISOString());
-                    chatMessages.innerHTML = '';
+                if (deleteTarget) {
+                    if (confirm('Are you sure you want to delete this message?')) {
+                        handleDeleteMessage(deleteTarget.dataset.msgId);
+                    }
                 }
             });
-
-            chatSendBtn.addEventListener('click', handlePeerSendMessage);
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handlePeerSendMessage();
+            mainChatMessages.addEventListener('contextmenu', (e) => {
+                const userTarget = e.target.closest('[data-userid]');
+                if (userTarget) {
+                    showContextMenu(e, userTarget.dataset.userid);
+                }
             });
         }
 
-        function joinChatRoom(roomId) {
-            if (unsubscribeFromMessages) {
-                unsubscribeFromMessages();
+        async function joinChatRoom(roomId, roomName) {
+            if (unsubscribeFromMessages) unsubscribeFromMessages();
+            if (!currentUserId) return;
+
+            currentChatRoomId = roomId;
+            mainChatHeader.innerHTML = `
+                <h3 class="text-lg font-semibold flex items-center gap-2"><i data-lucide="hash" class="w-6 h-6 text-gray-400"></i> ${roomName}</h3>
+                <button id="toggle-members-btn" title="Toggle Members List" class="text-gray-400 hover:text-white">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                </button>
+            `;
+            document.getElementById('toggle-members-btn').addEventListener('click', () => {
+                membersPanel.classList.toggle('hidden');
+            });
+
+            const isNoticesChannel = roomId === 'notices';
+            // This correctly allows ONLY owners and moderators to post
+            const canPostInNotices = currentUserProfile.role === 'owner' || currentUserProfile.role === 'moderator';
+            if (isNoticesChannel && !canPostInNotices) {
+                mainChatInput.disabled = true;
+                mainChatInput.placeholder = "Only Owners and Moderators can post in this channel.";
+            } else {
+                // This is crucial: it re-enables the input for other channels while still checking for timeouts.
+                checkAndUpdateTimeoutState();
             }
 
-            if (!currentUserId) {
-                console.warn("Auth not ready, user cannot join room yet.");
-                chatHeaderTitle.innerHTML = `<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Connecting...`;
-                chatMessages.innerHTML = `<div class="p-4 text-center text-gray-400">Please wait a moment for the connection to be established, then close this window and click the chat room again.</div>`;
-                chatWindow.classList.remove('hidden');
-                lucide.createIcons();
-                return;
-            }
-
-            currentChatRoomId = roomId.replace(/\s+/g, '-').toLowerCase();
-            chatHeaderTitle.innerHTML = `<i data-lucide="users" class="w-5 h-5"></i> ${roomId}`;
-            chatMessages.innerHTML = '';
-            chatWindow.classList.remove('hidden');
+            mainChatWelcome.classList.add('hidden');
+            mainChatMessages.classList.remove('hidden');
+            mainChatInputWrapper.classList.remove('hidden');
+            membersPanel.classList.remove('hidden');
+            mainChatMessages.innerHTML = '';
             lucide.createIcons();
 
-            if (!db) {
-                chatMessages.innerHTML = '<div>Error: Chat database not connected.</div>';
-                return;
-            }
+            const messagesPath = `artifacts/${sanitizedAppId}/public/data/chatrooms/${currentChatRoomId}/messages`;
+            const onSnapshotFn = USE_MOCK_FIRESTORE ? mockFirestore.onSnapshot : onSnapshot;
+            const messagesRef = USE_MOCK_FIRESTORE ? messagesPath : query(collection(db, messagesPath), orderBy("createdAt"));
 
-            const clearTimestamp = localStorage.getItem(`chatClearTimestamp_${currentChatRoomId}`);
+            unsubscribeFromMessages = onSnapshotFn(messagesRef, async (snapshot) => {
+                const messagesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                messagesData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
-            const messagesRef = collection(db, `artifacts/${sanitizedAppId}/public/data/chatrooms/${currentChatRoomId}/messages`);
-            const q = query(messagesRef);
+                const senderIds = [...new Set(messagesData.map(m => m.senderId))];
+                const profilesToFetch = senderIds.filter(id => !userProfilesCache[id]);
 
-            unsubscribeFromMessages = onSnapshot(q, (snapshot) => {
-                const messages = snapshot.docs.map(doc => doc.data());
-                messages.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+                if (profilesToFetch.length > 0) {
+                    await Promise.all(profilesToFetch.map(async id => {
+                        const profilePath = `artifacts/${sanitizedAppId}/public/data/profiles/${id}`;
+                        const getDocFn = USE_MOCK_FIRESTORE ? mockFirestore.getDoc : getDoc;
+                        const profileRef = USE_MOCK_FIRESTORE ? profilePath : doc(db, profilePath);
+                        const profileSnap = await getDocFn(profileRef);
+                        if (profileSnap.exists()) userProfilesCache[id] = profileSnap.data();
+                    }));
+                }
 
-                chatMessages.innerHTML = '';
-                messages.forEach(messageData => {
-                    const messageTimestamp = messageData.createdAt?.toDate();
-                    if (clearTimestamp && messageTimestamp && messageTimestamp < new Date(clearTimestamp)) {
-                        return;
-                    }
-                    displayPeerChatMessage(messageData);
+                mainChatMessages.innerHTML = '';
+                let lastSenderId = null;
+                messagesData.forEach(message => {
+                    const isSameSender = lastSenderId === message.senderId;
+                    displayPeerChatMessage(message, isSameSender);
+                    lastSenderId = message.senderId;
                 });
-
-            }, (error) => {
-                console.error("Error listening to chat messages:", error);
-                chatMessages.innerHTML = '<div>Error loading messages. Please check permissions.</div>';
+                mainChatMessages.scrollTop = mainChatMessages.scrollHeight;
             });
         }
 
-        function displayPeerChatMessage(messageData) {
+        function displayPeerChatMessage(messageData, isSameSender) {
+            const senderProfile = userProfilesCache[messageData.senderId] || { name: 'Unknown User', profilePic: '👤', role: 'member' };
             const isCurrentUser = messageData.senderId === currentUserId;
+
             const messageContainer = document.createElement('div');
-            messageContainer.className = `chat-message ${isCurrentUser ? 'user' : 'other'}`;
+            messageContainer.className = 'chat-message';
+            if (isSameSender) messageContainer.classList.add('is-consecutive');
 
-            const senderIdText = isCurrentUser ? 'You' : messageData.senderName || `User ${messageData.senderId.substring(0, 6)}...`;
-            const senderIdTitle = isCurrentUser ? `You (${currentUserAnonymousName})` : `${messageData.senderName} (${messageData.senderId})`;
+            const timeString = new Date(messageData.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || '';
+            const avatarHTML = `<div class="chat-avatar ${isSameSender ? 'is-placeholder' : ''}" data-userid="${messageData.senderId}">${senderProfile.profilePic}</div>`;
+            const roleIcons = { owner: `<i data-lucide="crown" class="w-4 h-4 text-amber-400" title="Owner"></i>`, moderator: `<i data-lucide="shield" class="w-4 h-4 text-blue-400" title="Moderator"></i>` };
+            const roleBadge = roleIcons[senderProfile.role] || '';
 
-            messageContainer.innerHTML = `
-                <div class="flex flex-col ${isCurrentUser ? 'items-end' : 'items-start'}">
-                    <div class="chat-sender-id" title="${senderIdTitle}">${senderIdText}</div>
-                    <div class="chat-bubble ${isCurrentUser ? 'user' : 'other-user'}">${messageData.text}</div>
-                </div>
-            `;
+            let messageContentHTML = '';
 
-            chatMessages.appendChild(messageContainer);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            const messageBody = () => {
+                switch (messageData.type) {
+                    case 'image':
+                        return `<img src="${messageData.content}" alt="User image" class="chat-image"><p class="chat-text">${messageData.caption || ''}</p>`;
+                    case 'audio':
+                        return `<audio controls src="${messageData.content}" class="w-full max-w-sm"></audio>`;
+                    case 'document':
+                        return `<div class="document-bubble"><i data-lucide="file-text" class="w-8 h-8 text-gray-400"></i><span class="font-semibold truncate">${messageData.fileName}</span></div>`;
+                    case 'sticker':
+                        return `<div class="text-6xl">${messageData.content}</div>`;
+                    default:
+                        return `<div class="chat-text">${messageData.text}</div>`;
+                }
+            };
+
+            if (isSameSender) {
+                messageContentHTML = messageBody();
+                messageContainer.innerHTML = messageContentHTML;
+            } else {
+                messageContentHTML = `
+                    <div>
+                        <div class="chat-sender-info">
+                            <span class="chat-sender-name ${isCurrentUser ? 'user' : ''}" data-userid="${messageData.senderId}">${isCurrentUser ? 'You' : senderProfile.name}</span>
+                            <span class="role-badge">${roleBadge}</span>
+                            <span class="chat-timestamp">${timeString}</span>
+                        </div>
+                        ${messageBody()}
+                    </div>`;
+                messageContainer.innerHTML = avatarHTML + messageContentHTML;
+            }
+
+            const canDelete = currentUserProfile.role === 'owner' || currentUserProfile.role === 'moderator';
+            if (canDelete) {
+                const actionsHTML = `<div class="message-actions">
+                    <button class="delete-message-btn p-1 text-gray-400 hover:text-red-400" data-msg-id="${messageData.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                </div>`;
+                messageContainer.innerHTML += actionsHTML;
+            }
+            mainChatMessages.appendChild(messageContainer);
+
+            lucide.createIcons({ nodes: [messageContainer] });
+        }
+
+        async function sendMessage(messageData) {
+            if (!currentChatRoomId || !currentUserId) return;
+            const finalMessage = {
+                ...messageData,
+                senderId: currentUserId,
+                createdAt: USE_MOCK_FIRESTORE ? mockFirestore.serverTimestamp() : serverTimestamp()
+            };
+
+            const messagesPath = `artifacts/${sanitizedAppId}/public/data/chatrooms/${currentChatRoomId}/messages`;
+            const addDocFn = USE_MOCK_FIRESTORE ? mockFirestore.addDoc : addDoc;
+            const collectionRef = USE_MOCK_FIRESTORE ? messagesPath : collection(db, messagesPath);
+
+            try {
+                await addDocFn(collectionRef, finalMessage);
+            } catch (error) {
+                console.error("Error sending message:", error);
+            }
         }
 
         async function handlePeerSendMessage() {
-            const userInput = chatInput.value.trim();
-            if (!userInput || !currentChatRoomId || !currentUserId || !db) return;
+            if (currentUserProfile && currentUserProfile.timeoutUntil && new Date(currentUserProfile.timeoutUntil) > new Date()) return;
 
-            try {
-                await checkForSuicidalIntent(userInput);
+            const userInput = mainChatInput.value.trim();
+            if (!userInput) return;
 
-                const messagesRef = collection(db, `artifacts/${sanitizedAppId}/public/data/chatrooms/${currentChatRoomId}/messages`);
+            mainChatSendBtn.disabled = true;
+            await sendMessage({ type: 'text', text: userInput });
+            mainChatInput.value = '';
+            mainChatSendBtn.disabled = false;
+        }
 
-                await addDoc(messagesRef, {
-                    text: userInput,
-                    senderId: currentUserId,
-                    senderName: currentUserAnonymousName,
-                    createdAt: serverTimestamp()
+        async function handleDeleteMessage(messageId) {
+            if (!currentChatRoomId) return;
+            const messagePath = `artifacts/${sanitizedAppId}/public/data/chatrooms/${currentChatRoomId}/messages/${messageId}`;
+            const deleteDocFn = USE_MOCK_FIRESTORE ? mockFirestore.deleteDoc : deleteDoc;
+            try { await deleteDocFn(messagePath); } catch (error) { console.error("Error deleting message: ", error); }
+        }
+
+        function listenToAllProfiles() {
+            if (unsubscribeFromProfiles) unsubscribeFromProfiles();
+            const profilesPath = `artifacts/${sanitizedAppId}/public/data/profiles`;
+            const onSnapshotFn = USE_MOCK_FIRESTORE ? mockFirestore.onSnapshot : onSnapshot;
+            const collectionRef = USE_MOCK_FIRESTORE ? profilesPath : collection(db, profilesPath);
+            unsubscribeFromProfiles = onSnapshotFn(collectionRef, (snapshot) => {
+                const allProfiles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allProfiles.forEach(p => {
+                    userProfilesCache[p.id] = p;
+                    if (p.id === currentUserId) {
+                        currentUserProfile = p;
+                        checkAndUpdateTimeoutState();
+                    }
                 });
-                chatInput.value = '';
+                renderMembersList(allProfiles);
+            });
+        }
+
+        function renderMembersList(profiles) {
+            const roles = { owner: [], moderator: [], member: [] };
+            profiles.forEach(p => { (roles[p.role] || roles.member).push(p); });
+            const roleOrder = ['owner', 'moderator', 'member'];
+            memberListContainer.innerHTML = '';
+            roleOrder.forEach(role => {
+                const members = roles[role];
+                if (members.length > 0) {
+                    const roleHeader = `<h3 class="text-xs font-bold uppercase text-gray-400 px-2 mt-4 mb-2">${role} - ${members.length}</h3>`;
+                    const membersHTML = members.map(member => {
+                        const isTimedOut = member.timeoutUntil && new Date(member.timeoutUntil) > new Date();
+                        return `
+                        <div class="member-list-item w-full text-left p-2 rounded transition-colors flex items-center gap-3" data-userid="${member.userId}">
+                            <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-xl flex-shrink-0">${member.profilePic}</div>
+                            <span class="truncate font-medium flex-1">${member.name}</span>
+                            ${isTimedOut ? '<i data-lucide="timer" class="w-4 h-4 text-gray-400" title="In Timeout"></i>' : ''}
+                        </div>
+                     `}).join('');
+                    memberListContainer.innerHTML += roleHeader + membersHTML;
+                }
+            });
+            lucide.createIcons({ nodes: [memberListContainer] });
+        }
+
+        function initializeUserProfilePopup() {
+            document.addEventListener('click', (event) => {
+                if (event.target.closest('.chat-avatar, .chat-sender-name, .member-list-item')) return;
+                if (!userProfilePopup.contains(event.target)) userProfilePopup.classList.remove('show');
+            });
+        }
+
+        function showUserProfile(userId, targetElement) {
+            const profile = userProfilesCache[userId];
+            if (!profile || !currentUserProfile) return;
+
+            const roleColors = { owner: 'text-amber-400', moderator: 'text-blue-400', member: 'text-gray-400' };
+            const roleColor = roleColors[profile.role] || 'text-gray-400';
+            const joinDate = new Date(profile.joinedAt).toLocaleDateString() || 'N/A';
+
+            userProfileContent.innerHTML = `
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center text-6xl mb-4">${profile.profilePic}</div>
+                    <h3 class="text-2xl font-bold">${profile.name}</h3>
+                    <p class="${roleColor} font-semibold capitalize">${profile.role}</p>
+                    <div class="mt-4 w-full text-left">
+                        <div class="bg-black/20 p-3 rounded-lg">
+                            <h4 class="text-sm text-gray-400 font-bold uppercase">Member Since</h4>
+                            <p>${joinDate}</p>
+                        </div>
+                    </div>
+                </div>`;
+
+            lucide.createIcons({ nodes: [userProfileContent] });
+
+            const rect = targetElement.getBoundingClientRect();
+            let top = rect.bottom + 8;
+            let left = rect.left;
+            if (left + 300 > window.innerWidth - 16) left = window.innerWidth - 300 - 16;
+            const popupHeight = 250;
+            if (top + popupHeight > window.innerHeight - 16) top = rect.top - popupHeight - 8;
+
+            userProfilePopup.style.top = `${top}px`;
+            userProfilePopup.style.left = `${left}px`;
+            userProfilePopup.classList.add('show');
+        }
+
+        function initializeContextMenu() {
+            document.addEventListener('click', () => contextMenu.classList.remove('show'));
+            document.addEventListener('contextmenu', () => contextMenu.classList.remove('show'));
+            contextMenu.addEventListener('click', e => e.stopPropagation());
+            channelButtonsContainer.addEventListener('contextmenu', e => showChannelContextMenu(e));
+
+            memberListContainer.addEventListener('click', e => {
+                const target = e.target.closest('.member-list-item');
+                if (target) {
+                    showUserProfile(target.dataset.userid, target);
+                }
+            });
+            memberListContainer.addEventListener('contextmenu', e => {
+                const target = e.target.closest('.member-list-item');
+                if (target) {
+                    showContextMenu(e, target.dataset.userid);
+                }
+            });
+        }
+
+        function showContextMenu(event, userId) {
+            event.preventDefault();
+            event.stopPropagation();
+            const targetProfile = userProfilesCache[userId];
+            if (!targetProfile || !currentUserProfile) return;
+
+            let menuItemsHTML = `<div class="context-menu-item" data-action="profile" data-userid="${userId}"><i data-lucide="user" class="w-4 h-4"></i> View Profile</div>`;
+            let modActionsHTML = '';
+
+            if (currentUserProfile.role === 'owner' && userId !== currentUserId && targetProfile.role !== 'owner') {
+                if (targetProfile.role === 'member') {
+                    modActionsHTML += `<div class="context-menu-item" data-action="promote" data-userid="${userId}"><i data-lucide="shield-plus" class="w-4 h-4"></i> Promote to Moderator</div>`;
+                } else if (targetProfile.role === 'moderator') {
+                    modActionsHTML += `<div class="context-menu-item" data-action="demote" data-userid="${userId}"><i data-lucide="shield-minus" class="w-4 h-4"></i> Demote to Member</div>`;
+                }
+            }
+            if ((currentUserProfile.role === 'owner' || currentUserProfile.role === 'moderator') && targetProfile.role === 'member' && userId !== currentUserId) {
+                modActionsHTML += `<div class="context-menu-item" data-action="timeout" data-userid="${userId}"><i data-lucide="timer" class="w-4 h-4"></i> Timeout User</div>`;
+                modActionsHTML += `<div class="context-menu-item danger" data-action="kick" data-userid="${userId}"><i data-lucide="user-x" class="w-4 h-4"></i> Kick User</div>`;
+            }
+
+            if (modActionsHTML) {
+                menuItemsHTML += `<div class="context-menu-separator"></div>${modActionsHTML}`;
+            }
+
+            contextMenu.innerHTML = menuItemsHTML;
+            lucide.createIcons({ nodes: [contextMenu] });
+
+            let left = event.pageX;
+            let top = event.pageY;
+            if (left + 220 > window.innerWidth) left -= 220;
+            if (top + contextMenu.offsetHeight > window.innerHeight) top -= contextMenu.offsetHeight;
+
+            contextMenu.style.left = `${left}px`;
+            contextMenu.style.top = `${top}px`;
+            contextMenu.classList.add('show');
+
+            contextMenu.querySelector('[data-action="profile"]')?.addEventListener('click', e => showUserProfile(e.currentTarget.dataset.userid, event.target));
+            contextMenu.querySelector('[data-action="promote"]')?.addEventListener('click', e => updateUserRole(e.currentTarget.dataset.userid, 'moderator'));
+            contextMenu.querySelector('[data-action="demote"]')?.addEventListener('click', e => updateUserRole(e.currentTarget.dataset.userid, 'member'));
+            contextMenu.querySelector('[data-action="kick"]')?.addEventListener('click', e => kickUser(e.currentTarget.dataset.userid));
+            contextMenu.querySelector('[data-action="timeout"]')?.addEventListener('click', e => timeoutUser(e.currentTarget.dataset.userid));
+        }
+
+        function showChannelContextMenu(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (currentUserProfile.role !== 'owner') return;
+
+            const targetChannel = event.target.closest('.channel-btn');
+            let menuItemsHTML = `<div class="context-menu-item" data-action="add-channel"><i data-lucide="plus" class="w-4 h-4"></i> Create Channel</div>`;
+            if (targetChannel && targetChannel.dataset.channelId !== 'notices') {
+                menuItemsHTML += `<div class="context-menu-item danger" data-action="delete-channel" data-channel-id="${targetChannel.dataset.channelId}" data-channel-name="${targetChannel.dataset.roomName}"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete Channel</div>`;
+            }
+            contextMenu.innerHTML = menuItemsHTML;
+            lucide.createIcons({ nodes: [contextMenu] });
+
+            let left = event.pageX;
+            let top = event.pageY;
+            if (left + 220 > window.innerWidth) left -= 220;
+            if (top + contextMenu.offsetHeight > window.innerHeight) top -= contextMenu.offsetHeight;
+
+            contextMenu.style.left = `${left}px`;
+            contextMenu.style.top = `${top}px`;
+            contextMenu.classList.add('show');
+
+            contextMenu.querySelector('[data-action="add-channel"]')?.addEventListener('click', addChannel);
+            contextMenu.querySelector('[data-action="delete-channel"]')?.addEventListener('click', e => deleteChannel(e.currentTarget.dataset.channelId, e.currentTarget.dataset.channelName));
+        }
+
+        async function updateUserRole(userId, newRole) {
+            const profilePath = `artifacts/${sanitizedAppId}/public/data/profiles/${userId}`;
+            const setDocFn = USE_MOCK_FIRESTORE ? mockFirestore.setDoc : setDoc;
+            const profileRef = USE_MOCK_FIRESTORE ? profilePath : doc(db, profilePath);
+            try {
+                await setDocFn(profileRef, { role: newRole }, { merge: true });
+            } catch (error) { console.error(`Failed to update role for ${userId}:`, error); }
+        }
+
+        async function kickUser(userId) {
+            if (!currentChatRoomId) return;
+            const messagesPath = `artifacts/${sanitizedAppId}/public/data/chatrooms/${currentChatRoomId}/messages`;
+            const deleteDocFn = USE_MOCK_FIRESTORE ? mockFirestore.deleteDoc : deleteDoc;
+            const allMessages = getCollectionDocs(messagesPath);
+            const userMessages = allMessages.filter(msg => msg.data().senderId === userId);
+            try {
+                for (const msg of userMessages) {
+                    await deleteDocFn(`${messagesPath}/${msg.id}`);
+                }
+            } catch (error) { console.error(`Failed to kick user ${userId}:`, error); }
+        }
+
+        async function timeoutUser(userId) {
+            const durationMinutes = prompt("Enter timeout duration in minutes:", "5");
+            if (durationMinutes === null || isNaN(durationMinutes) || durationMinutes <= 0) {
+                return;
+            }
+            const timeoutUntil = new Date(Date.now() + durationMinutes * 60 * 1000).toISOString();
+            const profilePath = `artifacts/${sanitizedAppId}/public/data/profiles/${userId}`;
+            const setDocFn = USE_MOCK_FIRESTORE ? mockFirestore.setDoc : setDoc;
+            const profileRef = USE_MOCK_FIRESTORE ? profilePath : doc(db, profilePath);
+            try {
+                await setDocFn(profileRef, { timeoutUntil: timeoutUntil }, { merge: true });
             } catch (error) {
-                console.error("Error sending message or flagging content:", error);
-                showNotification("Your message could not be sent due to a safety check error.", "error");
+                console.error(`Failed to timeout user ${userId}:`, error);
             }
         }
+
+        function checkAndUpdateTimeoutState() {
+            if (timeoutInterval) clearInterval(timeoutInterval);
+
+            const update = () => {
+                if (!currentUserProfile || !currentUserProfile.timeoutUntil) {
+                    mainChatInput.disabled = false;
+                    mainChatInput.placeholder = "Type a message...";
+                    clearInterval(timeoutInterval);
+                    return;
+                }
+
+                const timeoutEndDate = new Date(currentUserProfile.timeoutUntil);
+                const now = new Date();
+                const remainingSeconds = Math.round((timeoutEndDate - now) / 1000);
+
+                if (remainingSeconds > 0) {
+                    mainChatInput.disabled = true;
+                    const minutes = Math.floor(remainingSeconds / 60);
+                    const seconds = remainingSeconds % 60;
+                    mainChatInput.placeholder = `You are in timeout for ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                } else {
+                    mainChatInput.disabled = false;
+                    mainChatInput.placeholder = "Type a message...";
+                    delete currentUserProfile.timeoutUntil;
+                    clearInterval(timeoutInterval);
+                }
+            };
+
+            update();
+            timeoutInterval = setInterval(update, 1000);
+        }
+
+        const availableEmotes = ['☘️', '🌸', '🍓', '🍄', '✨', '🌙', '🪐', '🦊', '🐸', '🐢', '🦋', '⭐'];
+
+        async function updateProfilePic(newEmote) {
+            if (!currentUserId) return;
+            const profilePath = `artifacts/${sanitizedAppId}/public/data/profiles/${currentUserId}`;
+            const setDocFn = USE_MOCK_FIRESTORE ? mockFirestore.setDoc : setDoc;
+            const profileRef = USE_MOCK_FIRESTORE ? profilePath : doc(db, profilePath);
+            try {
+                await setDocFn(profileRef, { profilePic: newEmote }, { merge: true });
+                updateUserUI(currentUserAnonymousName, newEmote);
+                if (userProfilesCache[currentUserId]) userProfilesCache[currentUserId].profilePic = newEmote;
+                if (currentUserProfile) currentUserProfile.profilePic = newEmote;
+            } catch (error) { console.error("Error updating profile picture:", error); }
+        }
+
+        function initializeProfilePic() {
+            [dashboardProfilePicContainer, document.getElementById('chat-profile-pic-container')].forEach(el => {
+                el.addEventListener('click', () => emotePickerModal.classList.remove('hidden'));
+            });
+            closeEmoteModalBtn.addEventListener('click', () => emotePickerModal.classList.add('hidden'));
+            emotePickerModal.addEventListener('click', (e) => {
+                if (e.target === emotePickerModal) emotePickerModal.classList.add('hidden');
+            });
+            emoteGrid.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const newEmote = e.target.textContent;
+                    updateProfilePic(newEmote);
+                    emotePickerModal.classList.add('hidden');
+                }
+            });
+        }
+
+        function populateEmotePicker() {
+            emoteGrid.innerHTML = availableEmotes.map(emote =>
+                `<button class="p-2 rounded-lg hover:bg-white/10 transition-colors">${emote}</button>`
+            ).join('');
+        }
+
+        function initializeMediaSending() {
+            const attachmentBtn = document.getElementById('attachment-btn');
+            const attachmentMenu = document.getElementById('attachment-menu');
+            const attachImageBtn = document.getElementById('attach-image-btn');
+            const attachDocBtn = document.getElementById('attach-doc-btn');
+            const recordVoiceBtn = document.getElementById('record-voice-btn');
+            const imageUploadInput = document.getElementById('image-upload-input');
+            const docUploadInput = document.getElementById('doc-upload-input');
+            const imagePreviewModal = document.getElementById('image-preview-modal');
+            const previewImage = document.getElementById('preview-image');
+            const imageCaptionInput = document.getElementById('image-caption-input');
+            const sendImageBtn = document.getElementById('send-image-btn');
+            const cancelImageBtn = document.getElementById('cancel-image-btn');
+            const voiceRecorderContainer = document.getElementById('voice-recorder-container');
+
+            let imageFile = null;
+            let mediaRecorder = null;
+            let audioChunks = [];
+
+            attachmentBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isHidden = attachmentMenu.classList.contains('hidden');
+                if (isHidden) {
+                    attachmentMenu.classList.remove('hidden');
+                    setTimeout(() => {
+                        attachmentMenu.classList.remove('scale-90', 'opacity-0');
+                        attachmentBtn.style.transform = 'rotate(45deg)';
+                    }, 10);
+                } else {
+                    attachmentMenu.classList.add('scale-90', 'opacity-0');
+                    attachmentBtn.style.transform = 'rotate(0deg)';
+                    setTimeout(() => attachmentMenu.classList.add('hidden'), 200);
+                }
+            });
+            document.addEventListener('click', () => {
+                if (!attachmentMenu.classList.contains('hidden')) {
+                    attachmentMenu.classList.add('scale-90', 'opacity-0');
+                    attachmentBtn.style.transform = 'rotate(0deg)';
+                    setTimeout(() => attachmentMenu.classList.add('hidden'), 200);
+                }
+            });
+
+            attachImageBtn.addEventListener('click', () => imageUploadInput.click());
+            attachDocBtn.addEventListener('click', () => docUploadInput.click());
+
+            imageUploadInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    imageFile = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        previewImage.src = event.target.result;
+                        imagePreviewModal.style.display = 'flex';
+                    }
+                    reader.readAsDataURL(imageFile);
+                }
+            });
+
+            cancelImageBtn.addEventListener('click', () => {
+                imagePreviewModal.style.display = 'none';
+                imageCaptionInput.value = '';
+                imageUploadInput.value = '';
+                imageFile = null;
+            });
+
+            sendImageBtn.addEventListener('click', () => {
+                if (!imageFile) return;
+                const caption = imageCaptionInput.value.trim();
+                sendMessage({ type: 'image', content: previewImage.src, caption: caption });
+                cancelImageBtn.click();
+            });
+
+            docUploadInput.addEventListener('change', e => {
+                if (e.target.files && e.target.files[0]) {
+                    const docFile = e.target.files[0];
+                    sendMessage({ type: 'document', fileName: docFile.name });
+                    docUploadInput.value = '';
+                }
+            });
+
+            recordVoiceBtn.addEventListener('click', async () => {
+                if (mediaRecorder && mediaRecorder.state === "recording") {
+                    mediaRecorder.stop();
+                    return;
+                }
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.addEventListener("dataavailable", event => { audioChunks.push(event.data); });
+                    mediaRecorder.addEventListener("stop", () => {
+                        const audioBlob = new Blob(audioChunks);
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            sendMessage({ type: 'audio', content: event.target.result });
+                        };
+                        reader.readAsDataURL(audioBlob);
+                        voiceRecorderContainer.innerHTML = '';
+                    });
+
+                    startRecordingUI();
+                    mediaRecorder.start();
+                } catch (err) {
+                    console.error("Error accessing microphone:", err);
+                    alert("Could not access microphone. Please ensure permissions are granted.");
+                }
+            });
+
+            function startRecordingUI() {
+                let seconds = 0;
+                const interval = setInterval(() => {
+                    seconds++;
+                    const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+                    const secs = (seconds % 60).toString().padStart(2, '0');
+                    if (document.getElementById('recorder-timer')) {
+                        document.getElementById('recorder-timer').textContent = `${minutes}:${secs}`;
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 1000);
+
+                voiceRecorderContainer.innerHTML = `
+                    <div id="voice-recorder" class="glass p-2 rounded-lg flex items-center justify-between mb-2">
+                         <div class="flex items-center gap-2">
+                            <i data-lucide="mic" class="w-5 h-5 text-red-500 animate-pulse"></i>
+                            <span class="font-mono" id="recorder-timer">00:00</span>
+                         </div>
+                         <button id="stop-recording-btn" class="bg-red-500 text-white rounded-full p-2"><i data-lucide="stop-circle" class="w-5 h-5"></i></button>
+                    </div>
+                `;
+                lucide.createIcons({ nodes: [voiceRecorderContainer] });
+                document.getElementById('stop-recording-btn').addEventListener('click', () => {
+                    if (mediaRecorder) mediaRecorder.stop();
+                    clearInterval(interval);
+                });
+            }
+        }
+
+        function initializeChannelManagement() {
+            channelButtonsContainer.addEventListener('contextmenu', e => showChannelContextMenu(e));
+        }
+
+        async function addChannel() {
+            const name = prompt("Enter new channel name:");
+            if (!name || name.trim() === '') return;
+            const id = name.trim().toLowerCase().replace(/\s+/g, '-');
+            const channelPath = `artifacts/${sanitizedAppId}/public/data/channels/${id}`;
+            try {
+                // Correctly use the live setDoc function with the doc helper from the Firebase SDK
+                await setDoc(doc(db, channelPath), { name: name.trim(), id, icon: 'hash' });
+            } catch (error) { console.error("Error adding channel:", error); }
+        }
+
+        async function deleteChannel(channelId, channelName) {
+            if (!confirm(`Are you sure you want to delete the channel #${channelName}? This cannot be undone.`)) return;
+            const channelPath = `artifacts/${sanitizedAppId}/public/data/channels/${channelId}`;
+            try {
+                await mockFirestore.deleteDoc(channelPath);
+            } catch (error) { console.error("Error deleting channel:", error); }
+        }
+
+        function listenToChannels() {
+            if (unsubscribeFromChannels) unsubscribeFromChannels();
+            const channelsPath = `artifacts/${sanitizedAppId}/public/data/channels`;
+            const onSnapshotFn = USE_MOCK_FIRESTORE ? mockFirestore.onSnapshot : onSnapshot;
+            const collectionRef = USE_MOCK_FIRESTORE ? channelsPath : collection(db, channelsPath);
+
+            unsubscribeFromChannels = onSnapshotFn(collectionRef, (snapshot) => {
+                const channels = snapshot.docs.map(doc => doc.data());
+                renderChannelList(channels);
+            });
+        }
+
+        function renderChannelList(channels) {
+            channelButtonsContainer.innerHTML = `
+                <button class="channel-btn w-full text-left p-3 transition-colors flex items-center gap-3" data-room-name="Notices" data-channel-id="notices">
+                    <i data-lucide="megaphone" class="w-5 h-5"></i> Notices
+                </button>
+            `;
+            channels.forEach(channel => {
+                const btn = document.createElement('button');
+                btn.className = "channel-btn w-full text-left p-3 transition-colors flex items-center gap-3";
+                btn.dataset.roomName = channel.name;
+                btn.dataset.channelId = channel.id;
+                btn.innerHTML = `<i data-lucide="${channel.icon || 'hash'}" class="w-5 h-5"></i> ${channel.name}`;
+                channelButtonsContainer.appendChild(btn);
+            });
+
+            lucide.createIcons({ nodes: [channelButtonsContainer] });
+
+            // START OF CHANGE: Event delegation for channels
+            channelButtonsContainer.addEventListener('click', (e) => {
+                const target = e.target.closest('.channel-btn');
+                if (target) {
+                    document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
+                    target.classList.add('active');
+                    joinChatRoom(target.dataset.channelId, target.dataset.roomName);
+                }
+            });
+            // END OF CHANGE
+        }
+
+        function initializeEmojiPanel() {
+            const emojiBtn = document.getElementById('emoji-btn');
+            const emojiPanel = document.getElementById('emoji-panel');
+            const emojisGrid = document.getElementById('emojis-grid');
+            const stickersGrid = document.getElementById('stickers-grid');
+            const emojiTabs = emojiPanel.querySelectorAll('.emoji-tab');
+
+            const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '😈', '👿', '👹', '👺', '🤡', '💩', '👻', '💀', '☠️', '👽', '👾', '🤖', '🎃'];
+            const stickers = ['👍', '❤️', '😂', '🙏', '🔥', '🎉', '💯', '👋'];
+
+            emojisGrid.innerHTML = emojis.map(e => `<button class="emoji-btn">${e}</button>`).join('');
+            stickersGrid.innerHTML = stickers.map(s => `<button class="sticker-btn">${s}</button>`).join('');
+
+            emojiBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                const isHidden = emojiPanel.classList.contains('hidden');
+                if (isHidden) {
+                    emojiPanel.classList.remove('hidden');
+                    setTimeout(() => emojiPanel.classList.remove('scale-90', 'opacity-0'), 10);
+                } else {
+                    emojiPanel.classList.add('scale-90', 'opacity-0');
+                    setTimeout(() => emojiPanel.classList.add('hidden'), 200);
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!emojiPanel.classList.contains('hidden') && !emojiPanel.contains(e.target) && e.target !== emojiBtn) {
+                    emojiPanel.classList.add('scale-90', 'opacity-0');
+                    setTimeout(() => emojiPanel.classList.add('hidden'), 200);
+                }
+            });
+
+            emojiTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    emojiTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    if (tab.dataset.tab === 'emojis') {
+                        emojisGrid.classList.remove('hidden');
+                        stickersGrid.classList.add('hidden');
+                    } else {
+                        emojisGrid.classList.add('hidden');
+                        stickersGrid.classList.remove('hidden');
+                    }
+                });
+            });
+
+            emojiPanel.addEventListener('click', e => {
+                if (e.target.matches('.emoji-btn')) {
+                    mainChatInput.value += e.target.textContent;
+                    mainChatInput.focus();
+                }
+                if (e.target.matches('.sticker-btn')) {
+                    sendMessage({ type: 'sticker', content: e.target.textContent });
+                    emojiPanel.classList.add('scale-90', 'opacity-0');
+                    setTimeout(() => emojiPanel.classList.add('hidden'), 200);
+                }
+            });
+        }
+
+
+
 
         // --- AI Chatbot with Personalities Logic ---
         let aiChatHistory = [];
@@ -2042,31 +3466,6 @@
         const emotePickerModal = document.getElementById('emote-picker-modal');
         const closeEmoteModalBtn = document.getElementById('close-emote-modal');
         const emoteGrid = document.getElementById('emote-grid');
-        const availableEmotes = ['☘️', '🌸', '🍓', '🍄', '✨', '🌙', '🪐', '🦊', '🐸', '🐢', '🦋', '⭐'];
-
-        function populateEmotePicker() {
-            emoteGrid.innerHTML = '';
-            availableEmotes.forEach(emote => {
-                const button = document.createElement('button');
-                button.className = 'p-2 rounded-lg hover:bg-white/10 transition-colors';
-                button.textContent = emote;
-                emoteGrid.appendChild(button);
-            });
-        }
-
-        function initializeProfilePic() {
-            profilePicContainer.addEventListener('click', () => emotePickerModal.classList.remove('hidden'));
-            closeEmoteModalBtn.addEventListener('click', () => emotePickerModal.classList.add('hidden'));
-            emotePickerModal.addEventListener('click', (e) => { if (e.target === emotePickerModal) emotePickerModal.classList.add('hidden'); });
-            emoteGrid.addEventListener('click', (e) => {
-                if (e.target.tagName === 'BUTTON') {
-                    const newEmote = e.target.textContent;
-                    profilePicEmoji.textContent = newEmote;
-                    localStorage.setItem('dashboardProfilePic', newEmote);
-                    emotePickerModal.classList.add('hidden');
-                }
-            });
-        }
 
         function loadProfilePic() {
             const savedEmote = localStorage.getItem('dashboardProfilePic');
@@ -3698,14 +5097,16 @@ Use these when you don't know what to write.
 
 
         // --- General Initialization ---
+        // REPLACE the second DOMContentLoaded listener (around line 3866) with this:
+
         document.addEventListener('DOMContentLoaded', async () => {
+            // All these just set up non-Firebase DOM elements and listeners
             initializePage();
             loadProfilePic();
             initializeMusicPlayer();
             loadAiChatHistory();
             populateEmotePicker();
             initializeSerenityMap();
-            initializePeerChat();
             initializeAiChat();
             initializeProfilePic();
             setupAssignmentEventListeners();
@@ -3714,6 +5115,16 @@ Use these when you don't know what to write.
             initializeMeditationWidget();
             initializeOfflineCopingKit();
 
+            // These calls were in the deleted DOMContentLoaded and are needed
+            initializeViewSwitcher();
+            initializePeerChat();
+            initializeUserProfilePopup();
+            initializeContextMenu();
+            initializeMediaSending();
+            initializeEmojiPanel();
+            initializeChannelManagement();
+
+            // SOS button logic
             const sosBtn = document.getElementById('sos-btn');
             const sosSidebar = document.getElementById('sos-sidebar');
             const closeSosSidebarBtn = document.getElementById('close-sos-sidebar');
@@ -3727,22 +5138,59 @@ Use these when you don't know what to write.
 
             lucide.createIcons();
 
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else if (!auth.currentUser) {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Initial authentication failed:", error);
-                if (!auth.currentUser) {
-                    try {
-                        await signInAnonymously(auth);
-                    } catch (anonError) {
-                        console.error("Fallback anonymous sign-in also failed.", anonError);
+            const bellBtn = document.getElementById('notification-bell-btn');
+            if (bellBtn) {
+                bellBtn.addEventListener('click', () => {
+                    const panel = document.getElementById('notification-panel');
+                    if (!panel) return;
+                    panel.classList.toggle('hidden');
+
+                    // Optional: when panel opens, mark all visible notifications as read for this user
+                    if (!panel.classList.contains('hidden')) {
+                        // get all items currently displayed and mark them read
+                        // (alternative: call a cloud function to mark read for admin role)
+                        const listEl = document.getElementById('notification-list');
+                        if (listEl && listEl.children.length > 0) {
+                            Array.from(listEl.children).forEach(async (child, idx) => {
+                                // We rely on snapshot listener to handle read state per-item when clicked.
+                                // If you want 'mark all read' here, implement it with updateDoc on each doc.
+                            });
+                        }
                     }
-                }
+                });
             }
+
+            // "Clear All / Mark all read" button (client-side - marks each notification's readBy to include current user)
+            const clearBtn = document.getElementById('clear-notifications-btn');
+            if (clearBtn) {
+                clearBtn.classList.remove('hidden'); // show it if permitted
+                clearBtn.addEventListener('click', async () => {
+                    if (!confirm('Delete all your notifications?')) return;
+
+                    try {
+                        const user = auth.currentUser;
+                        if (!user) return;
+
+                        const notificationsRef = collection(db, `artifacts/${sanitizedAppId}/users/${user.uid}/notifications`);
+                        const snapshot = await getDocs(notificationsRef);
+
+                        const deletions = snapshot.docs.map(d =>
+                            deleteDoc(doc(db, `artifacts/${sanitizedAppId}/users/${user.uid}/notifications`, d.id))
+                        );
+
+                        await Promise.all(deletions);
+                        showNotification('All notifications cleared.');
+                    } catch (err) {
+                        console.error('Failed to clear notifications:', err);
+                        showNotification('Couldn\'t clear notifications. Check console.', 'error');
+                    }
+                });
+            }
+
+
+
+            // --- ALL AUTH LOGIC IS REMOVED FROM HERE ---
+            // It now lives safely in the onAuthStateChanged listener
         });
 
     </script>

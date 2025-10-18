@@ -4,640 +4,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peer Chat System</title>
+    <title>Student Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #0F2923;
-            /* Deep Green */
-            color: #E0E0E0;
-            position: relative;
-            overflow-x: hidden;
-            /* Prevent horizontal scrollbar */
-        }
-
-        .widget {
-            background-color: rgba(57, 65, 74, 0.5);
-            /* Semi-transparent background */
-            backdrop-filter: blur(10px);
-            /* Frosted glass effect */
-            -webkit-backdrop-filter: blur(10px);
-            /* Safari support */
-            border-radius: 8px;
-            padding: 1.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            /* Subtle border */
-        }
-
-        .pixelated-bg {
-            /* The background image will be set by JavaScript */
-            background-color: #5B6F55;
-            /* Added a fallback color */
-            background-size: cover;
-            background-position: center;
-            height: 200px;
-            image-rendering: pixelated;
-        }
-
-        /* Floating elements styles */
-        .floating-elements {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .floaty {
-            position: absolute;
-            background: rgba(104, 211, 145, 0.15);
-            border-radius: 50%;
-            animation: floatUp 25s infinite ease-in-out;
-            opacity: 0;
-            bottom: -100px;
-            /* Start from below the screen */
-        }
-
-        @keyframes floatUp {
-            0% {
-                transform: translateY(0) scale(1);
-                opacity: 0;
-            }
-
-            10%,
-            90% {
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(-120vh) scale(1.5);
-                opacity: 0;
-            }
-        }
-
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #68D391;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 1rem auto;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Chat styles */
-        .chat-message {
-            display: flex;
-            margin-bottom: 0.5rem;
-            align-items: flex-end;
-            gap: 0.5rem;
-        }
-
-        .chat-message.user {
-            justify-content: flex-end;
-        }
-
-        .chat-avatar {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 9999px;
-            background-color: #4A5568;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .chat-content {
-            display: flex;
-            flex-direction: column;
-            max-width: 80%;
-        }
-
-        .chat-message.user .chat-content {
-            align-items: flex-end;
-        }
-
-        .chat-bubble {
-            padding: 0.75rem 1rem;
-            line-height: 1.5;
-            word-break: break-word;
-            border-radius: 1.5rem;
-        }
-
-        .chat-bubble.other-user {
-            background-color: #2E3338;
-            border-top-left-radius: 0.5rem;
-        }
-
-        .chat-bubble.user {
-            background-color: #48BB78;
-            color: #1A202C;
-            border-top-right-radius: 0.5rem;
-        }
-
-        .chat-sender-id {
-            font-size: 0.75rem;
-            color: #A0AEC0;
-            margin-bottom: 0.25rem;
-            padding: 0 0.75rem;
-        }
-
-        .chat-timestamp {
-            font-size: 0.7rem;
-            color: #a0aec0;
-            margin-top: 0.25rem;
-            padding: 0 0.5rem;
-        }
-
-        .chat-message.user .chat-timestamp {
-            align-self: flex-end;
-        }
-
-        #chat-input-container {
-            background-color: #2E3338;
-            border-radius: 1.5rem;
-            padding: 0.5rem 0.5rem 0.5rem 1rem;
-        }
-
-        #chat-input {
-            background-color: transparent;
-            border: none;
-            outline: none;
-            color: #E0E0E0;
-            width: 100%;
-            font-family: 'Roboto', sans-serif;
-        }
-
-        #chat-input::placeholder {
-             font-family: 'Roboto', sans-serif;
-        }
-
-        #chat-send-btn {
-            background-color: #48BB78;
-            border-radius: 50%;
-            width: 2.5rem;
-            height: 2.5rem;
-            flex-shrink: 0;
-        }
-        
-        .chatroom-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+      
     </style>
 </head>
 
-<body class="p-4 md:p-8">
-
-    <!-- Custom Notification Banner -->
-    <div id="notification-banner"
-        class="hidden fixed top-5 right-5 bg-green-500 text-white p-3 rounded-lg shadow-lg z-50 text-base">
-        <span id="notification-message"></span>
-        <button id="notification-close-btn" class="ml-4 font-bold">X</button>
-    </div>
-
-    <!-- Floating Elements Background -->
+<body class="h-screen">
+    
     <div class="floating-elements">
-        <div class="floaty" style="width: 10px; height: 10px; left: 5%; animation-duration: 20s; animation-delay: 0s;"></div>
-        <div class="floaty" style="width: 20px; height: 20px; left: 15%; animation-duration: 30s; animation-delay: 5s;"></div>
-        <div class="floaty" style="width: 12px; height: 12px; left: 25%; animation-duration: 18s; animation-delay: 2s;"></div>
-        <div class="floaty" style="width: 15px; height: 15px; left: 40%; animation-duration: 28s; animation-delay: 8s;"></div>
-        <div class="floaty" style="width: 18px; height: 18px; left: 55%; animation-duration: 22s; animation-delay: 12s;"></div>
-        <div class="floaty" style="width: 8px; height: 8px; left: 70%; animation-duration: 35s; animation-delay: 1s;"></div>
-        <div class="floaty" style="width: 16px; height: 16px; left: 85%; animation-duration: 24s; animation-delay: 6s;"></div>
-        <div class="floaty" style="width: 13px; height: 13px; left: 95%; animation-duration: 26s; animation-delay: 10s;"></div>
+        <div class="floaty" style="left: 5%; animation-duration: 20s; animation-delay: 0s;"></div>
+        <div class="floaty" style="left: 15%; animation-duration: 30s; animation-delay: 5s; border-bottom-width: 30px; border-left-width: 15px; border-right-width: 15px;"></div>
+        <div class="floaty" style="left: 25%; animation-duration: 18s; animation-delay: 2s; border-bottom-width: 15px; border-left-width: 7px; border-right-width: 7px;"></div>
+        <div class="floaty" style="left: 40%; animation-duration: 28s; animation-delay: 8s;"></div>
+        <div class="floaty" style="left: 55%; animation-duration: 22s; animation-delay: 12s; border-bottom-width: 25px; border-left-width: 12px; border-right-width: 12px;"></div>
+        <div class="floaty" style="left: 70%; animation-duration: 35s; animation-delay: 1s;"></div>
+        <div class="floaty" style="left: 85%; animation-duration: 24s; animation-delay: 6s; border-bottom-width: 18px; border-left-width: 9px; border-right-width: 9px;"></div>
+        <div class="floaty" style="left: 95%; animation-duration: 26s; animation-delay: 10s;"></div>
     </div>
 
-
-    <div class="max-w-7xl mx-auto relative z-10">
-        <!-- Header Image -->
-        <div class="pixelated-bg rounded-lg relative">
-            <div class="absolute inset-0 bg-black/40 rounded-lg"></div> <!-- Brightness Overlay -->
-            <div class="absolute -bottom-8 left-8">
-                <button id="profile-pic-container"
-                    class="bg-[#39414A]/50 backdrop-blur-[10px] p-3 rounded-lg border border-white/10 shadow-[0_0_20px_rgba(160,130,255,0.5)] transition-transform hover:scale-105">
-                    <span id="profile-pic-emoji" class="text-5xl">☘️</span>
-                </button>
-            </div>
-            <div class="absolute bottom-4 left-32 text-2xl font-vt323">
-                <span id="user-anonymous-name" class="font-bold"></span>
-            </div>
+    <div class="flex h-full">
+        <div id="server-nav" class="w-20 p-3 flex flex-col items-center gap-3 flex-shrink-0">
+            <button class="server-btn w-14 h-14 rounded-full flex items-center justify-center text-2xl active" data-view="dashboard" title="Dashboard">
+                <i data-lucide="layout-dashboard" class="w-8 h-8"></i>
+            </button>
+            <button class="server-btn w-14 h-14 rounded-full flex items-center justify-center text-2xl" data-view="chat" title="Institute Server">
+                <i data-lucide="sprout" class="w-8 h-8"></i>
+            </button>
         </div>
 
-        <!-- Main Dashboard Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 pt-6 mt-6">
-
-            <!-- Sidebar -->
-            <div class="lg:col-span-1 flex flex-col gap-6">
-                <div class="widget h-full">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-vt323">Chat Rooms</h2>
-                    </div>
-                    <div class="space-y-2">
-                        <button class="chatroom-btn w-full text-left p-2 rounded hover:bg-white/10 transition-colors flex items-center gap-2" data-room-name="General Chat" disabled>
-                            <i data-lucide="message-square" class="w-4 h-4"></i> General Chat
-                        </button>
-                        <button class="chatroom-btn w-full text-left p-2 rounded hover:bg-white/10 transition-colors flex items-center gap-2" data-room-name="Study Group" disabled>
-                            <i data-lucide="book-open" class="w-4 h-4"></i> Study Group
-                        </button>
-                        <button class="chatroom-btn w-full text-left p-2 rounded hover:bg-white/10 transition-colors flex items-center gap-2" data-room-name="Gaming Corner" disabled>
-                            <i data-lucide="gamepad-2" class="w-4 h-4"></i> Gaming Corner
-                        </button>
+        <div id="main-content" class="flex-1 flex flex-col min-w-0 relative">
+            <div id="dashboard-view" class="w-full h-full overflow-y-auto">
+                <div class="p-4 md:p-8">
+                    <div class="max-w-7xl mx-auto relative z-10">
+                        <div class="pixelated-bg rounded-lg relative glass">
+                            <div class="absolute inset-0 bg-black/20 rounded-lg"></div>
+                            <div class="absolute -bottom-8 left-8">
+                                <button id="profile-pic-container" class="bg-[#39414A]/50 backdrop-blur-[10px] p-3 rounded-lg border border-white/10 shadow-[0_0_20px_rgba(160,130,255,0.5)] transition-transform hover:scale-105">
+                                    <span id="profile-pic-emoji" class="text-5xl">☘️</span>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-4 left-32 text-2xl font-vt323">
+                                <span id="user-anonymous-name" class="font-bold"></span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 pt-6 mt-6">
+                            <div class="lg:col-span-1">
+                                 <div class="widget glass h-full flex items-center justify-center">
+                                    <p class="text-gray-400">Your Original Sidebar Content</p>
+                                 </div>
+                            </div>
+                            <div class="lg:col-span-3">
+                                <div class="widget glass h-full flex items-center justify-center">
+                                    <p class="text-gray-400">Your Original Main Content</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Main Content Area (Placeholder) -->
-            <div class="lg:col-span-3">
-                 <!-- This area is kept to maintain the layout, but is intentionally left empty. -->
-            </div>
-        </div>
+            <div id="chat-view" class="w-full h-full hidden flex">
+                <div id="channel-list-panel" class="glass">
+                    <div class="p-4 border-b border-white/10 shadow-md flex justify-between items-center">
+                        <h2 class="text-lg font-bold truncate">Institute Server</h2>
+                        <button id="toggle-channels-btn" title="Toggle Channel List" class="text-gray-400 hover:text-white">
+                            <i data-lucide="panel-left-close" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div id="channel-buttons-container" class="flex-1 p-3 space-y-2 overflow-y-auto"></div>
+                    <div id="user-panel" class="p-3 flex items-center gap-3">
+                        <div id="chat-profile-pic-container" class="relative">
+                            <div id="chat-profile-pic-emoji" class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-2xl">☘️</div>
+                        </div>
+                        <span id="chat-user-anonymous-name" class="font-semibold text-sm truncate">Connecting...</span>
+                    </div>
+                </div>
+
+                <div id="chat-area" class="glass flex-1 flex flex-col min-w-0">
+                    <div id="main-chat-header" class="flex items-center justify-between p-4 border-b border-white/10 shadow-sm h-16 flex-shrink-0"></div>
+                    <div class="flex flex-1 min-h-0">
+                        <div class="flex-1 flex flex-col min-h-0">
+                            <div id="main-chat-welcome" class="flex flex-col items-center justify-center h-full text-center p-8">
+                                <i data-lucide="message-square" class="w-24 h-24 text-gray-400 opacity-50 mb-4"></i>
+                                <h2 class="text-2xl font-bold">Select a channel to begin</h2>
+                                <p class="text-gray-300 mt-2">Your conversations will appear here.</p>
+                            </div>
+                            <div id="main-chat-messages" class="flex-1 overflow-y-auto hidden"></div>
+                            <div id="main-chat-input-wrapper" class="hidden p-4 pt-0">
+                                <div id="voice-recorder-container"></div>
+                                <div id="main-chat-input-container" class="glass relative">
+                                    <div id="attachment-menu" class="glass hidden scale-90 opacity-0">
+                                        <div class="flex flex-col gap-2">
+                                            <button id="attach-image-btn" class="context-menu-item"><i data-lucide="image" class="w-4 h-4"></i> Image</button>
+                                            <button id="attach-doc-btn" class="context-menu-item"><i data-lucide="file-text" class="w-4 h-4"></i> Document</button>
+                                            <button id="record-voice-btn" class="context-menu-item"><i data-lucide="mic" class="w-4 h-4"></i> Record Voice</button>
+                                        </div>
+                                    </div>
+                                    <button id="attachment-btn" class="p-2 text-gray-400 hover:text-white">
+                                        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                                    </button>
+                                    <input type="text" id="main-chat-input" placeholder="Type a message..." class="flex-1">
+                                    <button id="emoji-btn" class="p-2 text-gray-400 hover:text-white">
+                                        <i data-lucide="smile" class="w-5 h-5"></i>
+                                    </button>
+                                    <button id="main-chat-send-btn"><i data-lucide="send" class="w-5 h-5"></i></button>
+                                    <div id="emoji-panel" class="glass hidden scale-90 opacity-0">
+                                        <div class="flex border-b border-white/10">
+                                            <button class="emoji-tab active" data-tab="emojis">Emojis</button>
+                                            <button class="emoji-tab" data-tab="stickers">Stickers</button>
+                                        </div>
+                                        <div id="emojis-grid" class="emoji-grid flex-1"></div>
+                                        <div id="stickers-grid" class="emoji-grid flex-1 hidden"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="members-panel" class="hidden p-2">
+                             <div id="member-list-container" class="flex-1 space-y-1 overflow-y-auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
+        </div> 
     </div>
 
-    <!-- Peer Chat Window -->
-    <div id="chat-window" class="fixed bottom-8 right-8 w-full max-w-md bg-[#39414A] rounded-lg shadow-2xl border border-[#4A5568] hidden flex flex-col z-20" style="height: 500px;">
-        <!-- Header -->
-        <div class="flex justify-between items-center p-3 bg-[#2E3338] rounded-t-lg">
-            <h3 id="chat-header-title" class="text-lg flex items-center gap-2 font-vt323"><i data-lucide="users" class="w-5 h-5"></i> Chat Room</h3>
-            <div class="flex items-center gap-3">
-                <button id="peer-chat-clear-btn" title="Clear chat locally" class="text-gray-400 hover:text-white">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-                <button id="chat-close-btn" class="text-gray-400 hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-        <!-- Messages -->
-        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4">
-            <!-- Messages from Firestore will be dynamically inserted here -->
-        </div>
-        <!-- Input -->
-        <div class="p-3 border-t border-[#4A5568]">
-            <div id="chat-input-container" class="flex items-center gap-2">
-                <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1">
-                <button id="chat-send-btn" class="flex items-center justify-center text-white">
-                    <i data-lucide="send" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Emote Picker Modal -->
-    <div id="emote-picker-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
-        <div class="widget p-6 rounded-lg max-w-sm w-full">
+    <div id="emote-picker-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+        <div class="widget glass p-6 rounded-lg max-w-sm w-full">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-vt323">Choose a new picture</h3>
                 <button id="close-emote-modal" class="text-gray-400 hover:text-white">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
-            <div id="emote-grid" class="grid grid-cols-4 gap-4 text-4xl text-center">
-                <!-- Emotes will be populated by JS -->
-            </div>
+            <div id="emote-grid" class="grid grid-cols-4 gap-4 text-4xl text-center"></div>
         </div>
     </div>
+    
+    <div id="user-profile-popup" class="glass">
+        <div id="user-profile-content" class="p-4"></div>
+    </div>
+
+    <div id="context-menu" class="glass"></div>
+
+    <div id="image-preview-modal" class="fixed inset-0 bg-black/70 flex-col items-center justify-center hidden z-50 p-4">
+        <img id="preview-image" src="" alt="Image preview" class="max-w-full max-h-full object-contain rounded-lg">
+        <div class="flex gap-2 mt-4 w-full max-w-lg">
+            <input type="text" id="image-caption-input" placeholder="Add a caption..." class="flex-1 bg-gray-800 text-white p-2 rounded border border-gray-600">
+            <button id="send-image-btn" class="bg-green-500 text-white px-4 py-2 rounded">Send</button>
+            <button id="cancel-image-btn" class="bg-gray-600 text-white px-4 py-2 rounded">Cancel</button>
+        </div>
+    </div>
+    <input type="file" id="image-upload-input" class="hidden" accept="image/*">
+    <input type="file" id="doc-upload-input" class="hidden">
 
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, doc, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // --- API Keys ---
-        const GIPHY_API_KEY = 'D25UbHQ9ZhdSwlwPPLWcc3WUXbS8vzd0'; // Replace with your key
-        const GEMINI_API_KEY = "AIzaSyBKIy8ScHv6JqVJAMuTibo7ikvBzMSfwXo"; // Replace with your key
-
-        // --- Firebase Setup ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCOveO-NFW_X5FkINfh5KMgCBBMlOej8M4",
-            authDomain: "student-dashboard-4ec02.firebaseapp.com",
-            projectId: "student-dashboard-4ec02",
-            storageBucket: "student-dashboard-4ec02.firebasestorage.app",
-            messagingSenderId: "250478137189",
-            appId: "1:250478137189:web:224352f8e017b4194edb8c",
-            measurementId: "G-K159S6DZNP"
-        };
-        const finalFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const sanitizedAppId = appId.replace(/\//g, '_');
-        let db, auth, currentUserId, currentUserAnonymousName;
-
-        // --- DOM Element Declarations ---
-        const notificationBanner = document.getElementById('notification-banner');
-        const notificationMessage = document.getElementById('notification-message');
-        const coverElement = document.querySelector('.pixelated-bg');
-        const chatWindow = document.getElementById('chat-window');
-        const chatCloseBtn = document.getElementById('chat-close-btn');
-        const peerChatClearBtn = document.getElementById('peer-chat-clear-btn');
-        const chatMessages = document.getElementById('chat-messages');
-        const chatInput = document.getElementById('chat-input');
-        const chatSendBtn = document.getElementById('chat-send-btn');
-        const chatHeaderTitle = document.getElementById('chat-header-title');
-        const profilePicContainer = document.getElementById('profile-pic-container');
-        const profilePicEmoji = document.getElementById('profile-pic-emoji');
-        const emotePickerModal = document.getElementById('emote-picker-modal');
-        const closeEmoteModalBtn = document.getElementById('close-emote-modal');
-        const emoteGrid = document.getElementById('emote-grid');
-
-        // --- App Initialization ---
-        try {
-            const app = initializeApp(finalFirebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-        } catch (e) {
-            console.error("Firebase initialization failed. Chat features will be disabled.", e);
-        }
-
-        // --- Authentication Listener ---
-        onAuthStateChanged(auth, user => {
-            if (user) {
-                currentUserId = user.uid;
-                let storedName = localStorage.getItem('anonymousUserName');
-                if (!storedName) {
-                    storedName = generateAnonymousName();
-                    localStorage.setItem('anonymousUserName', storedName);
-                }
-                currentUserAnonymousName = storedName;
-                document.getElementById('user-anonymous-name').textContent = currentUserAnonymousName;
-                // Enable chat buttons now that user is authenticated
-                document.querySelectorAll('.chatroom-btn').forEach(btn => btn.disabled = false);
-            } else {
-                signInAnonymously(auth); // Fallback if no user
-            }
-        });
-
-        // --- Helper Functions ---
-        function showNotification(message, type = 'success') {
-            notificationMessage.textContent = message;
-            notificationBanner.classList.remove('bg-green-500', 'bg-red-500', 'hidden');
-            notificationBanner.classList.add(type === 'success' ? 'bg-green-500' : 'bg-red-500');
-            setTimeout(() => notificationBanner.classList.add('hidden'), 5000);
-        }
-
-        function generateAnonymousName() {
-            const adjectives = ["Brave", "Silent", "Wise", "Wandering", "Gentle", "Hidden", "Cosmic", "Lunar", "Solar", "Pixelated"];
-            const nouns = ["River", "Fox", "Oak", "Badger", "Starlight", "Meadow", "Whisper", "Dreamer", "Voyager", "Sprite"];
-            return `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]}`;
-        }
         
-        // --- Gemini API for Safety Check ---
-        async function getGeminiResponse(prompt, systemInstruction) {
-            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
-            try {
-                const payload = {
-                    contents: [{ parts: [{ text: prompt }] }],
-                    systemInstruction: { parts: [{ text: systemInstruction }] },
-                };
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error(`API error: ${response.statusText}`);
-                const result = await response.json();
-                return result.candidates?.[0]?.content?.parts?.[0]?.text || "";
-            } catch (error) {
-                console.error("Error calling Gemini API:", error);
-                throw error; // Propagate error to the caller
-            }
-        }
-        
-        // --- Content Flagging Logic ---
-        async function checkForSuicidalIntent(text) {
-            const prompt = `Analyze the following text for suicidal intent. Respond with only "YES" if it contains clear suicidal ideation, plans, or intent, and "NO" otherwise. Text: "${text}"`;
-            const systemInstruction = "You are a content safety classifier. Your only job is to detect suicidal intent. You must only respond with 'YES' or 'NO'.";
-            const response = await getGeminiResponse(prompt, systemInstruction);
-            if (response.trim().toUpperCase().includes('YES')) {
-                await flagUserContent(text);
-            }
-        }
-
-        async function flagUserContent(message) {
-            if (!db || !currentUserId) throw new Error("User not authenticated. Cannot flag content.");
-            try {
-                const flaggedUsersRef = collection(db, `artifacts/${sanitizedAppId}/public/data/flagged_users`);
-                await addDoc(flaggedUsersRef, {
-                    userId: currentUserId,
-                    message: message,
-                    timestamp: serverTimestamp()
-                });
-                showNotification("It looks like you're going through a tough time. Help is available. Please reach out.", 'error');
-            } catch (error) {
-                console.error("Could not flag user content:", error);
-                throw new Error("Could not send alert to administrators.");
-            }
-        }
-        
-        // --- Peer Chat Logic ---
-        let currentChatRoomId = null;
-        let unsubscribeFromMessages = null;
-
-        function initializePeerChat() {
-            document.querySelectorAll('.chatroom-btn').forEach(btn => {
-                btn.addEventListener('click', () => joinChatRoom(btn.dataset.roomName));
-            });
-            chatCloseBtn.addEventListener('click', () => {
-                chatWindow.classList.add('hidden');
-                if (unsubscribeFromMessages) unsubscribeFromMessages();
-            });
-            peerChatClearBtn.addEventListener('click', () => {
-                if (currentChatRoomId) {
-                    localStorage.setItem(`chatClearTimestamp_${currentChatRoomId}`, new Date().toISOString());
-                    chatMessages.innerHTML = '';
-                }
-            });
-            chatSendBtn.addEventListener('click', handlePeerSendMessage);
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handlePeerSendMessage();
-            });
-        }
-
-        function joinChatRoom(roomId) {
-            if (unsubscribeFromMessages) unsubscribeFromMessages();
-            if (!currentUserId) return showNotification("Connecting... Please try again in a moment.", "error");
-
-            currentChatRoomId = roomId.replace(/\s+/g, '-').toLowerCase();
-            chatHeaderTitle.innerHTML = `<i data-lucide="users" class="w-5 h-5"></i> ${roomId}`;
-            chatMessages.innerHTML = '';
-            chatWindow.classList.remove('hidden');
-            lucide.createIcons();
-
-            const clearTimestamp = localStorage.getItem(`chatClearTimestamp_${currentChatRoomId}`);
-            const messagesRef = collection(db, `artifacts/${sanitizedAppId}/public/data/chatrooms/${currentChatRoomId}/messages`);
-            const q = query(messagesRef, orderBy("createdAt"));
-
-            unsubscribeFromMessages = onSnapshot(q, (snapshot) => {
-                const messages = snapshot.docs.map(doc => doc.data());
-                chatMessages.innerHTML = '';
-                messages.forEach(msg => {
-                    const msgTimestamp = msg.createdAt?.toDate();
-                    if (!clearTimestamp || !msgTimestamp || msgTimestamp >= new Date(clearTimestamp)) {
-                        displayPeerChatMessage(msg);
-                    }
-                });
-            }, (error) => {
-                console.error("Error listening to chat messages:", error);
-                chatMessages.innerHTML = `<div class="p-4 text-center text-gray-400">Could not load messages. This may be due to a permissions issue. Please try refreshing the page.</div>`;
-            });
-        }
-
-        function displayPeerChatMessage(messageData) {
-            const isCurrentUser = messageData.senderId === currentUserId;
-            const messageContainer = document.createElement('div');
-            messageContainer.className = `chat-message ${isCurrentUser ? 'user' : 'other'}`;
-            
-            const avatarHTML = `
-                <div class="chat-avatar">
-                    ${messageData.profilePic || '👤'}
-                </div>
-            `;
-
-            let timeString = '';
-            let fullDateString = '';
-            if (messageData.createdAt && messageData.createdAt.toDate) {
-                const date = messageData.createdAt.toDate();
-                timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                fullDateString = date.toLocaleString();
-            }
-            
-            const messageContentHTML = `
-                <div class="chat-content">
-                    ${!isCurrentUser ? `<div class="chat-sender-id">${messageData.senderName || `User...${messageData.senderId.substring(22)}`}</div>` : ''}
-                    <div class="chat-bubble ${isCurrentUser ? 'user' : 'other-user'}">
-                        <span class="chat-text">${messageData.text}</span>
-                    </div>
-                    <div class="chat-timestamp" title="${fullDateString}">${timeString}</div>
-                </div>
-            `;
-
-            if (isCurrentUser) {
-                messageContainer.innerHTML = messageContentHTML + avatarHTML;
-            } else {
-                messageContainer.innerHTML = avatarHTML + messageContentHTML;
-            }
-
-            chatMessages.appendChild(messageContainer);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-
-        async function handlePeerSendMessage() {
-            const userInput = chatInput.value.trim();
-            if (!userInput || !currentChatRoomId || !currentUserId) return;
-            
-            chatSendBtn.disabled = true;
-            try {
-                await checkForSuicidalIntent(userInput);
-                const messagesRef = collection(db, `artifacts/${sanitizedAppId}/public/data/chatrooms/${currentChatRoomId}/messages`);
-                
-                const profilePic = profilePicEmoji.textContent;
-                
-                await addDoc(messagesRef, {
-                    text: userInput,
-                    senderId: currentUserId,
-                    senderName: currentUserAnonymousName,
-                    profilePic: profilePic,
-                    createdAt: serverTimestamp()
-                });
-                chatInput.value = '';
-            } catch (error) {
-                console.error("Error sending message or flagging content:", error);
-                showNotification("Your message could not be sent due to a safety check error.", "error");
-            } finally {
-                chatSendBtn.disabled = false;
-            }
-        }
-
-        // --- Profile Picture Logic ---
-        const availableEmotes = ['☘️', '🌸', '🍓', '🍄', '✨', '🌙', '🪐', '🦊', '🐸', '🐢', '🦋', '⭐'];
-
-        function initializeProfilePic() {
-            profilePicContainer.addEventListener('click', () => emotePickerModal.classList.remove('hidden'));
-            closeEmoteModalBtn.addEventListener('click', () => emotePickerModal.classList.add('hidden'));
-            emotePickerModal.addEventListener('click', (e) => {
-                if (e.target === emotePickerModal) emotePickerModal.classList.add('hidden');
-            });
-            emoteGrid.addEventListener('click', (e) => {
-                if (e.target.tagName === 'BUTTON') {
-                    const newEmote = e.target.textContent;
-                    profilePicEmoji.textContent = newEmote;
-                    localStorage.setItem('dashboardProfilePic', newEmote);
-                    emotePickerModal.classList.add('hidden');
-                }
-            });
-        }
-        
-        function loadProfilePic() {
-            const savedEmote = localStorage.getItem('dashboardProfilePic');
-            if (savedEmote) profilePicEmoji.textContent = savedEmote;
-        }
-
-        function populateEmotePicker() {
-            emoteGrid.innerHTML = availableEmotes.map(emote => 
-                `<button class="p-2 rounded-lg hover:bg-white/10 transition-colors">${emote}</button>`
-            ).join('');
-        }
-
-        // --- Cover Image Logic ---
-        async function fetchAndSetCoverGif() {
-            const GIPHY_GIF_IDS = ['HRXnPYf10Zx0wz4alF', '6705G9I9sUcNCaJF10', 'rzeWnbH8Uc5Y4', 'TRebCjNbc4dIA'];
-            const ids = GIPHY_GIF_IDS.join(',');
-            const url = `https://api.giphy.com/v1/gifs?api_key=${GIPHY_API_KEY}&ids=${ids}`;
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                const randomIndex = Math.floor(Math.random() * data.data.length);
-                coverElement.style.backgroundImage = `url('${data.data[randomIndex].images.original.url}')`;
-            } catch (error) {
-                console.error("Failed to fetch GIFs from Giphy:", error);
-            }
-        }
-        
-        // --- Page Load ---
-        document.addEventListener('DOMContentLoaded', async () => {
-            fetchAndSetCoverGif();
-            loadProfilePic();
-            populateEmotePicker();
-            initializePeerChat();
-            initializeProfilePic();
-            lucide.createIcons();
-
-            document.getElementById('notification-close-btn').addEventListener('click', () => {
-                notificationBanner.classList.add('hidden');
-            });
-
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else if (!auth.currentUser) {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Authentication failed:", error);
-            }
-        });
     </script>
 </body>
 
