@@ -376,6 +376,14 @@
         }
 
         /* END OF ADDED SCREENING STYLES */
+
+        #emoji-panel.hidden {
+            pointer-events: none;
+        }
+
+        #emoji-panel {
+            pointer-events: auto;
+        }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -2718,7 +2726,12 @@
                     case 'image':
                         return `<img src="${messageData.content}" alt="User image" class="chat-image"><p class="chat-text">${messageData.caption || ''}</p>`;
                     case 'audio':
-                        return `<audio controls src="${messageData.content}" class="w-full max-w-sm"></audio>`;
+                        if (!messageData.content) {
+                            console.warn('Audio message without content:', messageData);
+                            return `<div class="chat-text text-sm text-red-400">[Audio unavailable]</div>`;
+                        }
+                        return `<audio controls src="${messageData.content}" class="w-full max-w-sm" preload="metadata"></audio>`;
+
                     case 'document':
                         return `<div class="document-bubble"><i data-lucide="file-text" class="w-8 h-8 text-gray-400"></i><span class="font-semibold truncate">${messageData.fileName}</span></div>`;
                     case 'sticker':
@@ -3156,24 +3169,58 @@
             });
 
             recordVoiceBtn.addEventListener('click', async () => {
+
+                // --- ADD THESE 4 LINES ---
+                // Force-hide the emoji panel in case it's invisibly open
+                const emojiPanel = document.getElementById('emoji-panel');
+                emojiPanel.classList.add('scale-90', 'opacity-0');
+                emojiPanel.classList.add('hidden'); // 'hidden' is (display: none)
+                // --- END OF ADDED CODE ---
                 if (mediaRecorder && mediaRecorder.state === "recording") {
                     mediaRecorder.stop();
                     return;
                 }
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
+                    let options = {};
+                    try {
+                        if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                            options.mimeType = 'audio/webm;codecs=opus';
+                        } else if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/webm')) {
+                            options.mimeType = 'audio/webm';
+                        } else if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
+                            options.mimeType = 'audio/ogg;codecs=opus';
+                        } else {
+                            options.mimeType = 'audio/webm'; // best-effort fallback
+                        }
+                    } catch (err) {
+                        options = {};
+                    }
+                    try {
+                        mediaRecorder = new MediaRecorder(stream, options);
+                    } catch (err) {
+                        // Some browsers will throw if options.mimeType not supported; fallback to default:
+                        console.warn('MediaRecorder creation with options failed, using default. Error:', err);
+                        mediaRecorder = new MediaRecorder(stream);
+                    }
+
                     audioChunks = [];
                     mediaRecorder.addEventListener("dataavailable", event => { audioChunks.push(event.data); });
                     mediaRecorder.addEventListener("stop", () => {
-                        const audioBlob = new Blob(audioChunks);
+                        console.log('mediaRecorder.stop -> audioChunks length:', audioChunks.length);
+                        // Use recorded mimeType when available
+                        const blobType = (mediaRecorder && mediaRecorder.mimeType) ? mediaRecorder.mimeType : 'audio/webm';
+                        const audioBlob = new Blob(audioChunks, { type: blobType });
                         const reader = new FileReader();
                         reader.onload = (event) => {
-                            sendMessage({ type: 'audio', content: event.target.result });
+                            const dataUrl = event.target.result;
+                            console.log('Recorder -> dataUrl length:', dataUrl ? dataUrl.length : 'NO_DATA', 'startsWith data:', dataUrl ? dataUrl.slice(0, 50) : '');
+                            sendMessage({ type: 'audio', content: dataUrl });
                         };
                         reader.readAsDataURL(audioBlob);
                         voiceRecorderContainer.innerHTML = '';
                     });
+
 
                     startRecordingUI();
                     mediaRecorder.start();
@@ -3185,50 +3232,71 @@
 
             function startRecordingUI() {
                 let seconds = 0;
-                // Declare interval here so it's accessible in all scopes
                 let interval;
 
-                voiceRecorderContainer.innerHTML = `
-                <div id="voice-recorder" class="glass p-2 rounded-lg flex items-center justify-between mb-2">
-                     <div class="flex items-center gap-2">
-                        <i data-lucide="mic" class="w-5 h-5 text-red-500 animate-pulse"></i>
-                        <span class="font-mono" id="recorder-timer">00:00</span>
-                     </div>
-                     <button id="stop-recording-btn" class="bg-red-500 text-white rounded-full p-2"><i data-lucide="stop-circle" class="w-5 h-5"></i></button>
-                </div>
-            `;
+                // 1. Clear the container
+                voiceRecorderContainer.innerHTML = '';
+
+                // 2. Create all elements manually
+                const recorderDiv = document.createElement('div');
+                recorderDiv.id = 'voice-recorder';
+                recorderDiv.className = 'glass p-2 rounded-lg flex items-center justify-between mb-2';
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'flex items-center gap-2';
+
+                const micIcon = document.createElement('i');
+                micIcon.setAttribute('data-lucide', 'mic');
+                micIcon.className = 'w-5 h-5 text-red-500 animate-pulse';
+
+                const timerSpan = document.createElement('span');
+                timerSpan.id = 'recorder-timer';
+                timerSpan.className = 'font-mono';
+                timerSpan.textContent = '00:00';
+
+                infoDiv.appendChild(micIcon);
+                infoDiv.appendChild(timerSpan);
+
+                const stopButton = document.createElement('button');
+                stopButton.id = 'stop-recording-btn';
+                stopButton.className = 'bg-red-500 text-white rounded-full p-2';
+
+                const stopIcon = document.createElement('i');
+                stopIcon.setAttribute('data-lucide', 'stop-circle');
+                stopIcon.className = 'w-5 h-5';
+
+                stopButton.appendChild(stopIcon);
+
+                recorderDiv.appendChild(infoDiv);
+                recorderDiv.appendChild(stopButton);
+
+                // 3. This listener handles the click, stops propagation,
+                //    stops the timer, removes the UI, and stops the recorder.
+                stopButton.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Stops the click from bubbling
+
+                    clearInterval(interval); // Stop the visual timer
+
+                    voiceRecorderContainer.innerHTML = ''; // IMMEDIATELY remove the UI
+
+                    if (mediaRecorder && mediaRecorder.state === "recording") {
+                        mediaRecorder.stop(); // Stop the actual recording
+                    }
+                });
+
+                // 4. Now, add the new UI to the page
+                voiceRecorderContainer.appendChild(recorderDiv);
+
+                // 5. Render the icons
                 lucide.createIcons({ nodes: [voiceRecorderContainer] });
 
-                // --- THIS IS THE FIX ---
-                // Wrap the element-dependent code in a setTimeout(..., 0).
-                // This waits for the DOM to update from the innerHTML change above.
-                setTimeout(() => {
-                    const timerElement = document.getElementById('recorder-timer');
-                    const stopButton = document.getElementById('stop-recording-btn');
-
-                    // Check if the elements were created successfully
-                    if (!timerElement || !stopButton) {
-                        console.error("Failed to initialize recorder UI. Elements not found.");
-                        return;
-                    }
-
-                    // Now it's safe to start the interval
-                    interval = setInterval(() => {
-                        seconds++;
-                        const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
-                        const secs = (seconds % 60).toString().padStart(2, '0');
-
-                        // We already know timerElement exists, so we don't need the 'else' block
-                        timerElement.textContent = `${minutes}:${secs}`;
-                    }, 1000);
-
-                    // And now it's safe to add the click listener
-                    stopButton.addEventListener('click', () => {
-                        if (mediaRecorder) mediaRecorder.stop();
-                        clearInterval(interval);
-                    });
-
-                }, 0); // A 0ms delay is all that's needed
+                // 6. Start the timer interval
+                interval = setInterval(() => {
+                    seconds++;
+                    const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+                    const secs = (seconds % 60).toString().padStart(2, '0');
+                    timerSpan.textContent = `${minutes}:${secs}`;
+                }, 1000);
             }
         }
 
