@@ -52,7 +52,7 @@
       "label": "Chat Interface"
     },
     {
-        "src": "https://placehold.co/1280x800/0F2923/FFFFFF?text=Replace+with+Desktop+Screenshot",
+        "src": "./Sources/DesktopSS.png",
         "sizes": "1280x800",
         "type": "image/png",
         "form_factor": "wide",
