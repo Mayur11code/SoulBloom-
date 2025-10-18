@@ -1,0 +1,71 @@
+{
+  "name": "Green Template Dashboard",
+  "short_name": "GreenDash",
+  "description": "A student dashboard for wellness, assignments, and community chat.",
+  "scope": "/",
+  "start_url": "./student_dashboard.html",
+  "id": "/student_dashboard.html",
+  "display": "standalone",
+  "background_color": "#0F2923",
+  "theme_color": "#0F2923",
+  "orientation": "portrait-primary",
+  "categories": [
+    "education",
+    "lifestyle",
+    "productivity",
+    "social"
+  ],
+  "icons": [
+    {
+      "src": "./imageicon.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "./imageicon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Journal Entry",
+      "short_name": "Journal",
+      "description": "Open the journal to write a new entry.",
+      "url": "/student_dasboard.html#journal",
+      "icons": [{ "src": "https://placehold.co/96x96/805AD5/FFFFFF?text=J", "sizes": "96x96" }]
+    },
+    {
+      "name": "Open Chat",
+      "short_name": "Chat",
+      "description": "Go directly to the community chat.",
+      "url": "/student_dasboard.html#chat",
+      "icons": [{ "src": "https://placehold.co/96x96/319795/FFFFFF?text=C", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://placehold.co/1080x1920/0F2923/FFFFFF?text=Replace+with+Screenshot+1",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Main Dashboard View"
+    },
+    {
+      "src": "https://placehold.co/1080x1920/0F2923/FFFFFF?text=Replace+with+Screenshot+2",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Chat Interface"
+    },
+    {
+        "src": "https://placehold.co/1280x800/0F2923/FFFFFF?text=Replace+with+Desktop+Screenshot",
+        "sizes": "1280x800",
+        "type": "image/png",
+        "form_factor": "wide",
+        "label": "Dashboard on Desktop"
+    }
+  ]
+}

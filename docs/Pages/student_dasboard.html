@@ -17,7 +17,9 @@
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0F2923"/>
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/48BB78/FFFFFF?text=G">
     <!-- 
       The Google Sign-In script is loaded asynchronously. 
       The 'onGoogleScriptsLoad' function will be our single entry point
@@ -5279,6 +5281,18 @@ Use these when you don't know what to write.
             // --- ALL AUTH LOGIC IS REMOVED FROM HERE ---
             // It now lives safely in the onAuthStateChanged listener
         });
+
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(error => {
+                    console.error('Service Worker registration failed:', error);
+                });
+        });
+    }
 
     </script>
 </body>
