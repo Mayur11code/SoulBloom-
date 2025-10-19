@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,21 +14,26 @@
             background-color: #1a202c;
             color: #e2e8f0;
         }
+
         /* Style for the AI-generated report text */
         .report-text {
-            white-space: pre-wrap; /* Preserves whitespace and wraps text */
-            font-family: sans-serif; /* Use a more readable font for the report body */
+            white-space: pre-wrap;
+            /* Preserves whitespace and wraps text */
+            font-family: sans-serif;
+            /* Use a more readable font for the report body */
             font-size: 0.9rem;
             line-height: 1.5;
         }
     </style>
 </head>
+
 <body class="p-8">
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl text-red-400 flex items-center gap-3"><i data-lucide="shield-alert" class="w-8 h-8"></i> Admin Monitor</h1>
+            <h1 class="text-3xl text-red-400 flex items-center gap-3"><i data-lucide="shield-alert" class="w-8 h-8"></i>
+                Admin Monitor</h1>
         </div>
-        
+
         <!-- START OF EDIT: Added Error Display Section -->
         <div id="error-section" class="hidden bg-red-900/50 border border-red-700 text-red-200 p-4 rounded-lg mb-6">
             <div class="flex items-center gap-3 mb-2">
@@ -36,7 +42,10 @@
             </div>
             <p id="error-message" class="font-mono text-sm"></p>
             <div class="mt-4 bg-gray-900 p-3 rounded">
-                <p class="text-gray-400 mb-2">This usually happens when your Firestore Security Rules don't allow this admin dashboard to access user data. Please ensure your rules in the Firebase Console allow authenticated users to read public data and write to user-specific notification paths. Here's a sample rule structure:</p>
+                <p class="text-gray-400 mb-2">This usually happens when your Firestore Security Rules don't allow this
+                    admin dashboard to access user data. Please ensure your rules in the Firebase Console allow
+                    authenticated users to read public data and write to user-specific notification paths. Here's a
+                    sample rule structure:</p>
                 <pre class="text-xs text-yellow-300 whitespace-pre-wrap"><code>
 rules_version = '2';
 service cloud.firestore {
@@ -63,8 +72,9 @@ service cloud.firestore {
         <!-- Flagged Users Section -->
         <div id="flagged-users-section">
             <h2 class="text-2xl text-red-400 mb-4">Flagged Users</h2>
-            <p class="text-gray-400 mb-6">This list shows users with flagged content. For each user, you can view their health report if available, or send them a reminder to complete the screening.</p>
-            
+            <p class="text-gray-400 mb-6">This list shows users with flagged content. For each user, you can view their
+                health report if available, or send them a reminder to complete the screening.</p>
+
             <div class="bg-gray-800 rounded-lg border border-gray-700 shadow-lg">
                 <div class="grid grid-cols-5 font-bold text-gray-400 p-4 border-b border-gray-700">
                     <div>Timestamp</div>
@@ -74,13 +84,14 @@ service cloud.firestore {
                 </div>
                 <div id="flagged-users-list" class="divide-y divide-gray-700">
                     <div id="loading-state" class="p-8 text-center text-gray-500">
-                         <p>Connecting and authenticating...</p>
+                        <p>Connecting and authenticating...</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="report-viewer-section" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+        <div id="report-viewer-section"
+            class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
             <div class="bg-gray-800 rounded-lg border border-gray-700 shadow-2xl max-w-4xl w-full p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl text-indigo-400">Student Health Report</h2>
@@ -95,7 +106,8 @@ service cloud.firestore {
         </div>
     </div>
 
-    <div id="notification-toast" class="hidden fixed bottom-5 right-5 bg-green-600 text-white p-3 rounded-lg shadow-lg z-50 text-base">
+    <div id="notification-toast"
+        class="hidden fixed bottom-5 right-5 bg-green-600 text-white p-3 rounded-lg shadow-lg z-50 text-base">
         <span id="notification-message"></span>
     </div>
 
@@ -114,7 +126,7 @@ service cloud.firestore {
             appId: "1:250478137189:web:224352f8e017b4194edb8c"
         };
         const finalFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
-        
+
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const sanitizedAppId = appId.replace(/\//g, '_');
 
@@ -163,16 +175,16 @@ service cloud.firestore {
         // START OF EDIT: Wrapped function logic in try/catch to handle permission errors
         async function checkReportStatus(userId, actionCell) {
             actionCell.innerHTML = `<div class="h-5 w-5 border-2 border-t-transparent border-gray-400 rounded-full animate-spin"></div>`;
-            
+
             try {
                 const reportsRef = collection(db, `artifacts/${sanitizedAppId}/public/data/mental_health_reports`);
                 const q = query(reportsRef, where("userId", "==", userId));
                 const querySnapshot = await getDocs(q);
 
-                actionCell.innerHTML = ''; 
+                actionCell.innerHTML = '';
 
                 if (!querySnapshot.empty) {
-                    const reportDoc = querySnapshot.docs[0]; 
+                    const reportDoc = querySnapshot.docs[0];
                     const viewBtn = document.createElement('button');
                     viewBtn.className = "bg-indigo-600 text-white px-3 py-1 text-sm rounded hover:bg-indigo-700 transition-colors flex items-center gap-1";
                     viewBtn.innerHTML = `<i data-lucide="file-text" class="w-4 h-4"></i> View Report`;
@@ -216,11 +228,11 @@ service cloud.firestore {
             `;
             reportViewerSection.classList.remove('hidden');
         }
-        
+
         // START OF EDIT: Wrapped function logic in try/catch to handle permission errors
         async function sendScreeningReminder(userId, button) {
-             button.disabled = true;
-             button.textContent = 'Sending...';
+            button.disabled = true;
+            button.textContent = 'Sending...';
             try {
                 const notificationsRef = collection(db, `artifacts/${sanitizedAppId}/users/${userId}/notifications`);
                 await addDoc(notificationsRef, {
@@ -236,7 +248,7 @@ service cloud.firestore {
                 lucide.createIcons();
             } catch (error) {
                 console.error("Failed to send reminder:", error);
-                showToast("Error: Could not send reminder.", "error"); 
+                showToast("Error: Could not send reminder.", "error");
                 button.disabled = false;
                 button.textContent = 'Send Reminder';
                 if (error.code === 'permission-denied') {
@@ -248,12 +260,12 @@ service cloud.firestore {
 
         function listenForFlaggedUsers() {
             if (!db) return;
-            
+
             const flaggedUsersRef = collection(db, `artifacts/${sanitizedAppId}/public/data/flagged_users`);
-            const q = query(flaggedUsersRef); 
+            const q = query(flaggedUsersRef);
 
             onSnapshot(q, (snapshot) => {
-                if(snapshot.empty && !loadingState.classList.contains('hidden')) {
+                if (snapshot.empty && !loadingState.classList.contains('hidden')) {
                     loadingState.innerHTML = `
                         <div class="flex flex-col items-center gap-4 py-8">
                             <i data-lucide="antenna" class="w-16 h-16 text-gray-600"></i>
@@ -265,24 +277,24 @@ service cloud.firestore {
                 } else if (!snapshot.empty) {
                     loadingState.classList.add('hidden');
                 }
-                
+
                 snapshot.docChanges().forEach((change) => {
                     if (change.type === "added") {
                         const userData = change.doc.data();
                         const newRow = document.createElement('div');
                         newRow.className = 'grid grid-cols-5 p-4 items-center bg-red-900/20 hover:bg-red-900/40 transition-colors duration-300';
-                        
+
                         const timestamp = userData.timestamp?.toDate ? userData.timestamp.toDate().toLocaleString() : 'N/A';
-                        
+
                         const actionCell = document.createElement('div');
                         actionCell.className = "flex justify-start";
-                        
+
                         newRow.innerHTML = `
                             <div class="text-sm text-gray-400">${timestamp}</div>
                             <div class="text-sm font-mono text-yellow-400" title="${userData.userId}">${userData.userId.substring(0, 12)}...</div>
                             <div class="col-span-2 text-sm text-gray-200 bg-gray-900 p-2 rounded">${userData.message}</div>
                         `;
-                        
+
                         newRow.appendChild(actionCell);
                         flaggedUsersList.prepend(newRow);
 
@@ -293,12 +305,12 @@ service cloud.firestore {
             }, (error) => {
                 console.error("Error listening for flagged users:", error);
                 loadingState.innerHTML = `<div class="p-4 text-center text-red-500">Error listening for updates. Check your browser console.</div>`;
-                 if (error.code === 'permission-denied') {
+                if (error.code === 'permission-denied') {
                     showPermissionError('Could not listen for flagged users due to a permissions issue.');
                 }
             });
         }
-        
+
         function initializeAdminDashboard() {
             if (!auth) {
                 loadingState.textContent = 'Error: Auth service not available.';
@@ -311,6 +323,7 @@ service cloud.firestore {
 
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
+                    console.log("My Admin UID is:", user.uid);
                     listenForFlaggedUsers();
                 } else {
                     try {
@@ -334,4 +347,5 @@ service cloud.firestore {
 
     </script>
 </body>
+
 </html>
