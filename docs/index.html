@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soul Bloom - Your Virtual Garden for Mental Wellness</title>
-
+    <link rel="manifest" href="Manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -240,6 +240,7 @@
     </style>
 </head>
 <body class="bg-green-50 dark:bg-gray-900 text-gray-900 dark:text-gray-200">
+
 
     <div id="garden-bg">
         <canvas id="bg-canvas"></canvas>
@@ -491,7 +492,19 @@
             <p class="text-sm mt-1">A project dedicated to improving student mental health, one step at a time.</p>
         </div>
     </footer>
-
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // ====================================================================

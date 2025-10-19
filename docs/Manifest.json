@@ -1,0 +1,63 @@
+{
+    "name": "Soul Bloom - Your Virtual Garden for Mental Wellness",
+    "short_name": "Soul Bloom",
+    "description": "A virtual garden for mental wellness, offering support and resources for students.",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#f0fdf4",
+    "theme_color": "#22c55e",
+    "icons": [
+    {
+      "src": "./Pages/imageicon.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "./Pages/imageicon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Student Login",
+      "short_name": "Student",
+      "description": "Login to Student Portal.",
+      "url": "/student_dasboard.html",
+      "icons": [{ "src": "https://placehold.co/96x96/805AD5/FFFFFF?text=J", "sizes": "96x96" }]
+    },
+    {
+      "name": "Mentor Login",
+      "short_name": "Mentor",
+      "description": "Login to Mentor Portal.",
+      "url": "/mentor_dasboard.html",
+      "icons": [{ "src": "https://placehold.co/96x96/319795/FFFFFF?text=C", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./Sources/homepageSS.jpg",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Main Dashboard View"
+    },
+    {
+      "src": "https://placehold.co/1080x1920/0F2923/FFFFFF?text=Replace+with+Screenshot+2",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Chat Interface"
+    },
+    {
+        "src": "./Sources/DesktopSS.png",
+        "sizes": "1280x800",
+        "type": "image/png",
+        "form_factor": "wide",
+        "label": "Dashboard on Desktop"
+    }
+  ]
+
+}
