@@ -386,6 +386,65 @@
         #emoji-panel {
             pointer-events: auto;
         }
+
+        /* --- Styles for Custom Audio Player --- */
+        .custom-audio-player {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            /* 12px */
+            padding: 0.5rem;
+            /* 8px */
+            border-radius: 0.5rem;
+            /* 8px */
+            background-color: rgba(255, 255, 255, 0.05);
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .audio-play-pause-btn {
+            background-color: #48BB78;
+            color: white;
+            border-radius: 50%;
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .audio-timeline-container {
+            flex-grow: 1;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .audio-timeline-progress {
+            height: 100%;
+            background-color: #48BB78;
+            border-radius: 3px;
+            width: 0%;
+            pointer-events: none;
+            /* So clicks go to the container */
+        }
+
+        .audio-time-display {
+            font-family: 'Roboto', sans-serif;
+            /* Clearer font for numbers */
+            font-size: 0.8rem;
+            color: #A0AEC0;
+            flex-shrink: 0;
+        }
+
+        .hidden-audio-element {
+            display: none;
+        }
+
+        /* --- End of Audio Player Styles --- */
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -2904,6 +2963,70 @@
             });
         }
 
+
+        function initializeAudioPlayer(playerElement) {
+            const audio = playerElement.querySelector('.hidden-audio-element');
+            const playBtn = playerElement.querySelector('.audio-play-pause-btn');
+            const playIcon = playBtn.querySelector('i');
+            const timeline = playerElement.querySelector('.audio-timeline-container');
+            const progress = playerElement.querySelector('.audio-timeline-progress');
+            const timeDisplay = playerElement.querySelector('.audio-time-display');
+
+            if (!audio) return; // Safety check
+
+            const formatTime = (seconds) => {
+                const minutes = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+                return `${minutes}:${secs}`;
+            };
+
+            // 1. Set total duration when audio is loaded
+            audio.addEventListener('loadedmetadata', () => {
+                if (isFinite(audio.duration)) {
+                    timeDisplay.textContent = `0:00 / ${formatTime(audio.duration)}`;
+                }
+            });
+
+            // 2. Handle Play/Pause
+            playBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (audio.paused) {
+                    audio.play();
+                    playIcon.setAttribute('data-lucide', 'pause');
+                } else {
+                    audio.pause();
+                    playIcon.setAttribute('data-lucide', 'play');
+                }
+                lucide.createIcons({ nodes: [playIcon] });
+            });
+
+            // 3. Update timeline on playback
+            audio.addEventListener('timeupdate', () => {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progress.style.width = `${percent}%`;
+                if (isFinite(audio.duration)) {
+                    timeDisplay.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+                }
+            });
+
+            // 4. Reset icon when audio ends
+            audio.addEventListener('ended', () => {
+                playIcon.setAttribute('data-lucide', 'play');
+                lucide.createIcons({ nodes: [playIcon] });
+                progress.style.width = '0%';
+            });
+
+            // 5. Allow scrubbing
+            timeline.addEventListener('click', (e) => {
+                const rect = timeline.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const percent = (clickX / rect.width);
+                if (isFinite(audio.duration)) {
+                    audio.currentTime = percent * audio.duration;
+                }
+            });
+        }
+
         function displayPeerChatMessage(messageData, isSameSender) {
             const senderProfile = userProfilesCache[messageData.senderId] || { name: 'Unknown User', profilePic: '👤', role: 'member' };
             const isCurrentUser = messageData.senderId === currentUserId;
@@ -2929,8 +3052,20 @@
                             console.warn('Audio message without content:', messageData);
                             return `<div class="chat-text text-sm text-red-400">[Audio unavailable]</div>`;
                         }
-                        return `<audio controls src="${messageData.content}" class="w-full max-w-sm" preload="metadata"></audio>`;
-
+                        // --- New Custom Player HTML ---
+                        return `
+                        <div class="custom-audio-player">
+                            <button class="audio-play-pause-btn">
+                                <i data-lucide="play" class="w-5 h-5"></i>
+                            </button>
+                            <div class="audio-timeline-container">
+                                <div class="audio-timeline-progress" style="width: 0%;"></div>
+                            </div>
+                            <span class="audio-time-display">0:00 / 0:00</span>
+                            <audio class="hidden-audio-element" src="${messageData.content}" preload="metadata"></audio>
+                        </div>
+                        `;
+                    // --- End of New HTML ---
                     case 'document':
                         return `<div class="document-bubble"><i data-lucide="file-text" class="w-8 h-8 text-gray-400"></i><span class="font-semibold truncate">${messageData.fileName}</span></div>`;
                     case 'sticker':
@@ -2965,7 +3100,16 @@
             }
             mainChatMessages.appendChild(messageContainer);
 
+            // --- ADD THIS BLOCK ---
+            // Find and initialize any new audio players in this message
+            const newPlayer = messageContainer.querySelector('.custom-audio-player');
+            if (newPlayer) {
+                initializeAudioPlayer(newPlayer);
+            }
+            // --- END OF ADDED BLOCK ---
+
             lucide.createIcons({ nodes: [messageContainer] });
+        }
         }
 
         async function sendMessage(messageData) {
@@ -3385,7 +3529,7 @@
             });
 
             recordVoiceBtn.addEventListener('click', async () => {
-
+                let userDeletedRecording = false;
                 // --- ADD THESE 4 LINES ---
                 // Force-hide the emoji panel in case it's invisibly open
                 const emojiPanel = document.getElementById('emoji-panel');
@@ -3423,9 +3567,9 @@
                     audioChunks = [];
                     mediaRecorder.addEventListener("dataavailable", event => { audioChunks.push(event.data); });
                     mediaRecorder.addEventListener("stop", () => {
-                        // Check if there are any audio chunks to send.
-                        // If the user clicked "Delete", audioChunks will be empty.
-                        if (audioChunks.length > 0) {
+                        // --- CHANGE THIS LINE ---
+                        if (audioChunks.length > 0 && !userDeletedRecording) {
+                            // --- END OF CHANGE ---
                             console.log('mediaRecorder.stop -> sending audio');
                             const blobType = (mediaRecorder && mediaRecorder.mimeType) ? mediaRecorder.mimeType : 'audio/webm';
                             const audioBlob = new Blob(audioChunks, { type: blobType });
@@ -3442,6 +3586,7 @@
                         // Clean up
                         voiceRecorderContainer.innerHTML = '';
                         audioChunks = [];
+                        userDeletedRecording = false; // <-- ADD THIS LINE
                     });
 
                     startRecordingUI();
@@ -3521,12 +3666,14 @@
                 // 6. Add Event Listeners
 
                 // --- Delete ---
+                // --- Delete ---
                 deleteButton.addEventListener('click', (e) => {
                     e.stopPropagation();
                     stopTimer();
-                    audioChunks = []; // <-- This line is crucial
+                    userDeletedRecording = true; // <-- ADD THIS LINE
+                    audioChunks = [];
                     if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
-                        mediaRecorder.stop(); // This triggers the "stop" listener above
+                        mediaRecorder.stop();
                     }
                     voiceRecorderContainer.innerHTML = '';
                 });
@@ -3557,7 +3704,7 @@
                 sendButton.addEventListener('click', (e) => {
                     e.stopPropagation();
                     stopTimer();
-                    // onstop listener will handle sending if audioChunks is not empty
+                    userDeletedRecording = false; // <-- ADD THIS LINE
                     if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
                         mediaRecorder.stop();
                     }
