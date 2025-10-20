@@ -3450,6 +3450,8 @@
         }
 
         function initializeMediaSending() {
+
+            let userDeletedRecording = false;
             const attachmentBtn = document.getElementById('attachment-btn');
             const attachmentMenu = document.getElementById('attachment-menu');
             const attachImageBtn = document.getElementById('attach-image-btn');
@@ -3529,7 +3531,7 @@
             });
 
             recordVoiceBtn.addEventListener('click', async () => {
-                let userDeletedRecording = false;
+                
                 // --- ADD THESE 4 LINES ---
                 // Force-hide the emoji panel in case it's invisibly open
                 const emojiPanel = document.getElementById('emoji-panel');
