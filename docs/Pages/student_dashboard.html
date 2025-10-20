@@ -2737,9 +2737,25 @@
                     }
                 });
             });
-            document.getElementById('toggle-channels-btn').addEventListener('click', () => {
-                channelListPanel2.classList.toggle('hidden');
+
+            // --- START OF MODIFICATION ---
+            const toggleChannelsBtn = document.getElementById('toggle-channels-btn');
+            toggleChannelsBtn.addEventListener('click', () => {
+                // Toggle the panel's visibility
+                const isHidden = channelListPanel.classList.toggle('hidden');
+
+                // Update the icon based on the new state
+                if (isHidden) {
+                    toggleChannelsBtn.innerHTML = '<i data-lucide="panel-left-open" class="w-5 h-5"></i>';
+                    toggleChannelsBtn.title = "Show Channel List";
+                } else {
+                    toggleChannelsBtn.innerHTML = '<i data-lucide="panel-left-close" class="w-5 h-5"></i>';
+                    toggleChannelsBtn.title = "Hide Channel List";
+                }
+                // Re-render the new Lucide icon
+                lucide.createIcons({ nodes: [toggleChannelsBtn] });
             });
+            // --- END OF MODIFICATION ---
         }
 
         let currentChatRoomId = null;
