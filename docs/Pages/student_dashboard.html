@@ -1699,10 +1699,7 @@
                 <div id="channel-list-panel" class="glass">
                     <div class="p-4 border-b border-white/10 shadow-md flex justify-between items-center">
                         <h2 class="text-lg font-bold truncate">Institute Server</h2>
-                        <button id="toggle-channels-btn" title="Toggle Channel List"
-                            class="text-gray-400 hover:text-white hidden md:block">
-                            <i data-lucide="panel-left-close" class="w-5 h-5"></i>
-                        </button>
+                       
                     </div>
                     <div id="channel-buttons-container" class="flex-1 p-3 space-y-2 overflow-y-auto"></div>
                     <div id="user-panel" class="p-3 flex items-center gap-3">
@@ -2738,24 +2735,7 @@
                 });
             });
 
-            // --- START OF MODIFICATION ---
-            const toggleChannelsBtn = document.getElementById('toggle-channels-btn');
-            toggleChannelsBtn.addEventListener('click', () => {
-                // Toggle the panel's visibility
-                const isHidden = channelListPanel.classList.toggle('hidden');
-
-                // Update the icon based on the new state
-                if (isHidden) {
-                    toggleChannelsBtn.innerHTML = '<i data-lucide="panel-left-open" class="w-5 h-5"></i>';
-                    toggleChannelsBtn.title = "Show Channel List";
-                } else {
-                    toggleChannelsBtn.innerHTML = '<i data-lucide="panel-left-close" class="w-5 h-5"></i>';
-                    toggleChannelsBtn.title = "Hide Channel List";
-                }
-                // Re-render the new Lucide icon
-                lucide.createIcons({ nodes: [toggleChannelsBtn] });
-            });
-            // --- END OF MODIFICATION ---
+           
         }
 
         let currentChatRoomId = null;
@@ -2789,13 +2769,41 @@
             if (unsubscribeFromMessages) unsubscribeFromMessages();
             if (!currentUserId) return;
 
-            currentChatRoomId = roomId;
+           currentChatRoomId = roomId;
             mainChatHeader.innerHTML = `
-                <h3 class="text-lg font-semibold flex items-center gap-2"><i data-lucide="hash" class="w-6 h-6 text-gray-400"></i> ${roomName}</h3>
+                <div class="flex items-center gap-2">
+                    <button id="toggle-channels-btn" title="Hide Channel List" class="text-gray-400 hover:text-white hidden md:block">
+                        <i data-lucide="panel-left-close" class="w-5 h-5"></i>
+                    </button>
+                    <h3 class="text-lg font-semibold flex items-center gap-2"><i data-lucide="hash" class="w-6 h-6 text-gray-400"></i> ${roomName}</h3>
+                </div>
                 <button id="toggle-members-btn" title="Toggle Members List" class="text-gray-400 hover:text-white">
                     <i data-lucide="users" class="w-5 h-5"></i>
                 </button>
             `;
+
+            // --- ADD THIS NEW LISTENER ---
+            const toggleChannelsBtn = document.getElementById('toggle-channels-btn');
+            toggleChannelsBtn.addEventListener('click', () => {
+                // Toggle the panel's visibility
+                // Note: We are selecting the panel by its ID here
+                const channelPanel = document.getElementById('channel-list-panel'); 
+                const isHidden = channelPanel.classList.toggle('hidden');
+                
+                // Update the icon based on the new state
+                if (isHidden) {
+                    toggleChannelsBtn.innerHTML = '<i data-lucide="panel-left-open" class="w-5 h-5"></i>';
+                    toggleChannelsBtn.title = "Show Channel List";
+                } else {
+                    toggleChannelsBtn.innerHTML = '<i data-lucide="panel-left-close" class="w-5 h-5"></i>';
+                    toggleChannelsBtn.title = "Hide Channel List";
+                }
+                // Re-render the new Lucide icon
+                lucide.createIcons({ nodes: [toggleChannelsBtn] });
+            });
+            // --- END OF NEW LISTENER ---
+
+            // This listener was already here
             document.getElementById('toggle-members-btn').addEventListener('click', () => {
                 membersPanel.classList.toggle('hidden');
             });
