@@ -1840,6 +1840,17 @@
         window.openChannelListWithOverlay = openChannelListWithOverlay;
         // --- END OF NEW FUNCTION ---
 
+        // --- ADD THIS NEW FUNCTION ---
+        // Closes server nav, opens channel nav (for mobile switching)
+        function switchToChannelList() {
+            if (serverNavPanel) serverNavPanel.classList.remove('active'); // Close server nav
+            if (channelListPanel) channelListPanel.classList.add('active'); // Open channel nav
+            if (sidebarOverlay) sidebarOverlay.classList.remove('hidden'); // Show overlay
+            if (sidebarToggleBtn) sidebarToggleBtn.classList.add('hidden'); // Hide hamburger
+        }
+        window.switchToChannelList = switchToChannelList;
+        // --- END OF NEW FUNCTION ---
+
         if (sidebarToggleBtn) {
             sidebarToggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -2714,7 +2725,7 @@
         }
 
 
-        function initializeViewSwitcher() {
+       function initializeViewSwitcher() {
             const serverBtns = document.querySelectorAll('.server-btn');
             serverBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -2722,20 +2733,38 @@
                     btn.classList.add('active');
                     const view = btn.dataset.view;
                     userProfilePopup.classList.remove('show');
+
                     if (view === 'dashboard') {
                         dashboardView.classList.remove('hidden');
                         chatView.classList.add('hidden');
-                    } else {
+                        // Close all sidebars when going to dashboard
+                        if (typeof window.closeAllSidebars === 'function') {
+                            window.closeAllSidebars();
+                        }
+                    } else { // view === 'chat'
                         dashboardView.classList.add('hidden');
                         chatView.classList.remove('hidden');
-                    }
-                    if (typeof window.closeAllSidebars === 'function') {
-                        window.closeAllSidebars();
+                        
+                        // --- NEW LOGIC ---
+                        // Check if we are on a mobile screen (using the same breakpoint as CSS)
+                        if (window.innerWidth <= 767) {
+                            // On mobile, switch from server nav to channel nav
+                            if (typeof window.switchToChannelList === 'function') {
+                                window.switchToChannelList(); // Use our new function
+                            }
+                        } else {
+                            // On desktop, just close the server nav (if it was open)
+                            if (typeof window.closeAllSidebars === 'function') {
+                                window.closeAllSidebars();
+                            }
+                        }
+                        // --- END OF NEW LOGIC ---
                     }
                 });
             });
-
-           
+            
+            // The 'toggle-channels-btn' listener was removed from here
+            // because the button is now created dynamically in joinChatRoom().
         }
 
         let currentChatRoomId = null;
