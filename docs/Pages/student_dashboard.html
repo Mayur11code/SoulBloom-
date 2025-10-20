@@ -1699,7 +1699,7 @@
                 <div id="channel-list-panel" class="glass">
                     <div class="p-4 border-b border-white/10 shadow-md flex justify-between items-center">
                         <h2 class="text-lg font-bold truncate">Institute Server</h2>
-                       
+
                     </div>
                     <div id="channel-buttons-container" class="flex-1 p-3 space-y-2 overflow-y-auto"></div>
                     <div id="user-panel" class="p-3 flex items-center gap-3">
@@ -2725,7 +2725,7 @@
         }
 
 
-       function initializeViewSwitcher() {
+        function initializeViewSwitcher() {
             const serverBtns = document.querySelectorAll('.server-btn');
             serverBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -2744,7 +2744,7 @@
                     } else { // view === 'chat'
                         dashboardView.classList.add('hidden');
                         chatView.classList.remove('hidden');
-                        
+
                         // --- NEW LOGIC ---
                         // Check if we are on a mobile screen (using the same breakpoint as CSS)
                         if (window.innerWidth <= 767) {
@@ -2762,7 +2762,7 @@
                     }
                 });
             });
-            
+
             // The 'toggle-channels-btn' listener was removed from here
             // because the button is now created dynamically in joinChatRoom().
         }
@@ -2798,7 +2798,7 @@
             if (unsubscribeFromMessages) unsubscribeFromMessages();
             if (!currentUserId) return;
 
-           currentChatRoomId = roomId;
+            currentChatRoomId = roomId;
             mainChatHeader.innerHTML = `
                 <div class="flex items-center gap-2">
                     <button id="toggle-channels-btn" title="Hide Channel List" class="text-gray-400 hover:text-white hidden md:block">
@@ -2816,9 +2816,9 @@
             toggleChannelsBtn.addEventListener('click', () => {
                 // Toggle the panel's visibility
                 // Note: We are selecting the panel by its ID here
-                const channelPanel = document.getElementById('channel-list-panel'); 
+                const channelPanel = document.getElementById('channel-list-panel');
                 const isHidden = channelPanel.classList.toggle('hidden');
-                
+
                 // Update the icon based on the new state
                 if (isHidden) {
                     toggleChannelsBtn.innerHTML = '<i data-lucide="panel-left-open" class="w-5 h-5"></i>';
@@ -2895,7 +2895,7 @@
                 addedDocs.forEach(message => {
                     const isSameSender = lastSenderId === message.senderId;
                     // displayPeerChatMessage() just appends the new message
-                    displayPeerChatMessage(message, isSameSender); 
+                    displayPeerChatMessage(message, isSameSender);
                     lastSenderId = message.senderId; // Update lastSenderId for the next message
                 });
 
@@ -3422,7 +3422,7 @@
 
                     audioChunks = [];
                     mediaRecorder.addEventListener("dataavailable", event => { audioChunks.push(event.data); });
-                   mediaRecorder.addEventListener("stop", () => {
+                    mediaRecorder.addEventListener("stop", () => {
                         // Check if there are any audio chunks to send.
                         // If the user clicked "Delete", audioChunks will be empty.
                         if (audioChunks.length > 0) {
@@ -3438,7 +3438,7 @@
                         } else {
                             console.log('mediaRecorder.stop -> no audio to send');
                         }
-                        
+
                         // Clean up
                         voiceRecorderContainer.innerHTML = '';
                         audioChunks = [];
@@ -3452,7 +3452,7 @@
                 }
             });
 
-           function startRecordingUI() {
+            function startRecordingUI() {
                 let seconds = 0;
                 let interval = null;
                 let isPaused = false;
@@ -3470,7 +3470,7 @@
                 deleteButton.className = 'text-gray-400 hover:text-red-400 p-2';
                 deleteButton.title = 'Cancel Recording';
                 deleteButton.innerHTML = '<i data-lucide="trash-2" class="w-5 h-5"></i>';
-                
+
                 // --- Timer ---
                 const timerSpan = document.createElement('span');
                 timerSpan.className = 'font-mono text-lg';
@@ -3499,7 +3499,7 @@
                 recorderDiv.appendChild(timerSpan);
                 recorderDiv.appendChild(controlsDiv);
                 voiceRecorderContainer.appendChild(recorderDiv);
-                
+
                 // 4. Render icons
                 lucide.createIcons({ nodes: [voiceRecorderContainer] });
 
@@ -3519,18 +3519,17 @@
                 };
 
                 // 6. Add Event Listeners
-                
+
                 // --- Delete ---
                 deleteButton.addEventListener('click', (e) => {
                     e.stopPropagation();
                     stopTimer();
-                    audioChunks = []; // Clear chunks so onstop listener sends nothing
+                    audioChunks = []; // <-- This line is crucial
                     if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
-                        mediaRecorder.stop(); // This will trigger the onstop listener
+                        mediaRecorder.stop(); // This triggers the "stop" listener above
                     }
-                    voiceRecorderContainer.innerHTML = ''; // Also clear UI immediately
+                    voiceRecorderContainer.innerHTML = '';
                 });
-
                 // --- Pause/Resume ---
                 pauseButton.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -3564,7 +3563,7 @@
                     }
                     voiceRecorderContainer.innerHTML = ''; // Clear UI immediately
                 });
-                
+
                 // 7. Start the timer
                 startTimer();
             }
