@@ -1833,10 +1833,21 @@
         }
         window.closeAllSidebars = closeAllSidebars; // <-- ADD THIS
 
+        // --- ADD THIS NEW FUNCTION ---
+        // This function opens the CHANNEL list
+        function openChannelListWithOverlay() {
+            if (channelListPanel) channelListPanel.classList.add('active');
+            if (sidebarOverlay) sidebarOverlay.classList.remove('hidden');
+            if (sidebarToggleBtn) sidebarToggleBtn.classList.add('hidden'); // Hide hamburger
+        }
+        window.openChannelListWithOverlay = openChannelListWithOverlay;
+        // --- END OF NEW FUNCTION ---
+
         if (sidebarToggleBtn) {
             sidebarToggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                openServerNavOnly(); // This will still work
+                // openServerNavOnly(); // Old behavior
+                openServerNavWithOverlay(); // New behavior: shows overlay
             });
         }
 
@@ -5451,21 +5462,21 @@ Use these when you don't know what to write.
             }, { passive: true });
         }
 
-       function handleSwipe() {
-        const diff = touchEndX - touchStartX;
+        function handleSwipe() {
+            const diff = touchEndX - touchStartX;
 
-        if (diff > swipeThreshold) {
-          // Swipe right → open server nav AND overlay
-          if(typeof window.openServerNavWithOverlay === 'function') {
-            window.openServerNavWithOverlay(); // <-- Use window.
-          }
-        } else if (diff < -swipeThreshold) {
-          // Swipe left → close everything
-          if(typeof window.closeAllSidebars === 'function') {
-            window.closeAllSidebars(); // <-- Use window.
-          }
+            if (diff > swipeThreshold) {
+                // Swipe right → open CHANNEL LIST and overlay
+                if (typeof window.openChannelListWithOverlay === 'function') { // <-- CHANGED
+                    window.openChannelListWithOverlay(); // <-- CHANGED
+                }
+            } else if (diff < -swipeThreshold) {
+                // Swipe left → close everything
+                if (typeof window.closeAllSidebars === 'function') {
+                    window.closeAllSidebars();
+                }
+            }
         }
-      }
     </script>
 </body>
 
