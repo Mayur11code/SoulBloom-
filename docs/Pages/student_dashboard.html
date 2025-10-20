@@ -2859,13 +2859,24 @@
             const onSnapshotFn = USE_MOCK_FIRESTORE ? mockFirestore.onSnapshot : onSnapshot;
             const messagesRef = USE_MOCK_FIRESTORE ? messagesPath : query(collection(db, messagesPath), orderBy("createdAt"));
 
+            // This new listener is much more efficient
             unsubscribeFromMessages = onSnapshotFn(messagesRef, async (snapshot) => {
-                const messagesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                messagesData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                // Get only the documents that were ADDED
+                const addedDocs = snapshot.docChanges()
+                    .filter(change => change.type === 'added')
+                    .map(change => ({ id: change.doc.id, ...change.doc.data() }));
 
-                const senderIds = [...new Set(messagesData.map(m => m.senderId))];
+                // If no new messages, do nothing
+                if (addedDocs.length === 0) return;
+
+                // Sort new messages (in case they arrive out of order, though Firestore is good at this)
+                addedDocs.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+                // Get sender IDs for new messages only
+                const senderIds = [...new Set(addedDocs.map(m => m.senderId))];
                 const profilesToFetch = senderIds.filter(id => !userProfilesCache[id]);
 
+                // Fetch any unknown profiles
                 if (profilesToFetch.length > 0) {
                     await Promise.all(profilesToFetch.map(async id => {
                         const profilePath = `artifacts/${sanitizedAppId}/public/data/profiles/${id}`;
@@ -2876,13 +2887,19 @@
                     }));
                 }
 
-                mainChatMessages.innerHTML = '';
-                let lastSenderId = null;
-                messagesData.forEach(message => {
+                // Get the ID of the last sender *already in the DOM*
+                const lastMessageEl = mainChatMessages.lastElementChild;
+                let lastSenderId = lastMessageEl ? lastMessageEl.dataset.senderId : null;
+
+                // Now, append only the new messages
+                addedDocs.forEach(message => {
                     const isSameSender = lastSenderId === message.senderId;
-                    displayPeerChatMessage(message, isSameSender);
-                    lastSenderId = message.senderId;
+                    // displayPeerChatMessage() just appends the new message
+                    displayPeerChatMessage(message, isSameSender); 
+                    lastSenderId = message.senderId; // Update lastSenderId for the next message
                 });
+
+                // Scroll to the bottom
                 mainChatMessages.scrollTop = mainChatMessages.scrollHeight;
             });
         }
@@ -2893,6 +2910,7 @@
 
             const messageContainer = document.createElement('div');
             messageContainer.className = 'chat-message';
+            messageContainer.dataset.senderId = messageData.senderId;
             if (isSameSender) messageContainer.classList.add('is-consecutive');
 
             const timeString = new Date(messageData.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || '';
