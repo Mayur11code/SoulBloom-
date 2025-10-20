@@ -3367,21 +3367,27 @@
 
                     audioChunks = [];
                     mediaRecorder.addEventListener("dataavailable", event => { audioChunks.push(event.data); });
-                    mediaRecorder.addEventListener("stop", () => {
-                        console.log('mediaRecorder.stop -> audioChunks length:', audioChunks.length);
-                        // Use recorded mimeType when available
-                        const blobType = (mediaRecorder && mediaRecorder.mimeType) ? mediaRecorder.mimeType : 'audio/webm';
-                        const audioBlob = new Blob(audioChunks, { type: blobType });
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            const dataUrl = event.target.result;
-                            console.log('Recorder -> dataUrl length:', dataUrl ? dataUrl.length : 'NO_DATA', 'startsWith data:', dataUrl ? dataUrl.slice(0, 50) : '');
-                            sendMessage({ type: 'audio', content: dataUrl });
-                        };
-                        reader.readAsDataURL(audioBlob);
+                   mediaRecorder.addEventListener("stop", () => {
+                        // Check if there are any audio chunks to send.
+                        // If the user clicked "Delete", audioChunks will be empty.
+                        if (audioChunks.length > 0) {
+                            console.log('mediaRecorder.stop -> sending audio');
+                            const blobType = (mediaRecorder && mediaRecorder.mimeType) ? mediaRecorder.mimeType : 'audio/webm';
+                            const audioBlob = new Blob(audioChunks, { type: blobType });
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                const dataUrl = event.target.result;
+                                sendMessage({ type: 'audio', content: dataUrl });
+                            };
+                            reader.readAsDataURL(audioBlob);
+                        } else {
+                            console.log('mediaRecorder.stop -> no audio to send');
+                        }
+                        
+                        // Clean up
                         voiceRecorderContainer.innerHTML = '';
+                        audioChunks = [];
                     });
-
 
                     startRecordingUI();
                     mediaRecorder.start();
@@ -3391,73 +3397,121 @@
                 }
             });
 
-            function startRecordingUI() {
+           function startRecordingUI() {
                 let seconds = 0;
-                let interval;
+                let interval = null;
+                let isPaused = false;
 
                 // 1. Clear the container
                 voiceRecorderContainer.innerHTML = '';
 
-                // 2. Create all elements manually
+                // 2. Create the UI elements
                 const recorderDiv = document.createElement('div');
                 recorderDiv.id = 'voice-recorder';
                 recorderDiv.className = 'glass p-2 rounded-lg flex items-center justify-between mb-2';
 
-                const infoDiv = document.createElement('div');
-                infoDiv.className = 'flex items-center gap-2';
-
-                const micIcon = document.createElement('i');
-                micIcon.setAttribute('data-lucide', 'mic');
-                micIcon.className = 'w-5 h-5 text-red-500 animate-pulse';
-
+                // --- Delete Button ---
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'text-gray-400 hover:text-red-400 p-2';
+                deleteButton.title = 'Cancel Recording';
+                deleteButton.innerHTML = '<i data-lucide="trash-2" class="w-5 h-5"></i>';
+                
+                // --- Timer ---
                 const timerSpan = document.createElement('span');
-                timerSpan.id = 'recorder-timer';
-                timerSpan.className = 'font-mono';
+                timerSpan.className = 'font-mono text-lg';
                 timerSpan.textContent = '00:00';
 
-                infoDiv.appendChild(micIcon);
-                infoDiv.appendChild(timerSpan);
+                // --- Controls Container ---
+                const controlsDiv = document.createElement('div');
+                controlsDiv.className = 'flex items-center gap-2';
 
-                const stopButton = document.createElement('button');
-                stopButton.id = 'stop-recording-btn';
-                stopButton.className = 'bg-red-500 text-white rounded-full p-2';
+                // --- Pause/Resume Button ---
+                const pauseButton = document.createElement('button');
+                pauseButton.className = 'text-gray-300 hover:text-white p-2';
+                pauseButton.title = 'Pause';
+                pauseButton.innerHTML = '<i data-lucide="pause" class="w-5 h-5"></i>';
 
-                const stopIcon = document.createElement('i');
-                stopIcon.setAttribute('data-lucide', 'stop-circle');
-                stopIcon.className = 'w-5 h-5';
+                // --- Send Button ---
+                const sendButton = document.createElement('button');
+                sendButton.className = 'bg-green-500 text-white rounded-full p-2';
+                sendButton.title = 'Send Recording';
+                sendButton.innerHTML = '<i data-lucide="send" class="w-5 h-5"></i>';
 
-                stopButton.appendChild(stopIcon);
-
-                recorderDiv.appendChild(infoDiv);
-                recorderDiv.appendChild(stopButton);
-
-                // 3. This listener handles the click, stops propagation,
-                //    stops the timer, removes the UI, and stops the recorder.
-                stopButton.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Stops the click from bubbling
-
-                    clearInterval(interval); // Stop the visual timer
-
-                    voiceRecorderContainer.innerHTML = ''; // IMMEDIATELY remove the UI
-
-                    if (mediaRecorder && mediaRecorder.state === "recording") {
-                        mediaRecorder.stop(); // Stop the actual recording
-                    }
-                });
-
-                // 4. Now, add the new UI to the page
+                // 3. Add elements to the DOM
+                controlsDiv.appendChild(pauseButton);
+                controlsDiv.appendChild(sendButton);
+                recorderDiv.appendChild(deleteButton);
+                recorderDiv.appendChild(timerSpan);
+                recorderDiv.appendChild(controlsDiv);
                 voiceRecorderContainer.appendChild(recorderDiv);
-
-                // 5. Render the icons
+                
+                // 4. Render icons
                 lucide.createIcons({ nodes: [voiceRecorderContainer] });
 
-                // 6. Start the timer interval
-                interval = setInterval(() => {
-                    seconds++;
-                    const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
-                    const secs = (seconds % 60).toString().padStart(2, '0');
-                    timerSpan.textContent = `${minutes}:${secs}`;
-                }, 1000);
+                // 5. Timer logic
+                const startTimer = () => {
+                    if (interval) clearInterval(interval); // Clear any existing interval
+                    interval = setInterval(() => {
+                        seconds++;
+                        const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+                        const secs = (seconds % 60).toString().padStart(2, '0');
+                        timerSpan.textContent = `${minutes}:${secs}`;
+                    }, 1000);
+                };
+
+                const stopTimer = () => {
+                    clearInterval(interval);
+                };
+
+                // 6. Add Event Listeners
+                
+                // --- Delete ---
+                deleteButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    stopTimer();
+                    audioChunks = []; // Clear chunks so onstop listener sends nothing
+                    if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
+                        mediaRecorder.stop(); // This will trigger the onstop listener
+                    }
+                    voiceRecorderContainer.innerHTML = ''; // Also clear UI immediately
+                });
+
+                // --- Pause/Resume ---
+                pauseButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (!mediaRecorder) return;
+
+                    if (isPaused) {
+                        // Resume recording
+                        mediaRecorder.resume();
+                        startTimer();
+                        isPaused = false;
+                        pauseButton.innerHTML = '<i data-lucide="pause" class="w-5 h-5"></i>';
+                        pauseButton.title = 'Pause';
+                    } else {
+                        // Pause recording
+                        mediaRecorder.pause();
+                        stopTimer();
+                        isPaused = true;
+                        pauseButton.innerHTML = '<i data-lucide="play" class="w-5 h-5"></i>';
+                        pauseButton.title = 'Resume';
+                    }
+                    lucide.createIcons({ nodes: [pauseButton] });
+                });
+
+                // --- Send ---
+                sendButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    stopTimer();
+                    // onstop listener will handle sending if audioChunks is not empty
+                    if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
+                        mediaRecorder.stop();
+                    }
+                    voiceRecorderContainer.innerHTML = ''; // Clear UI immediately
+                });
+                
+                // 7. Start the timer
+                startTimer();
             }
         }
 
