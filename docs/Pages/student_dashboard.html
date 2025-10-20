@@ -2911,10 +2911,27 @@
             const userInput = mainChatInput.value.trim();
             if (!userInput) return;
 
-            mainChatSendBtn.disabled = true;
-            await sendMessage({ type: 'text', text: userInput });
-            mainChatInput.value = '';
-            mainChatSendBtn.disabled = false;
+            mainChatSendBtn.disabled = true; // <-- Disable button before try block
+
+            try {
+                // 1. Run the safety check *before* sending the message
+                await checkForSuicidalIntent(userInput);
+
+                // 2. If check passes, send the message
+                await sendMessage({ type: 'text', text: userInput });
+
+                // 3. Clear input only on successful send
+                mainChatInput.value = '';
+
+            } catch (error) {
+                // 4. Handle errors from the flagging system (which throws an error)
+                console.error("Error sending peer message or flagging content:", error);
+                // Use the existing showNotification function to inform the user
+                showNotification("Your message could not be sent due to a safety check error.", "error");
+            } finally {
+                // 5. ALWAYS re-enable the button
+                mainChatSendBtn.disabled = false;
+            }
         }
 
         async function handleDeleteMessage(messageId) {
