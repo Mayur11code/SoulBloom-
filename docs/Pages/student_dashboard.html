@@ -1237,16 +1237,37 @@
                                         </div>
                                     </div>
                                 </div>
-
+                                 <!-- Music Player -->
+                                <div class="widget">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <div class="flex items-center gap-3">
+                                            <i data-lucide="music-4" class="w-6 h-6 text-green-400"></i>
+                                            <div>
+                                                <h3 class="text-lg">chill vibes</h3>
+                                                <p class="text-sm text-gray-400">lo-fi beats</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button id="spotify-btn"
+                                                class="text-sm bg-[#1DB954]/80 text-white px-3 py-1 rounded hover:bg-[#1DB954] transition-colors">Spotify</button>
+                                            <button id="yt-music-btn"
+                                                class="text-sm bg-[#FF0000]/80 text-white px-3 py-1 rounded hover:bg-[#FF0000] transition-colors">YT
+                                                Music</button>
+                                        </div>
+                                    </div>
+                                    <div id="music-player-container" class="w-full h-80 mt-2">
+                                        <!-- Music player content is managed by JavaScript -->
+                                    </div>
+                                </div>
                                 <!-- User Health -->
                                 <div class="widget flex flex-col">
-                                    <h2 class="text-xl mb-10 flex items-center gap-2"><i data-lucide="heart-pulse"
+                                    <h2 class="text-xl mb-6 flex items-center gap-2"><i data-lucide="heart-pulse"
                                             class="w-5 h-5 "></i> User Health</h2>
-                                    <div id="health-stats-container" class="flex flex-col gap-6 items-center"
+                                    <div id="health-stats-container" class="flex flex-row justify-around items-center"
                                         style="min-height: 150px;">
                                         <!-- Health gauges will be injected here by JS -->
                                     </div>
-                                    <div id="google-fit-auth-container" class="mt-4 text-center">
+                                    <div id="google-fit-auth-container" class="mt-4  text-center">
                                         <!-- This will show a login button or a sync message -->
                                     </div>
                                 </div>
@@ -1418,28 +1439,7 @@
                                             data-lucide="plus" class="w-4 h-4"></i> New</button>
                                 </div>
 
-                                <!-- Music Player -->
-                                <div class="widget">
-                                    <div class="flex justify-between items-center mb-4">
-                                        <div class="flex items-center gap-3">
-                                            <i data-lucide="music-4" class="w-6 h-6 text-green-400"></i>
-                                            <div>
-                                                <h3 class="text-lg">chill vibes</h3>
-                                                <p class="text-sm text-gray-400">lo-fi beats</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex gap-2">
-                                            <button id="spotify-btn"
-                                                class="text-sm bg-[#1DB954]/80 text-white px-3 py-1 rounded hover:bg-[#1DB954] transition-colors">Spotify</button>
-                                            <button id="yt-music-btn"
-                                                class="text-sm bg-[#FF0000]/80 text-white px-3 py-1 rounded hover:bg-[#FF0000] transition-colors">YT
-                                                Music</button>
-                                        </div>
-                                    </div>
-                                    <div id="music-player-container" class="w-full h-96 mt-2">
-                                        <!-- Music player content is managed by JavaScript -->
-                                    </div>
-                                </div>
+                               
                             </div>
                         </div>
                     </div>
