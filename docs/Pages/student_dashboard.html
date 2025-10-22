@@ -1125,7 +1125,7 @@
                     </div>
 
                     <!-- Main Dashboard Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 mt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6 mt-6">
 
                         <!-- Sidebar -->
                         <div class="lg:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
@@ -1137,6 +1137,22 @@
                                         <span>Study Help !!</span>
                                     </div>
                                 </button>
+                            </div>
+                            <!-- Helpful Links -->
+                            <div class="widget">
+                                    <div class="flex justify-between items-center">
+                                        <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="link-2"
+                                                class="w-5 h-5"></i> Helpful Links</h2>
+                                        <button id="helpful-link-btn"
+                                            class="text-base bg-green-500/80 text-white px-3 py-1 rounded hover:bg-green-600">✨
+                                            Find a
+                                            Link</button>
+                                    </div>
+                                    <ul id="helpful-links-list" class="space-y-2 mt-2">
+                                        <li><a href="https://telemanas.mohfw.gov.in/" target="_blank"
+                                                class="hover:text-green-400">✧
+                                                Tele MANAS</a></li>
+                                    </ul>
                             </div>
                             <!-- START OF EDIT: Added Screening Button -->
                             <div class="widget">
@@ -1178,25 +1194,11 @@
                         </div>
 
                         <!-- Main Content Area -->
-                        <div class="lg:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
+                        <div class="lg:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-6 min-w-0">
                             <!-- Left Column -->
                             <div class="lg:col-span-1 flex flex-col gap-6">
-                                <!-- Helpful Links -->
-                                <div class="widget">
-                                    <div class="flex justify-between items-center">
-                                        <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="link-2"
-                                                class="w-5 h-5"></i> Helpful Links</h2>
-                                        <button id="helpful-link-btn"
-                                            class="text-sm bg-green-500/80 text-white px-3 py-1 rounded hover:bg-green-600">✨
-                                            Find a
-                                            Link</button>
-                                    </div>
-                                    <ul id="helpful-links-list" class="space-y-2 mt-2">
-                                        <li><a href="https://telemanas.mohfw.gov.in/" target="_blank"
-                                                class="hover:text-green-400">✧
-                                                Tele MANAS</a></li>
-                                    </ul>
-                                </div>
+                                
+                                
 
                                 <!-- Journaling -->
                                 <div class="widget">
@@ -1237,9 +1239,9 @@
                                 </div>
 
                                 <!-- User Health -->
-                                <div class="widget">
-                                    <h2 class="text-xl mb-4 flex items-center gap-2"><i data-lucide="heart-pulse"
-                                            class="w-5 h-5"></i> User Health</h2>
+                                <div class="widget flex flex-col">
+                                    <h2 class="text-xl mb-10 flex items-center gap-2"><i data-lucide="heart-pulse"
+                                            class="w-5 h-5 "></i> User Health</h2>
                                     <div id="health-stats-container" class="flex flex-col gap-6 items-center"
                                         style="min-height: 150px;">
                                         <!-- Health gauges will be injected here by JS -->
@@ -1249,7 +1251,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Weather -->
+                                <!-- Weather 
                                 <div class="widget">
                                     <h2 class="text-sm text-gray-400">DELHI WEATHER</h2>
                                     <div class="flex items-center justify-between mt-2">
@@ -1291,14 +1293,14 @@
                                             <p class="text-gray-400">18°C</p>
                                         </div>
                                     </div>
-                                </div>
+                                </div>-->
                             </div>
 
                             <!-- Right Column -->
-                            <div class="lg:col-span-2 flex flex-col gap-6">
+                            <div class="lg:col-span-1 flex flex-col gap-6">
 
                                 <!-- Guided Meditation -->
-                                <div class="widget">
+                                <div class="widget  ">
                                     <div class="flex justify-between items-center mb-3">
                                         <h2 class="text-xl flex items-center gap-2"><i data-lucide="brain-circuit"
                                                 class="w-5 h-5"></i> Guided Meditation</h2>
@@ -1311,7 +1313,7 @@
                                                     class="w-5 h-5"></i></button>
                                         </div>
                                     </div>
-                                    <div id="meditation-widget-body">
+                                    <div id="meditation-widget-body " class="flex flex-col gap-3">
                                         <p class="text-gray-400 mb-3 text-base">Enter a topic and select a language for
                                             your guided
                                             meditation.</p>
@@ -1348,7 +1350,7 @@
                                 </div>
 
                                 <!-- Serenity Map -->
-                                <div class="widget">
+                                <div class="widget w-full h-[600px]">
                                     <h2 class="text-xl mb-3 flex items-center gap-2"><i data-lucide="map"
                                             class="w-5 h-5"></i>
                                         Serenity Map</h2>
@@ -1359,7 +1361,7 @@
                                         <button id="location-search-btn"
                                             class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Search</button>
                                     </div>
-                                    <div id="map" class="w-full h-64 bg-[#2E3338] rounded"></div>
+                                    <div id="map" class="w-full h-[470px] bg-[#2E3338] rounded"></div>
                                 </div>
 
                                 <!-- Assignments -->
